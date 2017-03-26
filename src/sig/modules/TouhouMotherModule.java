@@ -59,6 +59,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	int data_display_toggle=0;
 	int data_display_id=0;
 	boolean hasDied=false;
+	boolean battleEnds=false;
 	
 	Button updateButton;
 
@@ -235,6 +236,10 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		if (real_gameData!=null && real_gameData.contains("sad thing that your adventures")) {
 			hasDied=true;
 		}
+		if (real_gameData!=null && (real_gameData.contains("you should see...") ||
+				real_gameData.contains("KA-75 fired its") || real_gameData.contains("The battle was lost"))) {
+			battleEnds=true;
+		}
 	}
 	
 	private int GetLastAttacker(String data) {
@@ -309,26 +314,29 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	
 	public void KillBossData() {
 		if ((real_bossHP==SemiValidInteger.ERROR_VALUE &&
-				currentBoss!=null) || hasDied) {
+				currentBoss!=null) || hasDied || battleEnds) {
 			if (bossImage!=null) {
 				bossImage.flush();
 			}
 			int diff = lastBossHP;
 			if (!hasDied) {
-				if (lastCharacterAttacked>=0) {
-					characterDatabase[lastCharacterAttacked].addCurrentDamage(diff);
-					characterDatabase[lastCharacterAttacked].addTotalDamage(diff);
-					characterDatabase[lastCharacterAttacked].addDamageTurns(1);
-					characterDatabase[lastCharacterAttacked].setLargestHit(diff);
+				if (!battleEnds) {
+					if (lastCharacterAttacked>=0) {
+						characterDatabase[lastCharacterAttacked].addCurrentDamage(diff);
+						characterDatabase[lastCharacterAttacked].addTotalDamage(diff);
+						characterDatabase[lastCharacterAttacked].addDamageTurns(1);
+						characterDatabase[lastCharacterAttacked].setLargestHit(diff);
+					}
+					TimeRecord.setRecord(currentBoss.getID(), secondsCount);
+					TimeRecord.SaveRecordDatabase();
 				}
-				TimeRecord.setRecord(currentBoss.getID(), secondsCount);
-				TimeRecord.SaveRecordDatabase();
 			} else {
 				for (TouhouMotherCharacterData tmcd : characterDatabase) {
 					tmcd.resetAllData();
 				}
 				hasDied=false;
 			}
+			battleEnds=false;
 			bossMaxHP=SemiValidInteger.ERROR_VALUE;
 			currentBoss=null;
 			lastBossHP=0;
