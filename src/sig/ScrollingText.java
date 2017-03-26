@@ -195,7 +195,7 @@ public class ScrollingText {
 				//System.out.println("Word is '"+word+"'");
 				
 				for (Emoticon e : sigIRC.emoticons) {
-					if (e.getEmoteName().equalsIgnoreCase(word)) {
+					if (e.getEmoteName().equals(word)) {
 						basemsg = TextUtils.replaceFirst(basemsg, e.getEmoteName(), e.getSpaceFiller());
 						GenerateEmoticon(marker+1, basemsg, e);
 						space = basemsg.indexOf(" ", marker+1);
