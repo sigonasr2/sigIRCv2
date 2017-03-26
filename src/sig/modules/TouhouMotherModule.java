@@ -24,6 +24,7 @@ import sig.Module;
 import sig.TextUtils;
 import sig.sigIRC;
 import sig.modules.TouhouMother.Button;
+import sig.modules.TouhouMother.Button2;
 import sig.modules.TouhouMother.DataProperty;
 import sig.modules.TouhouMother.IncreaseTouhouMotherClockCount;
 import sig.modules.TouhouMother.TimeRecord;
@@ -62,6 +63,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	boolean battleEnds=false;
 	
 	Button updateButton;
+	Button2 killButton;
 
 	public TouhouMotherModule(Rectangle2D bounds, String moduleName) {
 		super(bounds, moduleName);
@@ -111,6 +113,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 				DrawSortedHealthbarsBasedOnDataProperty(g, DataProperty.getDataPropertyBasedOnID(data_display_id), 0, -64);
 			}
 			updateButton.draw(g);
+			killButton.draw(g);
 		}
 	}
 	
@@ -237,9 +240,14 @@ public class TouhouMotherModule extends Module implements ActionListener{
 			hasDied=true;
 		}
 		if (real_gameData!=null && (real_gameData.contains("you should see...") ||
-				real_gameData.contains("KA-75 fired its") || real_gameData.contains("The battle was lost"))) {
+				real_gameData.contains("KA-75 fired its") || real_gameData.contains("The battle was lost")
+				 || real_gameData.contains("Yukari tried"))) {
 			battleEnds=true;
 		}
+	}
+	
+	public void endBattle() {
+		battleEnds=true;
 	}
 	
 	private int GetLastAttacker(String data) {
@@ -413,6 +421,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	
 	public void mousePressed(MouseEvent ev) {
 		updateButton.onClickEvent(ev);
+		killButton.onClickEvent(ev);
 	}
 	public void mouseWheel(MouseWheelEvent ev) {
 		updateButton.onMouseWheelEvent(ev);
@@ -422,6 +431,9 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		updateButton = new Button(this, //56x20 pixels
 				new File(sigIRC.BASEDIR+"..\\update.png"),
 				(int)bounds.getX()+320-56,(int)bounds.getY()+sigIRC.panel.getHeight()/2-20);
+		killButton = new Button2(this,
+				new File(sigIRC.BASEDIR+"..\\kill.png"),
+				(int)bounds.getX(),(int)bounds.getY()+sigIRC.panel.getHeight()/2-20);
 	}
 	
 	public Rectangle2D getBounds() {
