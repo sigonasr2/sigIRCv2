@@ -38,7 +38,7 @@ public class Button {
 	}
 	
 	public void draw(Graphics g) {
-		DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, x-TextUtils.calculateStringBoundsFont(data[currentselection].split(",")[0], sigIRC.panel.smallFont).getWidth(), (int)module.getBounds().getY()+(int)module.getBounds().getHeight()-8, 1, Color.BLACK, Color.WHITE, 
+		DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, x-TextUtils.calculateStringBoundsFont(data[currentselection].split(",")[0], sigIRC.panel.smallFont).getWidth(), (int)module.getBounds().getY()+(int)module.getBounds().getHeight()-8, 1, Color.WHITE, new Color(30,0,86,255), 
 				data[currentselection].split(",")[0]);
 		g.drawImage(buttonimg, x, y, sigIRC.panel);
 	}

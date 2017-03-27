@@ -41,7 +41,7 @@ public class sigIRC{
 	static Timer programClock = new Timer(32,updater);
 	final public static int TEXTSCROLLSPD = 4;
 	final public static int ROWSEPARATION = 64;
-	final public static String BASEDIR = "D:\\Documents\\Touhou Mother Speedrun\\sigIRC\\"; 
+	final public static String BASEDIR = ".\\"; 
 	final public static String WINDOWTITLE = "sigIRCv2"; 
 	
 	public static void main(String[] args) {
