@@ -56,7 +56,7 @@ public class SemiValidInteger {
 	}
 
 	public boolean passesTestConditions(int testnumb) {
-		return testnumb!=0 && testnumb<1000000 && (((!initialized && testnumb==bossHP) || (initialized && testnumb<=bossHP)) || bossHP==Integer.MAX_VALUE);
+		return testnumb!=0 && testnumb<1000000 && (((!initialized && testnumb==bossHP) || (initialized && testnumb<=bossHP+7000)) || bossHP==Integer.MAX_VALUE);
 	}
 	
 	public String toString() {

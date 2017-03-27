@@ -264,7 +264,8 @@ public class TouhouMotherModule extends Module implements ActionListener{
 			return TouhouPlayerCharacter.MIMA.getID();
 		} else 
 		if (data.contains("Nitori") || data.contains("Sanae") ||
-				data.contains("Patchouli") || data.contains("Iku")) {
+				data.contains("Patchouli") || data.contains("Iku")
+				 || data.contains("Alice")) {
 			return -1;
 		}
 		return lastCharacterAttacked;
@@ -291,8 +292,13 @@ public class TouhouMotherModule extends Module implements ActionListener{
 							characterDatabase[lastCharacterAttacked].addTotalDamage(diff);
 							characterDatabase[lastCharacterAttacked].addDamageTurns(1);
 							characterDatabase[lastCharacterAttacked].setLargestHit(diff);
+							lastCharacterAttacked=-1;
 						}
 						lastBossHP=real_bossHP;
+					} else {
+						if (real_bossHP>lastBossHP) { //This boss healed somehow.
+							lastBossHP = real_bossHP;
+						}
 					}
 				}
 				lastCharacterAttacked = GetLastAttacker(real_gameData);
@@ -355,7 +361,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		characterDatabase[TouhouPlayerCharacter.REIMU.getID()] = new TouhouMotherCharacterData("Reimu",new Color(255,70,70));
 		characterDatabase[TouhouPlayerCharacter.MARISA.getID()] = new TouhouMotherCharacterData("Marisa",new Color(255,200,70));
 		characterDatabase[TouhouPlayerCharacter.YUUKA.getID()] = new TouhouMotherCharacterData("Yuuka",new Color(35,140,35));
-		characterDatabase[TouhouPlayerCharacter.MIMA.getID()] = new TouhouMotherCharacterData("Mima",new Color(55,100,200));
+		characterDatabase[TouhouPlayerCharacter.MIMA.getID()] = new TouhouMotherCharacterData("Mima",new Color(110,60,250));
 	}
 	
 	private void DefineMonsterDatabase() {
