@@ -13,12 +13,14 @@ public class SemiValidInteger {
 	
 	public SemiValidInteger(String[] vals) {
 		this.values = vals;
+		ConvertNegativeValues(vals);
 	}
 	
 	public SemiValidInteger(String[] vals, Integer bossHP, boolean initialized) {
 		this.bossHP=bossHP;
 		this.values=vals;
 		this.initialized=initialized;
+		ConvertNegativeValues(vals);
 	}
 	
 	public SemiValidInteger(String[] vals, Integer bossHP, boolean initialized, int trustedslot) {
@@ -26,6 +28,20 @@ public class SemiValidInteger {
 		this.values=vals;
 		this.initialized=initialized;
 		this.trustedslot=trustedslot;
+		ConvertNegativeValues(vals);
+	}
+
+	private void ConvertNegativeValues(String[] vals) {
+		for (int i=0;i<vals.length;i++) {
+			if (TextUtils.isNumeric(vals[i])) {
+				double d = Double.parseDouble(vals[i]);
+				if (d>Integer.MAX_VALUE) {
+					System.out.println("Double: "+d+" Val:"+vals[i]);
+					vals[i] = Integer.toString((int)(d-((double)Integer.MAX_VALUE*2))-2);
+				}
+			}
+		}
+		System.out.print("Test values: "+Arrays.toString(vals));
 	}
 
 	public int getValidInteger() {

@@ -5,6 +5,8 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
@@ -14,7 +16,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-public class MyPanel extends JPanel implements MouseListener, ActionListener, MouseWheelListener{
+public class MyPanel extends JPanel implements MouseListener, ActionListener, MouseWheelListener, KeyListener{
 	//List<String> messages = new ArrayList<String>();
 	final public static Font programFont = new Font("Gill Sans Ultra Bold Condensed",0,24);
 	final public static Font userFont = new Font("Gill Sans",0,16);
@@ -24,6 +26,8 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         //setBorder(BorderFactory.createLineBorder(Color.black));
     	addMouseListener(this);
     	addMouseWheelListener(this);
+    	addKeyListener(this);
+    	setFocusable(true);
     }
 
     public Dimension getPreferredSize() {
@@ -83,6 +87,25 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 	public void mouseWheelMoved(MouseWheelEvent ev) {
 		for (Module m : sigIRC.modules) {
 			m.mouseWheel(ev);
+		}
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent ev) {
+		for (Module m : sigIRC.modules) {
+			m.keypressed(ev);
+		}
+	}
+
+	@Override
+	public void keyReleased(KeyEvent ev) {
+		for (Module m : sigIRC.modules) {
+			m.keyreleased(ev);
 		}
 	}
 }

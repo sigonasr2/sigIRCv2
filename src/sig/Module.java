@@ -1,5 +1,6 @@
 package sig;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Rectangle2D;
@@ -32,5 +33,12 @@ public class Module {
 	}
 
 	public void mouseWheel(MouseWheelEvent ev) {
+	}
+
+	public void keypressed(KeyEvent ev) {
+		
+	}
+
+	public void keyreleased(KeyEvent ev) {
 	}
 }

@@ -46,6 +46,11 @@ public class Button {
 	public void onClickEvent(MouseEvent ev) {
 		if (ev.getX()>=x && ev.getX()<=x+buttonimg.getWidth() &&
 				ev.getY()>=y && ev.getY()<=y+buttonimg.getHeight()) {
+			data = FileUtils.readFromFile(sigIRC.BASEDIR+"..\\WSplits");
+
+			int val = Integer.parseInt(data[1].replace("Attempts=", ""));
+			data[1]=data[1].replace(Integer.toString(val), Integer.toString(++val));
+			
 			for (int i=4;i<=currentselection;i++) {
 				int runCount = Integer.parseInt(data[i].substring(data[i].indexOf("(")+1, data[i].indexOf(")")));
 				data[i]=data[i].replace("("+Integer.toString(runCount)+")", "("+Integer.toString(++runCount)+")");

@@ -38,7 +38,7 @@ public class TimeRecord {
 	
 	public static int getRecord(int id) {
 		for (TimeRecord tr : tmm.recordDatabase) {
-			if (id==tr.getID()) {
+			if (id==tr.getID() && tr.getTimeRecord()>10) {
 				return tr.getTimeRecord();
 			}
 		}
@@ -52,7 +52,7 @@ public class TimeRecord {
 	 */
 	public static void setRecord(int id, int seconds) {
 		for (TimeRecord tr : tmm.recordDatabase) {
-			if (id==tr.getID()) {
+			if (id==tr.getID() && tr.getTimeRecord()>10) {
 				if (tr.getTimeRecord()>seconds) {
 					tr.setTimeRecord(seconds);
 				}

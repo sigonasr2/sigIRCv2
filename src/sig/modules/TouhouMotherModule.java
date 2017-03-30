@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Rectangle2D;
@@ -25,6 +26,7 @@ import sig.TextUtils;
 import sig.sigIRC;
 import sig.modules.TouhouMother.Button;
 import sig.modules.TouhouMother.Button2;
+import sig.modules.TouhouMother.Button3;
 import sig.modules.TouhouMother.DataProperty;
 import sig.modules.TouhouMother.IncreaseTouhouMotherClockCount;
 import sig.modules.TouhouMother.TimeRecord;
@@ -46,7 +48,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	int real_bossHP=SemiValidInteger.ERROR_VALUE;
 	int real_bossID=SemiValidInteger.ERROR_VALUE;
 	String real_gameData=SemiValidString.ERROR_VALUE;
-	TouhouMotherBossData[] monsterDatabase = new TouhouMotherBossData[37];
+	TouhouMotherBossData[] monsterDatabase;
 	TouhouMotherCharacterData[] characterDatabase = new TouhouMotherCharacterData[4];
 	
 	public List<TimeRecord> recordDatabase = new ArrayList<TimeRecord>();
@@ -62,8 +64,11 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	boolean hasDied=false;
 	boolean battleEnds=false;
 	
+	boolean diamondSparkyMsg = false;
+	
 	Button updateButton;
 	Button2 killButton;
+	Button3 swapButton;
 
 	public TouhouMotherModule(Rectangle2D bounds, String moduleName) {
 		super(bounds, moduleName);
@@ -95,6 +100,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 			data_display_id=(data_display_id+1)%DataProperty.values().length;
 			data_display_toggle=0;
 		}
+		swapButton.run();
 	}
 	
 	
@@ -114,6 +120,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 			}
 			updateButton.draw(g);
 			killButton.draw(g);
+			swapButton.draw(g);
 		}
 	}
 	
@@ -145,7 +152,8 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		int pos = 0;
 		int[] sorteddmg = new int[4];
 		sorteddmg = SortByProperty(property);
-		int totaldmg = calculateDataPropertyTotal(property);
+		int maxdmg = calculateDataPropertyMaxValue(property);
+		int totaldmg = calculateDataPropertyTotalValue(property);
 		for (int i=0;i<sorteddmg.length;i++) {
 			if (sorteddmg[i]!=-1 && characterDatabase[sorteddmg[i]].getDataProperty(property)>0) {
 				DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, Math.min(((bossImage!=null)?bossImage.getWidth():0)+4,160)+(int)bounds.getX()+4-Math.min(50, (bossImage!=null)?bossImage.getWidth():0)+x, (int)bounds.getY()+4+96+pos+y, 1, Color.WHITE, new Color(30,0,86,255), 
@@ -157,7 +165,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 								96,
 								10
 								)
-						, (double)characterDatabase[sorteddmg[i]].getDataProperty(property)/totaldmg, characterDatabase[sorteddmg[i]].getColor());
+						, (double)characterDatabase[sorteddmg[i]].getDataProperty(property)/maxdmg, characterDatabase[sorteddmg[i]].getColor());
 				DecimalFormat df = new DecimalFormat("0.0");
 				DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, Math.min((bossImage!=null)?bossImage.getWidth():0+4,160)+(int)bounds.getX()+4+Math.max(0, 50-((bossImage!=null)?bossImage.getWidth():0))+108+x, (int)bounds.getY()+4+96+pos+y, 1, Color.WHITE, new Color(30,0,86,255), 
 						characterDatabase[sorteddmg[i]].getDataProperty(property)+" "+"("+df.format(((((double)characterDatabase[sorteddmg[i]].getDataProperty(property)/totaldmg))*100))+"%)");
@@ -194,10 +202,19 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		//System.out.println("End result of orderedslots: "+Arrays.toString(orderedslots));
 		return orderedslots;
 	}
-	private int calculateDataPropertyTotal(DataProperty property) {
+	private int calculateDataPropertyMaxValue(DataProperty property) {
+		int max = Integer.MIN_VALUE;
+		for (TouhouMotherCharacterData tmcd : characterDatabase) {
+			if (tmcd.getDataProperty(property)>max) {
+				max = tmcd.getDataProperty(property);
+			}
+		}
+		return max;
+	}
+	private int calculateDataPropertyTotalValue(DataProperty property) {
 		int total = 0;
 		for (TouhouMotherCharacterData tmcd : characterDatabase) {
-			total += tmcd.getDataProperty(property);
+			total = tmcd.getDataProperty(property);
 		}
 		return total;
 	}
@@ -235,9 +252,16 @@ public class TouhouMotherModule extends Module implements ActionListener{
 			real_bossID = bossID.getValidInteger();
 			real_gameData = gameData.getValidString();
 		}
+		if (memory.length>=14) {
+			gameData = new SemiValidString(Arrays.copyOfRange(memory, 9, 13));
+			real_gameData = gameData.getValidString();
+		}
 		System.out.print(real_gameData);
 		if (real_gameData!=null && real_gameData.contains("sad thing that your adventures")) {
 			hasDied=true;
+		}
+		if (real_gameData!=null && real_gameData.contains("Your SPARKY")) {
+			diamondSparkyMsg=true;
 		}
 		if (real_gameData!=null && (real_gameData.contains("you should see...") ||
 				real_gameData.contains("KA-75 fired its") || real_gameData.contains("The battle was lost")
@@ -263,9 +287,9 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		if (data.contains("Mima")) {
 			return TouhouPlayerCharacter.MIMA.getID();
 		} else 
-		if (data.contains("Nitori") || data.contains("Sanae") ||
+		if ((data.contains("Nitori") || data.contains("Sanae") ||
 				data.contains("Patchouli") || data.contains("Iku")
-				 || data.contains("Alice")) {
+				 || data.contains("Alice")) && !data.contains("took")) {
 			return -1;
 		}
 		return lastCharacterAttacked;
@@ -287,7 +311,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 				} else {
 					if (lastBossHP>real_bossHP) {
 						int diff = lastBossHP - real_bossHP;
-						if (lastCharacterAttacked>=0) {
+						if (lastCharacterAttacked>=0 && diff<=100000) {
 							characterDatabase[lastCharacterAttacked].addCurrentDamage(diff);
 							characterDatabase[lastCharacterAttacked].addTotalDamage(diff);
 							characterDatabase[lastCharacterAttacked].addDamageTurns(1);
@@ -310,32 +334,36 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		if (real_bossHP!=SemiValidInteger.ERROR_VALUE &&
 				currentBoss==null) {
 			currentBoss = GetBossData(real_bossID);
-			if (currentBoss!=null) {
-				bossMaxHP = currentBoss.getHP();
-				secondsCount=0;
-				secondClock.start();
-				for (TouhouMotherCharacterData tmcd : characterDatabase) {
-					tmcd.setCurrentDamage(0);
-				}
-				try {
-					bossImage = ImageIO.read(new File(sigIRC.BASEDIR+"..\\Boss Sprites\\"+currentBoss.getImage()));
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
+			SetupBattleInfo();
+		}
+	}
+
+	public void SetupBattleInfo() {
+		if (currentBoss!=null) {
+			bossMaxHP = currentBoss.getHP();
+			secondsCount=0;
+			secondClock.start();
+			for (TouhouMotherCharacterData tmcd : characterDatabase) {
+				tmcd.setCurrentDamage(0);
+			}
+			try {
+				bossImage = ImageIO.read(new File(sigIRC.BASEDIR+"..\\Boss Sprites\\"+currentBoss.getImage()));
+			} catch (IOException e) {
+				e.printStackTrace();
 			}
 		}
 	}
 	
 	public void KillBossData() {
-		if ((real_bossHP==SemiValidInteger.ERROR_VALUE &&
-				currentBoss!=null) || hasDied || battleEnds) {
+		if (((real_bossHP==SemiValidInteger.ERROR_VALUE || real_bossHP<0) &&
+				currentBoss!=null && (currentBoss.getID()!=121 || (diamondSparkyMsg))) || hasDied || battleEnds) {
 			if (bossImage!=null) {
 				bossImage.flush();
 			}
 			int diff = lastBossHP;
 			if (!hasDied) {
 				if (!battleEnds) {
-					if (lastCharacterAttacked>=0) {
+					if (lastCharacterAttacked>=0 && diff<=100000) {
 						characterDatabase[lastCharacterAttacked].addCurrentDamage(diff);
 						characterDatabase[lastCharacterAttacked].addTotalDamage(diff);
 						characterDatabase[lastCharacterAttacked].addDamageTurns(1);
@@ -351,10 +379,20 @@ public class TouhouMotherModule extends Module implements ActionListener{
 				hasDied=false;
 			}
 			battleEnds=false;
-			bossMaxHP=SemiValidInteger.ERROR_VALUE;
-			currentBoss=null;
-			lastBossHP=0;
+			if (IsSparky()) { //Sparky has its own rules.
+				currentBoss = GetBossData(121);
+				SetupBattleInfo();
+			} else {
+				bossMaxHP=SemiValidInteger.ERROR_VALUE;
+				currentBoss=null;
+				lastBossHP=0;
+				diamondSparkyMsg=false;
+			}
 		}
+	}
+
+	public boolean IsSparky() {
+		return currentBoss.getID()==120;
 	}
 	
 	private void DefineCharacterDatabase() {
@@ -365,44 +403,47 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	}
 	
 	private void DefineMonsterDatabase() {
-		int i=0;
-		monsterDatabase[i++] = new TouhouMotherBossData("Cirno", 1, 500, "Cirno.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Starman Jr", 3, 888, "Starman_Junior.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Masked Maid Girl", 4, 1000, "Masked_Maid_Girl.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Youmu Shall Not Lose", 11, 2111, "Youmu_Never_Loses.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Alice (Sick)", 15, 3500, "TME_15.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Galbangor", 23, 4000, "TME_23.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Miss Iku", 24, 3000, "TME_24.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Starman EX", 33, 5558, "TME_33.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("V-1969", 38, 8000, "TME_38.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Severed Head", 44, 7209, "TME_44.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Lady Shinki", 53, 10000, "TME_53.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Cirno", 63, 8888, "TME_63.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Strange Patchouli", 68, 10000, "TME_68.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("DEATH", 73, 10000, "TME_73.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Count Remilia", 55, 16000, "TME_55.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Miss Sanae", 74, 6000, "TME_74.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Pitch Black Rumia", 75, 8888, "TME_75.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Rinbokusan", 83, 10000, "TME_83.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("New Udonge", -101, 8888, "TME_-101.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Roboster", -84, 9999, "TME_-84.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Ancestral Starman", 103, 9999, "TME_103.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Miss Yuugi", 104, 12345, "TME_104.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Sparky", 105, 8000, "TME_105.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Keine", 136, 10000, "TME_136.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Miracle Udon", 137, 6000, "TME_137.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("a", -99, 26000, "TME_-99.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Mima", -10000, 41, "TME_-10000.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Ness", 900000, 1500, "TME_900000.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("General Pigmask", 202, 15000, "TME_202.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Proto-NKC", 204, 30000, "TME_204.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Tenshi", 999997, 30000, "TME_999997.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("The Devil's Machine", 999998, 14000, "DevilMachine.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("R-IN", 122, 999999, "TME_122.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("S-IN", 138, 999999, "TME_138.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Heavy Kisume", 200, 999999, "TME_200.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("KA-75", 203, 999999, "TME_203.png");
-		monsterDatabase[i++] = new TouhouMotherBossData("Gensokyo", 999999, 900000, "TME_999999.png");
+		List<TouhouMotherBossData> monsterdata = new ArrayList<TouhouMotherBossData>();
+		monsterdata.add(new TouhouMotherBossData("Cirno", 1, 500, "Cirno.png"));
+		monsterdata.add(new TouhouMotherBossData("Starman Jr", 3, 888, "Starman_Junior.png"));
+		monsterdata.add(new TouhouMotherBossData("Masked Maid Girl", 4, 1000, "Masked_Maid_Girl.png"));
+		monsterdata.add(new TouhouMotherBossData("Youmu Shall Not Lose", 11, 2111, "Youmu_Never_Loses.png"));
+		monsterdata.add(new TouhouMotherBossData("Alice (Sick)", 15, 3500, "TME_15.png"));
+		monsterdata.add(new TouhouMotherBossData("Galbangor", 23, 4000, "TME_23.png"));
+		monsterdata.add(new TouhouMotherBossData("Miss Iku", 24, 3000, "TME_24.png"));
+		monsterdata.add(new TouhouMotherBossData("Starman EX", 33, 5558, "TME_33.png"));
+		monsterdata.add(new TouhouMotherBossData("V-1969", 38, 8000, "TME_38.png"));
+		monsterdata.add(new TouhouMotherBossData("Severed Head", 44, 7209, "TME_44.png"));
+		monsterdata.add(new TouhouMotherBossData("Lady Shinki", 53, 10000, "TME_53.png"));
+		monsterdata.add(new TouhouMotherBossData("Cirno", 63, 8888, "TME_63.png"));
+		monsterdata.add(new TouhouMotherBossData("Strange Patchouli", 68, 10000, "TME_68.png"));
+		monsterdata.add(new TouhouMotherBossData("DEATH", 73, 10000, "TME_73.png"));
+		monsterdata.add(new TouhouMotherBossData("Count Remilia", 55, 16000, "TME_55.png"));
+		monsterdata.add(new TouhouMotherBossData("Miss Sanae", 74, 6000, "TME_74.png"));
+		monsterdata.add(new TouhouMotherBossData("Pitch Black Rumia", -100, 8888, "TME_-100.png"));
+		monsterdata.add(new TouhouMotherBossData("Rinbokusan", 83, 10000, "TME_83.png"));
+		monsterdata.add(new TouhouMotherBossData("New Udonge", -101, 8888, "TME_-101.png"));
+		monsterdata.add(new TouhouMotherBossData("Roboster", -84, 9999, "TME_-84.png"));
+		monsterdata.add(new TouhouMotherBossData("Ancestral Starman", 103, 9999, "TME_103.png"));
+		monsterdata.add(new TouhouMotherBossData("Miss Yuugi", 104, 12345, "TME_104.png"));
+		monsterdata.add(new TouhouMotherBossData("Sparky", 120, 8000, "TME_120.png"));
+		monsterdata.add(new TouhouMotherBossData("Diamond Sparky", 121, 8000, "ENEMYDiamondMasahirorin.png"));
+		monsterdata.add(new TouhouMotherBossData("Keine", 136, 10000, "TME_136.png"));
+		monsterdata.add(new TouhouMotherBossData("Miracle Udon", 137, 6000, "TME_137.png"));
+		monsterdata.add(new TouhouMotherBossData("a", -99, 26000, "TME_43.png"));
+		monsterdata.add(new TouhouMotherBossData("Mima", -10000, 41, "TME_-10000.png"));
+		monsterdata.add(new TouhouMotherBossData("Ness", 900000, 1500, "TME_900000.png"));
+		monsterdata.add(new TouhouMotherBossData("General Pigmask", 202, 15000, "TME_202.png"));
+		monsterdata.add(new TouhouMotherBossData("Proto-NKC", 204, 30000, "TME_204.png"));
+		monsterdata.add(new TouhouMotherBossData("Tenshi", 999997, 30000, "TME_999997.png"));
+		monsterdata.add(new TouhouMotherBossData("The Devil's Machine", 999998, 14000, "DevilMachine.png"));
+		monsterdata.add(new TouhouMotherBossData("R-IN", 122, 999999, "TME_122.png"));
+		monsterdata.add(new TouhouMotherBossData("S-IN", 138, 999999, "TME_138.png"));
+		monsterdata.add(new TouhouMotherBossData("Heavy Kisume", 200, 999999, "TME_200.png"));
+		monsterdata.add(new TouhouMotherBossData("KA-75", 203, 999999, "TME_203.png"));
+		monsterdata.add(new TouhouMotherBossData("Gensokyo", 999999, 900000, "TME_999999.png"));
+		monsterdata.add(new TouhouMotherBossData("Miss Satori", 108, 900000, "TME_108.png"));
+		monsterDatabase = monsterdata.toArray(new TouhouMotherBossData[monsterdata.size()]);
 	}
 	
 	/**
@@ -428,9 +469,18 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	public void mousePressed(MouseEvent ev) {
 		updateButton.onClickEvent(ev);
 		killButton.onClickEvent(ev);
+		swapButton.onClickEvent(ev);
 	}
 	public void mouseWheel(MouseWheelEvent ev) {
 		updateButton.onMouseWheelEvent(ev);
+	}
+	
+	public void keypressed(KeyEvent ev) {
+		swapButton.keyPressEvent(ev);
+	}
+	
+	public void keyreleased(KeyEvent ev) {
+		swapButton.keyReleaseEvent(ev);
 	}
 	
 	private void DefineButton() {
@@ -440,6 +490,9 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		killButton = new Button2(this,
 				new File(sigIRC.BASEDIR+"..\\kill.png"),
 				(int)bounds.getX(),(int)bounds.getY()+sigIRC.panel.getHeight()/2-20);
+		swapButton = new Button3(this,
+				new File(sigIRC.BASEDIR+"..\\swap.png"),
+				(int)bounds.getX(),(int)bounds.getY()+sigIRC.panel.getHeight()/2-40);
 	}
 	
 	public Rectangle2D getBounds() {
