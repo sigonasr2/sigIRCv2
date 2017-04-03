@@ -112,6 +112,7 @@ public class sigIRC{
 		manager = new FileManager("memory"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("update.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("backcolor.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("WSplits"); manager.verifyAndFetchFileFromServer();
 	}
 
