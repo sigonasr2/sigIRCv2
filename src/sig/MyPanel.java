@@ -1,5 +1,6 @@
 package sig;
 
+import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
@@ -12,6 +13,7 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
+import javax.swing.JColorChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
@@ -47,10 +49,11 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         for (Module m : sigIRC.modules) {
         	m.draw(g);
         }
+        sigIRC.button.draw(g);
     }  
     
     public void addMessage(String message) {
-    	ScrollingText text = new ScrollingText(message,this.getWidth(),(int)(Math.random()*128),sigIRC.TEXTSCROLLSPD);
+    	ScrollingText text = new ScrollingText(message,this.getWidth(),(int)(Math.random()*128));
     	TextRow row = TextRow.PickRandomTextRow(text.getUsername());
     	sigIRC.textobj.add(text);
     	row.updateRow(text);
@@ -65,6 +68,7 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 		for (Module m : sigIRC.modules) {
 			m.mousePressed(ev);
 		}
+        sigIRC.button.onClickEvent(ev);
 	}
 
 	@Override

@@ -26,11 +26,13 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 
 public class sigIRC{
 	public static MyPanel panel = null;
+	public static ColorPanel colorpanel = null;
 	public static List<ScrollingText> textobj = new ArrayList<ScrollingText>();
 	public static List<TextRow> rowobj = new ArrayList<TextRow>();
 	public static List<Emoticon> emoticons = new ArrayList<Emoticon>();
@@ -39,22 +41,39 @@ public class sigIRC{
 	public static List<Module> modules = new ArrayList<Module>();
 	static UpdateEvent updater = new UpdateEvent();
 	static Timer programClock = new Timer(32,updater);
-	final public static int TEXTSCROLLSPD = 4;
+	final public static int BASESCROLLSPD = 4;
 	final public static int ROWSEPARATION = 64;
-	final public static String BASEDIR = ".\\"; 
+	final public static String BASEDIR = "./"; 
 	final public static String WINDOWTITLE = "sigIRCv2"; 
+	static ConfigFile config;
+	static String server;
+	static String nickname;
+	static String channel;
+	public static boolean authenticated=false;
+	public static int lastPlayedDing=0;
+	final public static int DINGTIMER=150;
+	static boolean dingEnabled=true;
+	static int dingThreshold;
+	static Color backgroundcol;
+	public static BackgroundColorButton button;
 	
 	public static void main(String[] args) {
-		String server = "irc.chat.twitch.tv";
-		String nickname = "SigoNitori";
-		String channel = "#sigonitori";
 		
-		String[] filedata = FileUtils.readFromFile(BASEDIR+"oauthToken.txt");
+		config = InitializeConfigurationFile();
+		
+		server = config.getProperty("server");
+		nickname = config.getProperty("nickname");
+		channel = config.getProperty("channel");
+		dingThreshold = Integer.parseInt(config.getProperty("dingThreshold"));
+		backgroundcol = new Color(Integer.parseInt(config.getProperty("backgroundColor")));
+		
+		DownloadAllRequiredDependencies();
+		
+		String[] filedata = FileUtils.readFromFile(BASEDIR+"sigIRC/oauthToken.txt");
 		
 		String oauth = filedata[0];
 		
 		WriteBreakToLogFile();
-
 		programClock.start();
 		
 		InitializeRows(3);
@@ -69,6 +88,31 @@ public class sigIRC{
             }
         });
 		InitializeIRCConnection(server, nickname, channel, oauth);
+	}
+
+	private static ConfigFile InitializeConfigurationFile() {
+		ConfigFile.configureDefaultConfiguration();
+		final String configname = "sigIRCv2.conf";
+		File config = new File(BASEDIR+configname);
+		ConfigFile conf = new ConfigFile(configname);
+		if (!config.exists()) {
+			ConfigFile.setAllDefaultProperties(conf);
+			conf.saveProperties();
+		}
+		return conf;
+	}
+
+	public static void DownloadAllRequiredDependencies() {
+		FileManager manager = new FileManager("sigIRC/oauthToken.txt"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/Emotes/",true); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/logs/",true); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/sounds/",true); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/record"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("kill.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("memory"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("update.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("WSplits"); manager.verifyAndFetchFileFromServer();
 	}
 
 	private static void InitializeModules() {
@@ -113,9 +157,9 @@ public class sigIRC{
 
 	public static void WriteBreakToLogFile() {
 		Calendar cal = Calendar.getInstance();
-		File file = new File(BASEDIR+"logs\\log_"+(cal.get(Calendar.MONTH)+1)+"_"+cal.get(Calendar.DAY_OF_MONTH)+"_"+cal.get(Calendar.YEAR)+".txt");
+		File file = new File(BASEDIR+"logs/log_"+(cal.get(Calendar.MONTH)+1)+"_"+cal.get(Calendar.DAY_OF_MONTH)+"_"+cal.get(Calendar.YEAR)+".txt");
 		if (file.exists()) {
-			FileUtils.logToFile("\n---------------------------\n", BASEDIR+"logs\\log_"+(cal.get(Calendar.MONTH)+1)+"_"+cal.get(Calendar.DAY_OF_MONTH)+"_"+cal.get(Calendar.YEAR)+".txt");
+			FileUtils.logToFile("\n---------------------------\n", BASEDIR+"logs/log_"+(cal.get(Calendar.MONTH)+1)+"_"+cal.get(Calendar.DAY_OF_MONTH)+"_"+cal.get(Calendar.YEAR)+".txt");
 		}
 	}
 
@@ -160,8 +204,8 @@ public class sigIRC{
 	}
 
 	/*private static void DefineEmoticons() {
-		//emoticons.add(new Emoticon(sigIRC.BASEDIR+"Emotes\\;).png"));
-		File folder = new File(sigIRC.BASEDIR+"Emotes\\");
+		//emoticons.add(new Emoticon(sigIRC.BASEDIR+"Emotes/;).png"));
+		File folder = new File(sigIRC.BASEDIR+"Emotes/");
 		for (File f : folder.listFiles()) {
 			emoticons.add(new Emoticon(f.getAbsolutePath()));
 		}
@@ -184,6 +228,9 @@ public class sigIRC{
 		    } 
 		    else {
 		        // Print the raw line received by the bot.
+		    	if (!authenticated && line.contains("372 "+nickname.toLowerCase())) {
+		    		authenticated=true;
+		    	} else
 		    	if (MessageIsAllowed(line)) {
 		    		String filteredMessage = FilterMessage(line);
 		    		panel.addMessage(filteredMessage);
@@ -195,7 +242,7 @@ public class sigIRC{
     private static String FilterMessage(String line) {
     	System.out.println("Original Message: "+line);
 		String username = line.substring(1, line.indexOf("!"));
-		String cutstring = "#sigonitori :";
+		String cutstring = channel+" :";
 		String message = line.substring(line.indexOf(cutstring)+cutstring.length(), line.length());
 		return username+": "+ message;
 	}
@@ -212,10 +259,14 @@ public class sigIRC{
         JFrame f = new JFrame("sigIRCv2");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
         sigIRC.panel = new MyPanel();
-        sigIRC.panel.setBackground(Color.CYAN);
+        sigIRC.panel.setBackground(sigIRC.backgroundcol);
+        colorpanel = new ColorPanel();
+        f.add(colorpanel);
         f.add(sigIRC.panel);
         f.pack();
         f.setVisible(true);
+        
+        button = new BackgroundColorButton(new File(sigIRC.BASEDIR+"backcolor.png"),panel.getX()+panel.getWidth()-96,panel.getHeight()/2);
     }
 
 	public static boolean VerifyLogin(BufferedReader reader) throws IOException {

@@ -6,6 +6,7 @@ public class CustomSound {
 	private int cooldown = 0;
 	private String customsound;
 	private String username;
+	private FileManager manager;
 	
 	public String getUsername() {
 		return username;
@@ -19,6 +20,7 @@ public class CustomSound {
 	public CustomSound(String username, String customsound) {
 		this.username=username;
 		this.customsound=customsound;
+		this.manager = new FileManager("sigIRC/sounds/"+customsound);
 	}
 	
 	public boolean isSoundAvailable() {
@@ -30,7 +32,8 @@ public class CustomSound {
 	}
 	
 	public void playCustomSound() {
-		SoundUtils.playSound(sigIRC.BASEDIR+"sounds\\"+customsound);
+		manager.verifyAndFetchFileFromServer();
+		SoundUtils.playSound(sigIRC.BASEDIR+"sounds/"+customsound);
 		cooldown = SOUNDCOOLDOWN;
 	}
 	

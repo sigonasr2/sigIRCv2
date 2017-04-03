@@ -24,11 +24,11 @@ public class ScrollingText {
 	private String message;
 	private double x;
 	private double y;
-	private double scrollspd;
 	private int stringWidth;
 	private int stringHeight;
 	private boolean isAlive=true;
 	private Color userColor;
+	private TextRow myRow;
 	
 	public void setX(double x) {
 		this.x = x;
@@ -65,14 +65,13 @@ public class ScrollingText {
 	private int userstringWidth;
 	private int shadowSize;
 	
-	public ScrollingText(String msg, double x, double y, double scrollspd) {
+	public ScrollingText(String msg, double x, double y) {
 		LogMessageToFile(msg);
 		this.username = GetUsername(msg);
 		this.userColor = GetUserNameColor(this.username);
 		this.message = GetMessage(msg);
 		this.x=x;
 		this.y=y;
-		this.scrollspd=scrollspd;
 		
 		this.shadowSize=2;
 		
@@ -88,14 +87,19 @@ public class ScrollingText {
 		if (cs!=null && cs.isSoundAvailable()) {
 			cs.playCustomSound();
 		} else {
-			String soundName = sigIRC.BASEDIR+"sounds\\ping.wav";    
-			SoundUtils.playSound(soundName);
+			if (sigIRC.lastPlayedDing==0 && sigIRC.dingEnabled) {
+				String soundName = sigIRC.BASEDIR+"sigIRC/sounds/ping.wav";    
+				FileManager manager = new FileManager("sigIRC/sounds/ping.wav");
+				manager.verifyAndFetchFileFromServer();
+				SoundUtils.playSound(soundName);
+				sigIRC.lastPlayedDing=sigIRC.DINGTIMER;
+			}
 		}
 	}
 
 	private void LogMessageToFile(String message) {
 		Calendar cal = Calendar.getInstance();
-		FileUtils.logToFile(message, sigIRC.BASEDIR+"logs\\log_"+(cal.get(Calendar.MONTH)+1)+"_"+cal.get(Calendar.DAY_OF_MONTH)+"_"+cal.get(Calendar.YEAR)+".txt");
+		FileUtils.logToFile(message, sigIRC.BASEDIR+"sigIRC/logs/log_"+(cal.get(Calendar.MONTH)+1)+"_"+cal.get(Calendar.DAY_OF_MONTH)+"_"+cal.get(Calendar.YEAR)+".txt");
 	}
 
 	private Color GetUserNameColor(String username) {
@@ -121,7 +125,7 @@ public class ScrollingText {
 	}
 
 	public boolean run() {
-		x-=scrollspd;
+		x-=myRow.getScrollSpd();
 		//System.out.println("X: "+x);
 		sigIRC.panel.repaint(
 				FindLeftMostCornerInDisplay(),
@@ -159,8 +163,8 @@ public class ScrollingText {
 		}
 	}
 	public int FindRightMostCornerInDisplay() {
-		if (x+stringWidth+(int)scrollspd+1+shadowSize+1>0) {
-			return Math.min(Math.max(stringWidth,userstringWidth+8)+(int)scrollspd+1+shadowSize+1, sigIRC.panel.getWidth()-(int)x);
+		if (x+stringWidth+(int)sigIRC.BASESCROLLSPD+1+shadowSize+1>0) {
+			return Math.min(Math.max(stringWidth,userstringWidth+8)+(int)sigIRC.BASESCROLLSPD+1+shadowSize+1, sigIRC.panel.getWidth()-(int)x);
 		} else {
 			return 0;
 		}
@@ -172,6 +176,10 @@ public class ScrollingText {
 			return 0;
 		}
 	}
+	
+	public void setTextRow(TextRow row) {
+		this.myRow=row;
+	}
 
 	private String GetMessage(String msg) {
 		String basemsg = " "+msg.substring(msg.indexOf(":")+2, msg.length())+" ";
@@ -181,7 +189,7 @@ public class ScrollingText {
 	}
 
 	private String ConvertMessageSymbols(String basemsg) {
-		basemsg = basemsg.replace("/", "SLASH").replace(":", "COLON").replace("\\", "BACKSLASH").replace("|", "BAR").replace(">", "GREATERTHAN").replace("<", "LESSTHAN");
+		basemsg = basemsg.replace("/", "SLASH").replace(":", "COLON").replace("/", "BACKSLASH").replace("|", "BAR").replace(">", "GREATERTHAN").replace("<", "LESSTHAN");
 		return basemsg;
 	}
 

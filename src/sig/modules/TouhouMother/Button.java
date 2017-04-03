@@ -24,11 +24,15 @@ public class Button {
 	String[] data;
 	int currentselection=4;
 	TouhouMotherModule module;
+	boolean buttonEnabled = false;
 	
 	public Button(TouhouMotherModule parentmodule, File filename, int x, int y) {
 		this.x=x;
 		this.y=y;
-		data = FileUtils.readFromFile(sigIRC.BASEDIR+"..\\WSplits");
+		data = FileUtils.readFromFile(sigIRC.BASEDIR+"WSplits");
+		if (data.length>4) {
+			buttonEnabled=true;
+		}
 		this.module=parentmodule;
 		try {
 			buttonimg = ImageIO.read(filename);
@@ -38,31 +42,47 @@ public class Button {
 	}
 	
 	public void draw(Graphics g) {
-		DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, x-TextUtils.calculateStringBoundsFont(data[currentselection].split(",")[0], sigIRC.panel.smallFont).getWidth(), (int)module.getBounds().getY()+(int)module.getBounds().getHeight()-8, 1, Color.WHITE, new Color(30,0,86,255), 
-				data[currentselection].split(",")[0]);
-		g.drawImage(buttonimg, x, y, sigIRC.panel);
+		if (buttonEnabled) {
+			DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, x-TextUtils.calculateStringBoundsFont(data[currentselection].split(",")[0], sigIRC.panel.smallFont).getWidth(), (int)module.getBounds().getY()+(int)module.getBounds().getHeight()-8, 1, Color.WHITE, new Color(30,0,86,255), 
+					data[currentselection].split(",")[0]);
+			g.drawImage(buttonimg, x, y, sigIRC.panel);
+		}
 	}
 	
 	public void onClickEvent(MouseEvent ev) {
-		if (ev.getX()>=x && ev.getX()<=x+buttonimg.getWidth() &&
-				ev.getY()>=y && ev.getY()<=y+buttonimg.getHeight()) {
-			data = FileUtils.readFromFile(sigIRC.BASEDIR+"..\\WSplits");
-
-			int val = Integer.parseInt(data[1].replace("Attempts=", ""));
-			data[1]=data[1].replace(Integer.toString(val), Integer.toString(++val));
-			
-			for (int i=4;i<=currentselection;i++) {
-				int runCount = Integer.parseInt(data[i].substring(data[i].indexOf("(")+1, data[i].indexOf(")")));
-				data[i]=data[i].replace("("+Integer.toString(runCount)+")", "("+Integer.toString(++runCount)+")");
+		if (buttonEnabled) {
+			if (ev.getX()>=x && ev.getX()<=x+buttonimg.getWidth() &&
+					ev.getY()>=y && ev.getY()<=y+buttonimg.getHeight()) {
+				data = FileUtils.readFromFile(sigIRC.BASEDIR+"WSplits");
+	
+				int val = Integer.parseInt(data[1].replace("Attempts=", ""));
+				data[1]=data[1].replace(Integer.toString(val), Integer.toString(++val));
+				
+				for (int i=4;i<=currentselection;i++) {
+					int runCount = Integer.parseInt(data[i].substring(data[i].indexOf("(")+1, data[i].indexOf(")")));
+					data[i]=data[i].replace("("+Integer.toString(runCount)+")", "("+Integer.toString(++runCount)+")");
+				}
+				for (int i=4;i<data.length-1;i++) {
+					int runCount = Integer.parseInt(data[i].substring(data[i].indexOf("(")+1, data[i].indexOf(")")));
+					final String pctRunString = " - "+Integer.toString((int)(((double)runCount/val)*100))+"%";
+					if (data[i].contains("%")) {
+						String pctRuns = data[i].substring(data[i].indexOf(" - "), data[i].indexOf("%")+1); 
+						data[i]=data[i].replace(pctRuns, pctRunString);
+					} else {
+						data[i]=data[i].substring(0, data[i].indexOf(")")+1)+pctRunString+data[i].substring(data[i].indexOf(","), data[i].length());
+					}
+				}
+				FileUtils.writetoFile(data, sigIRC.BASEDIR+"WSplits");
 			}
-			FileUtils.writetoFile(data, sigIRC.BASEDIR+"..\\WSplits");
 		}
 	}
 
 	public void onMouseWheelEvent(MouseWheelEvent ev) {
-		int nextselection = currentselection+(int)Math.signum(ev.getWheelRotation());
-		nextselection = LoopSelectionAround(nextselection);
-		currentselection=nextselection;
+		if (buttonEnabled) {
+			int nextselection = currentselection+(int)Math.signum(ev.getWheelRotation());
+			nextselection = LoopSelectionAround(nextselection);
+			currentselection=nextselection;
+		}
 	}
 
 	public int LoopSelectionAround(int nextselection) {

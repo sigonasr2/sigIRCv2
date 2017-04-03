@@ -90,7 +90,8 @@ public class TouhouMotherModule extends Module implements ActionListener{
 
 	@Override
 	public void actionPerformed(ActionEvent ev) {
-		memory = FileUtils.readFromFile(sigIRC.BASEDIR+"..\\memory");
+		memory = FileUtils.readFromFile(sigIRC.BASEDIR+"memory");
+		System.out.println(Arrays.toString(memory));
 		if (memory.length>=14) {
 			ProcessMemoryData();
 			ValidateAndControlMonsterData();
@@ -214,7 +215,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	private int calculateDataPropertyTotalValue(DataProperty property) {
 		int total = 0;
 		for (TouhouMotherCharacterData tmcd : characterDatabase) {
-			total = tmcd.getDataProperty(property);
+			total += tmcd.getDataProperty(property);
 		}
 		return total;
 	}
@@ -347,7 +348,8 @@ public class TouhouMotherModule extends Module implements ActionListener{
 				tmcd.setCurrentDamage(0);
 			}
 			try {
-				bossImage = ImageIO.read(new File(sigIRC.BASEDIR+"..\\Boss Sprites\\"+currentBoss.getImage()));
+				currentBoss.getFileManager().verifyAndFetchFileFromServer();
+				bossImage = ImageIO.read(new File(sigIRC.BASEDIR+"Boss Sprites/"+currentBoss.getImage()));
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
@@ -443,6 +445,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		monsterdata.add(new TouhouMotherBossData("KA-75", 203, 999999, "TME_203.png"));
 		monsterdata.add(new TouhouMotherBossData("Gensokyo", 999999, 900000, "TME_999999.png"));
 		monsterdata.add(new TouhouMotherBossData("Miss Satori", 108, 900000, "TME_108.png"));
+		monsterdata.add(new TouhouMotherBossData("Only God", 48, 4010, "TME_48.png"));
 		monsterDatabase = monsterdata.toArray(new TouhouMotherBossData[monsterdata.size()]);
 	}
 	
@@ -485,13 +488,13 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	
 	private void DefineButton() {
 		updateButton = new Button(this, //56x20 pixels
-				new File(sigIRC.BASEDIR+"..\\update.png"),
+				new File(sigIRC.BASEDIR+"update.png"),
 				(int)bounds.getX()+320-56,(int)bounds.getY()+sigIRC.panel.getHeight()/2-20);
 		killButton = new Button2(this,
-				new File(sigIRC.BASEDIR+"..\\kill.png"),
+				new File(sigIRC.BASEDIR+"kill.png"),
 				(int)bounds.getX(),(int)bounds.getY()+sigIRC.panel.getHeight()/2-20);
 		swapButton = new Button3(this,
-				new File(sigIRC.BASEDIR+"..\\swap.png"),
+				new File(sigIRC.BASEDIR+"swap.png"),
 				(int)bounds.getX(),(int)bounds.getY()+sigIRC.panel.getHeight()/2-40);
 	}
 	

@@ -29,7 +29,7 @@ public class Button3 {
 	int x=0;
 	int y=0;
 	TouhouMotherModule module;
-	final static String GAMEDIR = "D:\\Documents\\Games\\Touhou Mother\\Data\\";
+	final static String GAMEDIR = "D:/Documents/Games/Touhou Mother/Data/";
 	
 	boolean controlKeyPressed;
 	
@@ -125,8 +125,8 @@ public class Button3 {
 			String[] contents = dir.list();
 			for (String s : contents) {
 				if (IsValidTouhouMotherSaveFile(s)) {
-					File existingfile = new File(GAMEDIR+"SAVES"+foldernumb+"\\"+s);
-					File newfile = new File(GAMEDIR+"\\"+s);
+					File existingfile = new File(GAMEDIR+"SAVES"+foldernumb+"/"+s);
+					File newfile = new File(GAMEDIR+"/"+s);
 					try {
 						System.out.println("Copying file "+existingfile.getAbsolutePath()+" to "+newfile.getAbsolutePath());
 						FileUtils.copyFile(existingfile, newfile);
@@ -151,8 +151,8 @@ public class Button3 {
 			String[] contents = dir.list();
 			for (String s : contents) {
 				if (IsValidTouhouMotherSaveFile(s)) {
-					File newfile = new File(GAMEDIR+"SAVES"+foldernumb+"\\"+s);
-					File existingfile = new File(GAMEDIR+"\\"+s);
+					File newfile = new File(GAMEDIR+"SAVES"+foldernumb+"/"+s);
+					File existingfile = new File(GAMEDIR+"/"+s);
 					try {
 						System.out.println("Copying file "+existingfile.getAbsolutePath()+" to "+newfile.getAbsolutePath());
 						FileUtils.copyFile(existingfile, newfile);

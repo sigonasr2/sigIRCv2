@@ -13,7 +13,7 @@ public class Emoticon {
 	
 	public Emoticon(String emoteName, URL onlinePath) {
 		try {
-			String imagePath = sigIRC.BASEDIR+"Emotes\\"+emoteName+".png";
+			String imagePath = sigIRC.BASEDIR+"sigIRC/Emotes/"+emoteName+".png";
 			File file = new File(imagePath);
 			if (file.exists()) {
 				image = ImageIO.read(file);
@@ -36,7 +36,9 @@ public class Emoticon {
 	
 	public Emoticon(String emoteName, String fileName) {
 		try {
-			String imagePath = sigIRC.BASEDIR+"Emotes\\"+fileName+".png";
+			FileManager manager = new FileManager("sigIRC/Emotes/"+fileName+".png");
+			manager.verifyAndFetchFileFromServer();
+			String imagePath = sigIRC.BASEDIR+"sigIRC/Emotes/"+fileName+".png";
 			File file = new File(imagePath);
 			if (file.exists()) {
 				image = ImageIO.read(file);

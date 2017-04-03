@@ -3,9 +3,26 @@ import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
 public class UpdateEvent implements ActionListener{
+	final static int MSGTIMER = 300;
+	int last_authentication_msg = MSGTIMER;
+	
 	@Override
 	public void actionPerformed(ActionEvent ev) {
 	    UpdateScrollingText();
+	    UpdateAuthenticationCountdownMessage();
+	}
+
+	private void UpdateAuthenticationCountdownMessage() {
+		if (!sigIRC.authenticated && last_authentication_msg<MSGTIMER) {
+			last_authentication_msg++;
+		}
+		if (!sigIRC.authenticated && last_authentication_msg==MSGTIMER) {
+			last_authentication_msg=0;
+			sigIRC.panel.addMessage("SYSTEM: Your oauthToken was not successful. Please go to the sigIRC folder and make sure your oauthToken.txt file is correct!!! SwiftRage");
+		}
+		if (sigIRC.lastPlayedDing>0) {
+			sigIRC.lastPlayedDing--;
+		}
 	}
 
 	public void UpdateScrollingText() {
@@ -21,9 +38,7 @@ public class UpdateEvent implements ActionListener{
 	    		sigIRC.textobj.remove(i--);
 	    	}
 	    }
-		for (TextRow tr : sigIRC.rowobj) {
-			tr.update();
-		}
+		ProcessTextRows();
 		for (CustomSound cs : sigIRC.customsounds) {
 			if (!cs.isSoundAvailable()) {
 				cs.decreaseCooldown(1);
@@ -32,5 +47,13 @@ public class UpdateEvent implements ActionListener{
 		for (Module m : sigIRC.modules) {
 			m.run();
 		}
+	}
+
+	private void ProcessTextRows() {
+		for (TextRow tr : sigIRC.rowobj) {
+			tr.update();
+		}
+		sigIRC.dingEnabled = (sigIRC.textobj.size()<=sigIRC.dingThreshold);
+		//System.out.println(sigIRC.textobj.size()+"/"+sigIRC.dingThreshold+sigIRC.dingEnabled);
 	}
 }

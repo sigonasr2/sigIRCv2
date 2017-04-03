@@ -16,7 +16,7 @@ public class TimeRecord {
 	}
 	
 	public static void LoadRecordDatabase() {
-		String[] records = FileUtils.readFromFile(sigIRC.BASEDIR+"records");
+		String[] records = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/records");
 		for (String s : records) {
 			if (s.contains(":")) {
 				String[] pieces = s.split(":");
@@ -33,7 +33,7 @@ public class TimeRecord {
 		for (TimeRecord tr : tmm.recordDatabase) {
 			sb.append(tr.getID()+":"+tr.getTimeRecord()+"\n");
 		}
-		FileUtils.writetoFile(new String[]{sb.toString()}, sigIRC.BASEDIR+"records");
+		FileUtils.writetoFile(new String[]{sb.toString()}, sigIRC.BASEDIR+"sigIRC/records");
 	}
 	
 	public static int getRecord(int id) {
