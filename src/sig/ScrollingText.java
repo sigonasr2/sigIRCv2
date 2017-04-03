@@ -140,12 +140,23 @@ public class ScrollingText {
 		return true;
 	}
 	
+	public boolean isActive() {
+		return isAlive;
+	}
+	
 	public void draw(Graphics g) {
-		if (isAlive) {
+		if (isAlive && WithinBounds(x,y,Math.max(TextUtils.calculateStringBoundsFont(username, MyPanel.userFont).getWidth(), TextUtils.calculateStringBoundsFont(message, MyPanel.programFont).getWidth()),Math.max(TextUtils.calculateStringBoundsFont(username, MyPanel.userFont).getHeight(), TextUtils.calculateStringBoundsFont(message, MyPanel.programFont).getHeight()))) {
 			//DrawUtils.drawTextFont(g, MyPanel.userFont, x+8, y+stringHeight-20, Color.GREEN, username);
 			DrawUtils.drawOutlineText(g, MyPanel.userFont, x+8, y+stringHeight-20, 2, userColor, Color.BLACK, username);
 			DrawUtils.drawOutlineText(g, MyPanel.programFont, x, y+stringHeight, 2, Color.WHITE, Color.BLACK, message);
 		}
+	}
+
+	private boolean WithinBounds(double x, double y, double w, double h) {
+		if (x<sigIRC.panel.getWidth() && x+w>0 && y<sigIRC.panel.getHeight() && y+h>0) {
+			return true;
+		}
+		return false;
 	}
 
 	public int FindLeftMostCornerInDisplay() {

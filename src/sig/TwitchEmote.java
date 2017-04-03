@@ -6,6 +6,7 @@ public class TwitchEmote {
 	int x=0; //X Offset
 	int y=0; //Y Offset
 	ScrollingText text;
+	boolean active=true;
 	
 	public TwitchEmote(Emoticon emote, ScrollingText textref, int x, int y) {
 		this.emote=emote;
@@ -19,9 +20,10 @@ public class TwitchEmote {
 		sigIRC.panel.repaint(
 				Math.max(x,0), 
 				Math.max(y, 0), 
-				Math.min(sigIRC.panel.getWidth()-x,emote.getImage().getWidth())+1, 
-				Math.min(sigIRC.panel.getHeight()-y,emote.getImage().getHeight())+1);
-		if (x+emote.getImage().getWidth()<0) {
+				Math.min(sigIRC.panel.getWidth()-x,emote.getImage().getWidth()), 
+				Math.min(sigIRC.panel.getHeight()-y,emote.getImage().getHeight()));
+		if (x+emote.getImage().getWidth()<0 || text==null || !text.isActive()) {
+			active=false;
 			return false;
 		} else {
 			return true;
@@ -29,6 +31,19 @@ public class TwitchEmote {
 	}
 
 	public void draw(Graphics g) {
-		g.drawImage(emote.getImage(), (int)(text.getX()+x), (int)(text.getY()+y), sigIRC.panel);
+		if (WithinBounds((int)(text.getX()+x), (int)(text.getY()+y), emote.getImage().getWidth(), emote.getImage().getHeight())) {
+			g.drawImage(emote.getImage(), (int)(text.getX()+x), (int)(text.getY()+y), sigIRC.panel);
+		}
+	}
+	
+	public boolean isActive() {
+		return active;
+	}
+
+	private boolean WithinBounds(double x, double y, double w, double h) {
+		if (x<sigIRC.panel.getWidth() && x+w>0 && y<sigIRC.panel.getHeight() && y+h>0) {
+			return true;
+		}
+		return false;
 	}
 }

@@ -266,7 +266,6 @@ public class sigIRC{
         f.add(sigIRC.panel);
         f.pack();
         f.setVisible(true);
-        
         button = new BackgroundColorButton(new File(sigIRC.BASEDIR+"backcolor.png"),panel.getX()+panel.getWidth()-96,panel.getHeight()/2);
     }
 

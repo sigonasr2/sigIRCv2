@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.KeyEvent;
@@ -40,11 +41,19 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         super.paintComponent(g);      
         // Draw Text
         //int counter=18;
-        for (TwitchEmote e : sigIRC.twitchemoticons) {
-        	e.draw(g);
+        for (int i=0;i<sigIRC.twitchemoticons.size();i++) {
+        	if (sigIRC.twitchemoticons.get(i).isActive()) {
+        		sigIRC.twitchemoticons.get(i).draw(g);
+        	} else {
+        		break;
+        	}
         }
-        for (ScrollingText st : sigIRC.textobj) {
-        	st.draw(g);
+        for (int i=0;i<sigIRC.textobj.size();i++) {
+        	if (sigIRC.textobj.get(i).isActive()) {
+        		sigIRC.textobj.get(i).draw(g);
+        	} else {
+        		break;
+        	}
         }
         for (Module m : sigIRC.modules) {
         	m.draw(g);
