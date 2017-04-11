@@ -1,6 +1,8 @@
 package sig;
 import java.awt.Graphics;
 
+import javax.swing.SwingUtilities;
+
 public class TwitchEmote {
 	Emoticon emote;
 	int x=0; //X Offset
@@ -17,11 +19,15 @@ public class TwitchEmote {
 	
 	public boolean run() {
 		//this.x-=paint.TEXTSCROLLSPD;
-		sigIRC.panel.repaint(
-				Math.max(x,0), 
-				Math.max(y, 0), 
-				Math.min(sigIRC.panel.getWidth()-x,emote.getImage().getWidth()), 
-				Math.min(sigIRC.panel.getHeight()-y,emote.getImage().getHeight()));
+		SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	sigIRC.panel.repaint(
+					Math.max(x,0), 
+					Math.max(y, 0), 
+					Math.min(sigIRC.panel.getWidth()-x,emote.getImage().getWidth()), 
+					Math.min(sigIRC.panel.getHeight()-y,emote.getImage().getHeight()));
+		    }  
+		});
 		if (x+emote.getImage().getWidth()<0 || text==null || !text.isActive()) {
 			active=false;
 			return false;

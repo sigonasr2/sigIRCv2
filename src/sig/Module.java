@@ -5,6 +5,8 @@ import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Rectangle2D;
 
+import javax.swing.SwingUtilities;
+
 public class Module {
 	protected Rectangle2D bounds;
 	protected boolean enabled;
@@ -29,7 +31,11 @@ public class Module {
 	}
 	
 	public void draw(Graphics g) {
-		sigIRC.panel.repaint(bounds.getBounds());
+		SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	sigIRC.panel.repaint(bounds.getBounds());
+            }  
+        });
 	}
 
 	public void mouseWheel(MouseWheelEvent ev) {

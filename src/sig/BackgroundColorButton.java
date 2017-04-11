@@ -40,7 +40,7 @@ public class BackgroundColorButton {
 	}
 	
 	public void onClickEvent(MouseEvent ev) {
-		if (buttonEnabled) {
+		if (buttonEnabled && !sigIRC.overlayMode) {
 			if (ev.getX()>=x && ev.getX()<=x+buttonimg.getWidth() &&
 					ev.getY()>=y && ev.getY()<=y+buttonimg.getHeight()) {
 				sigIRC.backgroundcol=sigIRC.colorpanel.getBackgroundColor();

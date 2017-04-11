@@ -12,6 +12,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GraphicsDevice;
+import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
@@ -56,6 +58,20 @@ public class sigIRC{
 	static int dingThreshold;
 	static Color backgroundcol;
 	public static BackgroundColorButton button;
+	public static JFrame window;
+	static boolean overlayMode=false;
+	static boolean showWindowControls=false;
+	static int windowX=0;
+	static int windowY=0;
+	static int windowWidth=0;
+	static int windowHeight=0;
+	static int chatRows=3;
+	static int chatScrollSpd=4;
+	static int rowSpacing=64;
+	static String messageFont="Gill Sans Ultra Bold Condensed";
+	static String usernameFont="Gill Sans";
+	static String touhoumotherConsoleFont="Agency FB Bold";
+	static boolean touhoumothermodule_enabled=true;
 	
 	public static void main(String[] args) {
 		
@@ -64,8 +80,21 @@ public class sigIRC{
 		server = config.getProperty("server");
 		nickname = config.getProperty("nickname");
 		channel = config.getProperty("channel");
+		overlayMode = config.getBoolean("overlayMode", false);
+		showWindowControls = config.getBoolean("showWindowControls", true);
+		windowX = config.getInteger("windowX", 0);
+		windowY = config.getInteger("windowY", 0);
+		windowWidth = config.getInteger("windowWidth", (int)java.awt.Toolkit.getDefaultToolkit().getScreenSize().getWidth());
+		windowHeight = config.getInteger("windowHeight", (int)java.awt.Toolkit.getDefaultToolkit().getScreenSize().getHeight());
+		chatRows = config.getInteger("chatRows", 3);
+		chatScrollSpd = config.getInteger("chatScrollSpd", 4);
+		rowSpacing = config.getInteger("rowSpacing", 64);
 		dingThreshold = Integer.parseInt(config.getProperty("dingThreshold"));
 		backgroundcol = new Color(Integer.parseInt(config.getProperty("backgroundColor")));
+		messageFont = config.getProperty("messageFont","Gill Sans Ultra Bold Condensed");
+		usernameFont = config.getProperty("usernameFont","Gill Sans");
+		touhoumotherConsoleFont = config.getProperty("touhoumotherConsoleFont","Agency FB Bold");
+		touhoumothermodule_enabled = config.getBoolean("Module_touhoumother_Enabled",true);
 		
 		DownloadAllRequiredDependencies();
 		
@@ -76,12 +105,12 @@ public class sigIRC{
 		WriteBreakToLogFile();
 		programClock.start();
 		
-		InitializeRows(3);
+		InitializeRows(chatRows);
 		InitializeCustomSounds();
 		
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
-                createAndShowGUI();
+                window = createAndShowGUI();
 
         		InitializeModules();
         		performTwitchEmoteUpdate();
@@ -117,10 +146,12 @@ public class sigIRC{
 	}
 
 	private static void InitializeModules() {
-		modules.add(new TouhouMotherModule(
-				new Rectangle(0,panel.getHeight()/2,320,panel.getHeight()/2),
-				"Touhou Mother"
-				));
+		if (touhoumothermodule_enabled) {
+			modules.add(new TouhouMotherModule(
+					new Rectangle(0,panel.getHeight()/2,320,panel.getHeight()/2),
+					"Touhou Mother"
+					));
+		}
 	}
 
 	private static void InitializeCustomSounds() {
@@ -214,7 +245,7 @@ public class sigIRC{
 
 	private static void InitializeRows(int rowcount) {
 		for (int i=0;i<rowcount;i++) {
-			rowobj.add(new TextRow(32+ROWSEPARATION*i));
+			rowobj.add(new TextRow(32+rowSpacing*i));
 		}
 	}
 
@@ -256,17 +287,35 @@ public class sigIRC{
 		}
 	}
 
-	private static void createAndShowGUI() {
+	private static JFrame createAndShowGUI() {
+		if (sigIRC.overlayMode && sigIRC.showWindowControls) {
+			JFrame.setDefaultLookAndFeelDecorated(true);
+		}
+		System.setProperty("sun.java2d.opengl", "true");
         JFrame f = new JFrame("sigIRCv2");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
+		if (sigIRC.overlayMode && !sigIRC.showWindowControls) {
+			f.setUndecorated(true);
+		}
         sigIRC.panel = new MyPanel();
+        if (sigIRC.overlayMode) { 
+        	sigIRC.panel.setOpaque(false);
+        }
         sigIRC.panel.setBackground(sigIRC.backgroundcol);
         colorpanel = new ColorPanel();
         f.add(colorpanel);
         f.add(sigIRC.panel);
         f.pack();
         f.setVisible(true);
-        button = new BackgroundColorButton(new File(sigIRC.BASEDIR+"backcolor.png"),panel.getX()+panel.getWidth()-96,panel.getHeight()/2);
+        f.setLocation(windowX, windowY);
+        f.setSize(windowWidth, windowHeight);
+        button = new BackgroundColorButton(new File(sigIRC.BASEDIR+"backcolor.png"),panel.getX()+panel.getWidth()-96,64+rowobj.size()*rowSpacing);
+        if (sigIRC.overlayMode) {
+        	f.setBackground(new Color(0,0,0,0));
+            f.setAlwaysOnTop(true);
+        }
+        //f.setOpacity(0.5f);
+        return f;
     }
 
 	public static boolean VerifyLogin(BufferedReader reader) throws IOException {

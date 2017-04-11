@@ -18,6 +18,7 @@ import javax.sound.sampled.AudioSystem;
 import javax.sound.sampled.Clip;
 import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
+import javax.swing.SwingUtilities;
 
 public class ScrollingText {
 	private String username;
@@ -127,11 +128,15 @@ public class ScrollingText {
 	public boolean run() {
 		x-=myRow.getScrollSpd();
 		//System.out.println("X: "+x);
-		sigIRC.panel.repaint(
-				FindLeftMostCornerInDisplay(),
-				FindTopMostCornerInDisplay()-32,
-				(int)Math.max(FindRightMostCornerInDisplay(),(int)TextUtils.calculateStringBoundsFont(username, MyPanel.userFont).getWidth())+4,
-				FindBottomMostCornerInDisplay()+(stringHeight*2)+4);
+		SwingUtilities.invokeLater(new Runnable() {
+            public void run() {
+            	sigIRC.panel.repaint(
+					FindLeftMostCornerInDisplay(),
+					FindTopMostCornerInDisplay()-32,
+					(int)Math.max(FindRightMostCornerInDisplay(),(int)TextUtils.calculateStringBoundsFont(username, MyPanel.userFont).getWidth())+4,
+					FindBottomMostCornerInDisplay()+(stringHeight*2)+4);
+			    }  
+			});
 		//sigIRC.panel.repaint();
 		if (x+stringWidth<0) {
 			isAlive=false;

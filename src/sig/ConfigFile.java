@@ -56,8 +56,35 @@ public class ConfigFile {
 		}
 	}
 	
+	public String getProperty(String key, String def) {
+		String val = properties.getProperty(key);
+		if (val==null) {
+			this.setProperty(key, def);
+			this.saveProperties();
+			return properties.getProperty(key);
+		} else {
+			return val;
+		}
+	}
+	
+	public boolean getBoolean(String key, boolean def) {
+		return Boolean.parseBoolean(getProperty(key,Boolean.toString(def)));
+	}
+	
+	public int getInteger(String key, int def) {
+		return Integer.parseInt(getProperty(key,Integer.toString(def)));
+	}
+	
 	public void setProperty(String key, String value) {
 		properties.setProperty(key, value);
+	}
+	
+	public void setBoolean(String key, boolean value) {
+		properties.setProperty(key, Boolean.toString(value));
+	}
+	
+	public void setInteger(String key, int value) {
+		properties.setProperty(key, Integer.toString(value));
 	}
 	
 	public void saveProperties() {

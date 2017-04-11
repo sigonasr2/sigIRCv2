@@ -4,7 +4,12 @@ import java.awt.event.ActionListener;
 
 public class UpdateEvent implements ActionListener{
 	final static int MSGTIMER = 300;
+	final static int AUTOSAVETIMER = 600;
 	int last_authentication_msg = MSGTIMER;
+	int last_autosave = AUTOSAVETIMER;
+	long lasttime = System.currentTimeMillis();
+	int avgfps = 30;
+	int counter = 0;
 	
 	@Override
 	public void actionPerformed(ActionEvent ev) {
@@ -15,13 +20,50 @@ public class UpdateEvent implements ActionListener{
 	private void UpdateAuthenticationCountdownMessage() {
 		if (!sigIRC.authenticated && last_authentication_msg<MSGTIMER) {
 			last_authentication_msg++;
-		}
-		if (!sigIRC.authenticated && last_authentication_msg==MSGTIMER) {
+		} else
+		if (!sigIRC.authenticated && last_authentication_msg>=MSGTIMER) {
 			last_authentication_msg=0;
 			sigIRC.panel.addMessage("SYSTEM: Your oauthToken was not successful. Please go to the sigIRC folder and make sure your oauthToken.txt file is correct!!! SwiftRage");
 		}
+		if (last_autosave<AUTOSAVETIMER) {
+			last_authentication_msg++;
+		} else
+		if (last_autosave>=AUTOSAVETIMER) {
+			last_autosave=0;
+			sigIRC.windowX = sigIRC.window.getX(); 
+			sigIRC.windowY = sigIRC.window.getY();
+			sigIRC.windowWidth = sigIRC.window.getWidth(); 
+			sigIRC.windowHeight = sigIRC.window.getHeight();
+			sigIRC.config.setInteger("windowX", sigIRC.windowX);
+			sigIRC.config.setInteger("windowY", sigIRC.windowY);
+			sigIRC.config.setInteger("windowWidth", sigIRC.windowWidth);
+			sigIRC.config.setInteger("windowHeight", sigIRC.windowHeight);
+			sigIRC.config.saveProperties();
+		}
 		if (sigIRC.lastPlayedDing>0) {
 			sigIRC.lastPlayedDing--;
+		}
+		updateFPSCounter();
+		sigIRC.window.setTitle("sigIRCv2 - "+(avgfps)+" FPS");
+		lasttime=System.currentTimeMillis();
+	}
+
+	public void updateFPSCounter() {
+		if (System.currentTimeMillis()-lasttime>1000/avgfps) {
+			//System.out.println("WARNING! Last update took "+(System.currentTimeMillis()-lasttime)+"ms! Lagging?");
+			if (counter<30) {
+				counter++;
+			} else {
+				counter=0;
+				avgfps--;
+			}
+		} else {
+			if (counter>-30) {
+				counter--;
+			} else {
+				counter=0;
+				avgfps++;
+			}
 		}
 	}
 
