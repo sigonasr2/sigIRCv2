@@ -72,6 +72,7 @@ public class sigIRC{
 	static String usernameFont="Gill Sans";
 	static String touhoumotherConsoleFont="Agency FB Bold";
 	static boolean touhoumothermodule_enabled=true;
+	static boolean downloadsComplete=false;
 	
 	public static void main(String[] args) {
 		
@@ -100,7 +101,7 @@ public class sigIRC{
 		
 		String[] filedata = FileUtils.readFromFile(BASEDIR+"sigIRC/oauthToken.txt");
 		
-		String oauth = filedata[0];
+		final String oauth = filedata[0];
 		
 		WriteBreakToLogFile();
 		programClock.start();
@@ -114,6 +115,7 @@ public class sigIRC{
 
         		InitializeModules();
         		performTwitchEmoteUpdate();
+        		downloadsComplete=true;
             }
         });
 		InitializeIRCConnection(server, nickname, channel, oauth);
@@ -160,7 +162,7 @@ public class sigIRC{
 		customsounds.add(new CustomSound("samusaran458", "Samus Appears - Metroid Prime [OST]-G8frLXCHtqM.wav"));
 	}
 
-	public static void InitializeIRCConnection(String server, String nickname, String channel, String oauth) {
+	public static void InitializeIRCConnection(final String server,final String nickname,final String channel,final String oauth) {
 		Socket socket;
 		try {
 			socket = new Socket(server, 6667);
@@ -184,7 +186,7 @@ public class sigIRC{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		InitializeIRCConnection(server,nickname,channel,oauth);
+        InitializeIRCConnection(server,nickname,channel,oauth);
 	}
 
 	public static void WriteBreakToLogFile() {
@@ -272,15 +274,19 @@ public class sigIRC{
 	}
 	
     private static String FilterMessage(String line) {
+    	final String hostcutoff_str = "sigonitori :";
     	System.out.println("Original Message: "+line);
 		String username = line.substring(1, line.indexOf("!"));
 		String cutstring = channel+" :";
 		String message = line.substring(line.indexOf(cutstring)+cutstring.length(), line.length());
+		if (username.equalsIgnoreCase("jtv")) {
+			message = line.substring(line.indexOf(hostcutoff_str)+hostcutoff_str.length(), line.length());
+		}
 		return username+": "+ message;
 	}
 
 	private static boolean MessageIsAllowed(String line) {
-		if (line.contains("PRIVMSG")) {
+		if (line.contains("PRIVMSG") && downloadsComplete) {
 			return true;
 		} else {
 			return false;
