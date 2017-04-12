@@ -4,6 +4,8 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.MouseInfo;
+import java.awt.PointerInfo;
 import java.awt.Toolkit;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
@@ -55,11 +57,20 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         		break;
         	}
         }
-        if (sigIRC.window!=null && sigIRC.window.getMousePosition(true)!=null && sigIRC.overlayMode) {
+        if (sigIRC.panel!=null) {
+	        lastMouseX = (int)(MouseInfo.getPointerInfo().getLocation().getX()-sigIRC.panel.getLocationOnScreen().getX());
+	        lastMouseY = (int)(MouseInfo.getPointerInfo().getLocation().getY()-sigIRC.panel.getLocationOnScreen().getY());
+	        //System.out.println("("+lastMouseX+","+lastMouseY+")");
+        }
+        /*if (sigIRC.window!=null && sigIRC.window.getMousePosition(true)!=null && sigIRC.overlayMode) {
 	        lastMouseX = (int)sigIRC.window.getMousePosition(true).getX();
 	        lastMouseY = (int)sigIRC.window.getMousePosition(true).getY();
-        }
-		//System.out.println("("+lastMouseX+","+lastMouseY+")");
+	        System.out.println("("+lastMouseX+","+lastMouseY+")");
+        } else {
+        	lastMouseX = -1;
+        	lastMouseY = -1;
+        }*/
+		//
         for (int i=0;i<sigIRC.textobj.size();i++) {
         	if (sigIRC.textobj.get(i).isActive() && sigIRC.overlayMode) {
         		if (!sigIRC.textobj.get(i).intersects(lastMouseX,lastMouseY)) {
