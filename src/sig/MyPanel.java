@@ -13,6 +13,7 @@ import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseListener;
+import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 
@@ -26,6 +27,8 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 	final public static Font programFont = new Font(sigIRC.messageFont,0,24);
 	final public static Font userFont = new Font(sigIRC.usernameFont,0,16);
 	final public static Font smallFont = new Font(sigIRC.touhoumotherConsoleFont,0,12);
+	int lastMouseX = 0;
+	int lastMouseY = 0;
 
     public MyPanel() {
         //setBorder(BorderFactory.createLineBorder(Color.black));
@@ -41,19 +44,30 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
     }
 
     public void paintComponent(Graphics g) {
-        super.paintComponent(g);      
+        super.paintComponent(g);
         // Draw Text
         //int counter=18;
         for (int i=0;i<sigIRC.twitchemoticons.size();i++) {
-        	if (sigIRC.twitchemoticons.get(i).isActive()) {
+        	if (sigIRC.twitchemoticons.get(i).isActive() &&
+        			sigIRC.twitchemoticons.get(i).textRefIsVisible()) {
         		sigIRC.twitchemoticons.get(i).draw(g);
         	} else {
         		break;
         	}
         }
+        if (sigIRC.window!=null && sigIRC.window.getMousePosition(true)!=null && sigIRC.overlayMode) {
+	        lastMouseX = (int)sigIRC.window.getMousePosition(true).getX();
+	        lastMouseY = (int)sigIRC.window.getMousePosition(true).getY();
+        }
+		//System.out.println("("+lastMouseX+","+lastMouseY+")");
         for (int i=0;i<sigIRC.textobj.size();i++) {
-        	if (sigIRC.textobj.get(i).isActive()) {
-        		sigIRC.textobj.get(i).draw(g);
+        	if (sigIRC.textobj.get(i).isActive() && sigIRC.overlayMode) {
+        		if (!sigIRC.textobj.get(i).intersects(lastMouseX,lastMouseY)) {
+        			sigIRC.textobj.get(i).setVisible(true);
+        			sigIRC.textobj.get(i).draw(g);
+        		} else {
+        			sigIRC.textobj.get(i).setVisible(false);
+        		}
         	} else {
         		break;
         	}

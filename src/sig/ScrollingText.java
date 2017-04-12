@@ -30,6 +30,9 @@ public class ScrollingText {
 	private boolean isAlive=true;
 	private Color userColor;
 	private TextRow myRow;
+	private int textMaxWidth;
+	private int textMaxHeight;
+	private boolean visible=true;
 	
 	public void setX(double x) {
 		this.x = x;
@@ -61,6 +64,10 @@ public class ScrollingText {
 
 	public int getStringHeight() {
 		return stringHeight;
+	}
+	
+	public boolean isVisible() {
+		return visible;
 	}
 
 	private int userstringWidth;
@@ -149,6 +156,10 @@ public class ScrollingText {
 		return isAlive;
 	}
 	
+	public void setVisible(boolean isVisible) {
+		this.visible=visible;
+	}
+	
 	public void draw(Graphics g) {
 		if (isAlive && WithinBounds(x,y,Math.max(TextUtils.calculateStringBoundsFont(username, MyPanel.userFont).getWidth(), TextUtils.calculateStringBoundsFont(message, MyPanel.programFont).getWidth()),Math.max(TextUtils.calculateStringBoundsFont(username, MyPanel.userFont).getHeight(), TextUtils.calculateStringBoundsFont(message, MyPanel.programFont).getHeight()))) {
 			//DrawUtils.drawTextFont(g, MyPanel.userFont, x+8, y+stringHeight-20, Color.GREEN, username);
@@ -232,6 +243,8 @@ public class ScrollingText {
 				break;
 			}
 		}
+		textMaxWidth = (int)TextUtils.calculateStringBoundsFont(basemsg, sigIRC.panel.programFont).getWidth();
+		textMaxHeight = Math.max(textMaxHeight,(int)TextUtils.calculateStringBoundsFont(basemsg, sigIRC.panel.programFont).getHeight());
 		return basemsg;
 	}
 
@@ -248,9 +261,16 @@ public class ScrollingText {
 		double width = TextUtils.calculateStringBoundsFont(cutstring, sigIRC.panel.programFont).getWidth();
 		//System.out.println("Width of '"+cutstring+"' is "+width);
 		sigIRC.createEmoticon(e, this, (int)(width), 0);
+		textMaxHeight = Math.max(textMaxHeight, e.getImage().getHeight());
+		//textMaxWidth = (int)(width + e.getImage().getWidth()+1);
 	}
 
 	private String GetUsername(String msg) {
 		return msg.substring(0,msg.indexOf(":"));
+	}
+
+	public boolean intersects(int x, int y) {
+		return (x>=this.x && x<=this.x+this.textMaxWidth &&
+				y>=this.y && y<=this.y+this.textMaxHeight);
 	}
 }

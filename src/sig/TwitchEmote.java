@@ -52,4 +52,8 @@ public class TwitchEmote {
 		}
 		return false;
 	}
+
+	public boolean textRefIsVisible() {
+		return text.isVisible();
+	}
 }

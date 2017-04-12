@@ -315,6 +315,7 @@ public class sigIRC{
         f.setVisible(true);
         f.setLocation(windowX, windowY);
         f.setSize(windowWidth, windowHeight);
+
         button = new BackgroundColorButton(new File(sigIRC.BASEDIR+"backcolor.png"),panel.getX()+panel.getWidth()-96,64+rowobj.size()*rowSpacing);
         if (sigIRC.overlayMode) {
         	f.setBackground(new Color(0,0,0,0));
