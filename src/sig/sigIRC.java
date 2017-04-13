@@ -28,6 +28,7 @@ import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.List;
 
+import javax.imageio.ImageIO;
 import javax.swing.JColorChooser;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
@@ -139,6 +140,7 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/logs/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sounds/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/record"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/sigIRCicon.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("kill.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("memory"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();
@@ -315,6 +317,12 @@ public class sigIRC{
         f.setVisible(true);
         f.setLocation(windowX, windowY);
         f.setSize(windowWidth, windowHeight);
+        
+        try {
+			f.setIconImage(ImageIO.read(new File(sigIRC.BASEDIR+"/sigIRC/sigIRCicon.png")));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 
         button = new BackgroundColorButton(new File(sigIRC.BASEDIR+"backcolor.png"),panel.getX()+panel.getWidth()-96,64+rowobj.size()*rowSpacing);
         if (sigIRC.overlayMode) {
