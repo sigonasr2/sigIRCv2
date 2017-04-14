@@ -157,7 +157,7 @@ public class ScrollingText {
 	}
 	
 	public void setVisible(boolean isVisible) {
-		this.visible=visible;
+		this.visible=isVisible;
 	}
 	
 	public void draw(Graphics g) {

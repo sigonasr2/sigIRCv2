@@ -18,34 +18,36 @@ public class UpdateEvent implements ActionListener{
 	}
 
 	private void UpdateAuthenticationCountdownMessage() {
-		if (!sigIRC.authenticated && last_authentication_msg<MSGTIMER) {
-			last_authentication_msg++;
-		} else
-		if (!sigIRC.authenticated && last_authentication_msg>=MSGTIMER) {
-			last_authentication_msg=0;
-			sigIRC.panel.addMessage("SYSTEM: Your oauthToken was not successful. Please go to the sigIRC folder and make sure your oauthToken.txt file is correct!!! SwiftRage");
+		if (sigIRC.downloadsComplete) {
+			if (!sigIRC.authenticated && last_authentication_msg<MSGTIMER) {
+				last_authentication_msg++;
+			} else
+			if (!sigIRC.authenticated && last_authentication_msg>=MSGTIMER) {
+				last_authentication_msg=0;
+				sigIRC.panel.addMessage("SYSTEM: Your oauthToken was not successful. Please go to the sigIRC folder and make sure your oauthToken.txt file is correct!!! SwiftRage");
+			}
+			if (last_autosave<AUTOSAVETIMER) {
+				last_authentication_msg++;
+			} else
+			if (last_autosave>=AUTOSAVETIMER) {
+				last_autosave=0;
+				sigIRC.windowX = sigIRC.window.getX(); 
+				sigIRC.windowY = sigIRC.window.getY();
+				sigIRC.windowWidth = sigIRC.window.getWidth(); 
+				sigIRC.windowHeight = sigIRC.window.getHeight();
+				sigIRC.config.setInteger("windowX", sigIRC.windowX);
+				sigIRC.config.setInteger("windowY", sigIRC.windowY);
+				sigIRC.config.setInteger("windowWidth", sigIRC.windowWidth);
+				sigIRC.config.setInteger("windowHeight", sigIRC.windowHeight);
+				sigIRC.config.saveProperties();
+			}
+			if (sigIRC.lastPlayedDing>0) {
+				sigIRC.lastPlayedDing--;
+			}
+			updateFPSCounter();
+			sigIRC.window.setTitle("sigIRCv2 - "+(avgfps)+" FPS");
+			lasttime=System.currentTimeMillis();
 		}
-		if (last_autosave<AUTOSAVETIMER) {
-			last_authentication_msg++;
-		} else
-		if (last_autosave>=AUTOSAVETIMER) {
-			last_autosave=0;
-			sigIRC.windowX = sigIRC.window.getX(); 
-			sigIRC.windowY = sigIRC.window.getY();
-			sigIRC.windowWidth = sigIRC.window.getWidth(); 
-			sigIRC.windowHeight = sigIRC.window.getHeight();
-			sigIRC.config.setInteger("windowX", sigIRC.windowX);
-			sigIRC.config.setInteger("windowY", sigIRC.windowY);
-			sigIRC.config.setInteger("windowWidth", sigIRC.windowWidth);
-			sigIRC.config.setInteger("windowHeight", sigIRC.windowHeight);
-			sigIRC.config.saveProperties();
-		}
-		if (sigIRC.lastPlayedDing>0) {
-			sigIRC.lastPlayedDing--;
-		}
-		updateFPSCounter();
-		sigIRC.window.setTitle("sigIRCv2 - "+(avgfps)+" FPS");
-		lasttime=System.currentTimeMillis();
 	}
 
 	public void updateFPSCounter() {

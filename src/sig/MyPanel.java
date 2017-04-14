@@ -72,15 +72,18 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         }*/
 		//
         for (int i=0;i<sigIRC.textobj.size();i++) {
-        	if (sigIRC.textobj.get(i).isActive() && sigIRC.overlayMode) {
-        		if (!sigIRC.textobj.get(i).intersects(lastMouseX,lastMouseY)) {
-        			sigIRC.textobj.get(i).setVisible(true);
-        			sigIRC.textobj.get(i).draw(g);
+        	if (sigIRC.textobj.get(i).isActive()) {
+        		if (sigIRC.overlayMode) {
+	        		if (!sigIRC.textobj.get(i).intersects(lastMouseX,lastMouseY)) {
+	        			sigIRC.textobj.get(i).setVisible(true);
+	        			sigIRC.textobj.get(i).draw(g);
+	        		} else {
+	        			System.out.println("Setting to False.");
+	        			sigIRC.textobj.get(i).setVisible(false);
+	        		}
         		} else {
-        			sigIRC.textobj.get(i).setVisible(false);
+        			sigIRC.textobj.get(i).draw(g);
         		}
-        	} else {
-        		break;
         	}
         }
         for (Module m : sigIRC.modules) {
