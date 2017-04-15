@@ -78,7 +78,7 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 	        			sigIRC.textobj.get(i).setVisible(true);
 	        			sigIRC.textobj.get(i).draw(g);
 	        		} else {
-	        			System.out.println("Setting to False.");
+	        			//System.out.println("Setting to False.");
 	        			sigIRC.textobj.get(i).setVisible(false);
 	        		}
         		} else {
