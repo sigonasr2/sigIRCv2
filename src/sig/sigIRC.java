@@ -74,6 +74,7 @@ public class sigIRC{
 	static String touhoumotherConsoleFont="Agency FB Bold";
 	static boolean touhoumothermodule_enabled=true;
 	static boolean downloadsComplete=false;
+	static boolean hardwareAcceleration=true;
 	
 	public static void main(String[] args) {
 		
@@ -97,6 +98,7 @@ public class sigIRC{
 		usernameFont = config.getProperty("usernameFont","Gill Sans");
 		touhoumotherConsoleFont = config.getProperty("touhoumotherConsoleFont","Agency FB Bold");
 		touhoumothermodule_enabled = config.getBoolean("Module_touhoumother_Enabled",true);
+		hardwareAcceleration = config.getBoolean("hardware_acceleration",true);
 		
 		DownloadAllRequiredDependencies();
 		
@@ -299,7 +301,7 @@ public class sigIRC{
 		if (sigIRC.overlayMode && sigIRC.showWindowControls) {
 			JFrame.setDefaultLookAndFeelDecorated(true);
 		}
-		System.setProperty("sun.java2d.opengl", "true");
+		System.setProperty("sun.java2d.opengl", Boolean.toString(sigIRC.hardwareAcceleration));
         JFrame f = new JFrame("sigIRCv2");
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		if (sigIRC.overlayMode && !sigIRC.showWindowControls) {
