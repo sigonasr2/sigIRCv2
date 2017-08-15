@@ -21,6 +21,7 @@ public class Module {
 	protected boolean enabled;
 	protected String name;
 	public static BufferedImage IMG_DRAGBAR;
+	public static boolean inDragZone=false;
 	
 	final protected int titleHeight;
 	
@@ -73,7 +74,19 @@ public class Module {
 	
 	protected void moduleRun() {
 		dragWindow();
+		modifyCursor();
 		run();
+	}
+
+	private void modifyCursor() {
+		int cursortype = sigIRC.panel.getCursor().getType();
+		if (inDragZone &&
+				cursortype!=Cursor.MOVE_CURSOR) {
+			sigIRC.panel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+		} else 
+		if (!inDragZone && cursortype!=Cursor.DEFAULT_CURSOR) {
+			sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		}
 	}
 
 	private void dragWindow() {
@@ -88,11 +101,13 @@ public class Module {
 			ModuleDragEvent(oldX,oldY,mouseX,mouseY);
 		}
 		if (inDragBounds(sigIRC.panel.lastMouseX,sigIRC.panel.lastMouseY)) {
-			sigIRC.panel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-		} else
+			inDragZone=true;
+			//System.out.println("In Drag Zone for Module "+name);
+			//sigIRC.panel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+		} /*else
 		if (sigIRC.panel.getCursor().getType()==Cursor.MOVE_CURSOR) {
 			sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		}
+		}*/
 	}
 	
 	public void run() {

@@ -69,4 +69,8 @@ public class TextUtils {
 		}
 		return sb.toString();
 	}
+	
+	public static String getActualChannelName() {
+		return sigIRC.channel.replaceFirst("#", "");
+	}
 }

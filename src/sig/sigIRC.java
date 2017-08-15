@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import sig.modules.TouhouMotherModule;
+import sig.modules.TwitchModule;
 import sig.utils.FileUtils;
 
 import java.awt.Color;
@@ -30,9 +31,7 @@ import java.util.Calendar;
 import java.util.List;
 
 import javax.imageio.ImageIO;
-import javax.swing.JColorChooser;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 
 public class sigIRC{
 	public static MyPanel panel = null;
@@ -52,7 +51,7 @@ public class sigIRC{
 	static ConfigFile config;
 	static String server;
 	static String nickname;
-	static String channel;
+	public static String channel;
 	public static boolean authenticated=false;
 	public static int lastPlayedDing=0;
 	final public static int DINGTIMER=150;
@@ -74,6 +73,7 @@ public class sigIRC{
 	static String usernameFont="GillSansMTStd-Book";
 	static String touhoumotherConsoleFont="Agency FB Bold";
 	static boolean touhoumothermodule_enabled=true;
+	static boolean twitchmodule_enabled=true;
 	static boolean downloadsComplete=false;
 	static boolean hardwareAcceleration=true;
 	static boolean playedoAuthSoundOnce=false;
@@ -100,6 +100,7 @@ public class sigIRC{
 		usernameFont = config.getProperty("usernameFont","Gill Sans");
 		touhoumotherConsoleFont = config.getProperty("touhoumotherConsoleFont","Agency FB Bold");
 		touhoumothermodule_enabled = config.getBoolean("Module_touhoumother_Enabled",true);
+		twitchmodule_enabled = config.getBoolean("Module_twitch_Enabled",true);
 		hardwareAcceleration = config.getBoolean("hardware_acceleration",true);
 		
 		DownloadAllRequiredDependencies();
@@ -164,6 +165,12 @@ public class sigIRC{
 			modules.add(new TouhouMotherModule(
 					new Rectangle(0,panel.getHeight()/2,320,panel.getHeight()/2),
 					"Touhou Mother"
+					));
+		}
+		if (twitchmodule_enabled) {
+			modules.add(new TwitchModule(
+					new Rectangle(320,panel.getHeight()/2,panel.getWidth()-320,96),
+					"Twitch"
 					));
 		}
 	}

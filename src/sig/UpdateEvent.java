@@ -91,6 +91,7 @@ public class UpdateEvent implements ActionListener{
 				cs.decreaseCooldown(1);
 			}
 		}
+		Module.inDragZone=false;
 		for (Module m : sigIRC.modules) {
 			m.moduleRun();
 		}

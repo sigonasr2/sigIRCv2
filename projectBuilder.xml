@@ -14,6 +14,7 @@
             </manifest>
             <fileset dir="${dir.jarfile}/bin"/>
             <zipfileset excludes="META-INF/*.SF" src="D:/Downloads/commons-io-2.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/Downloads/twitch-api-wrapper-0.3-jar-with-dependencies.jar"/>
         </jar>
     </target>
 </project>
