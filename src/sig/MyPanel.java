@@ -95,7 +95,11 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
     }  
     
     public void addMessage(String message) {
-    	ScrollingText text = new ScrollingText(message,this.getWidth(),(int)(Math.random()*128));
+    	addMessage(message,true);
+    }
+    
+    public void addMessage(String message, boolean playSound) {
+    	ScrollingText text = new ScrollingText(message,this.getWidth(),(int)(Math.random()*128),playSound);
     	TextRow row = TextRow.PickRandomTextRow(text.getUsername());
     	sigIRC.textobj.add(text);
     	row.updateRow(text);
@@ -108,13 +112,16 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 	@Override
 	public void mousePressed(MouseEvent ev) {
 		for (Module m : sigIRC.modules) {
-			m.mousePressed(ev);
+			m.mouseModuleMousePress(ev);
 		}
         sigIRC.button.onClickEvent(ev);
 	}
 
 	@Override
 	public void mouseReleased(MouseEvent ev) {
+		for (Module m : sigIRC.modules) {
+			m.mouseReleased(ev);
+		}
 	}
 
 	@Override

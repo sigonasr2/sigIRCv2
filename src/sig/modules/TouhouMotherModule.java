@@ -19,22 +19,23 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
 
-import sig.DrawUtils;
-import sig.FileUtils;
 import sig.Module;
-import sig.TextUtils;
 import sig.sigIRC;
-import sig.modules.TouhouMother.Button;
-import sig.modules.TouhouMother.Button2;
-import sig.modules.TouhouMother.Button3;
 import sig.modules.TouhouMother.DataProperty;
 import sig.modules.TouhouMother.IncreaseTouhouMotherClockCount;
+import sig.modules.TouhouMother.KillButton;
+import sig.modules.TouhouMother.SwapButton;
 import sig.modules.TouhouMother.TimeRecord;
 import sig.modules.TouhouMother.TouhouMotherBossData;
+import sig.modules.TouhouMother.TouhouMotherButton;
 import sig.modules.TouhouMother.TouhouMotherCharacterData;
 import sig.modules.TouhouMother.TouhouPlayerCharacter;
+import sig.modules.TouhouMother.UpdateButton;
 import sig.modules.utils.SemiValidInteger;
 import sig.modules.utils.SemiValidString;
+import sig.utils.DrawUtils;
+import sig.utils.FileUtils;
+import sig.utils.TextUtils;
 
 public class TouhouMotherModule extends Module implements ActionListener{
 	Timer filereadClock = new Timer(200,this);
@@ -66,9 +67,11 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	
 	boolean diamondSparkyMsg = false;
 	
-	Button updateButton;
-	Button2 killButton;
-	Button3 swapButton;
+	List<TouhouMotherButton> moduleButtons = new ArrayList<TouhouMotherButton>();
+	
+	UpdateButton updateButton;
+	KillButton killButton;
+	SwapButton swapButton;
 
 	public TouhouMotherModule(Rectangle2D bounds, String moduleName) {
 		super(bounds, moduleName);
@@ -107,6 +110,12 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	
 	public void run() {
 		EnableAndDisableTimer();
+	}
+	
+	public void ModuleDragEvent(int oldX, int oldY, int newX, int newY) {
+		for (TouhouMotherButton tmb : moduleButtons) {
+			tmb.updatePosition(oldX,oldY,newX,newY);
+		}
 	}
 	
 	public void draw(Graphics g) {
@@ -487,15 +496,18 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	}
 	
 	private void DefineButton() {
-		updateButton = new Button(this, //56x20 pixels
+		updateButton = new UpdateButton(this, //56x20 pixels
 				new File(sigIRC.BASEDIR+"update.png"),
 				(int)bounds.getX()+320-56,(int)bounds.getY()+sigIRC.panel.getHeight()/2-20);
-		killButton = new Button2(this,
+		killButton = new KillButton(this,
 				new File(sigIRC.BASEDIR+"kill.png"),
 				(int)bounds.getX(),(int)bounds.getY()+sigIRC.panel.getHeight()/2-20);
-		swapButton = new Button3(this,
+		swapButton = new SwapButton(this,
 				new File(sigIRC.BASEDIR+"swap.png"),
 				(int)bounds.getX(),(int)bounds.getY()+sigIRC.panel.getHeight()/2-40);
+		moduleButtons.add(updateButton);
+		moduleButtons.add(killButton);
+		moduleButtons.add(swapButton);
 	}
 	
 	public Rectangle2D getBounds() {

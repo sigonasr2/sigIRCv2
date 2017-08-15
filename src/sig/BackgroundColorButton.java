@@ -11,11 +11,11 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
-import sig.DrawUtils;
-import sig.FileUtils;
-import sig.TextUtils;
 import sig.sigIRC;
 import sig.modules.TouhouMotherModule;
+import sig.utils.DrawUtils;
+import sig.utils.FileUtils;
+import sig.utils.TextUtils;
 
 public class BackgroundColorButton {
 	BufferedImage buttonimg;

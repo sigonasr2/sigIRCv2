@@ -17,18 +17,14 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
-import sig.DrawUtils;
-import sig.FileUtils;
 import sig.MyPanel;
-import sig.TextUtils;
 import sig.sigIRC;
 import sig.modules.TouhouMotherModule;
+import sig.utils.DrawUtils;
+import sig.utils.FileUtils;
+import sig.utils.TextUtils;
 
-public class Button3 {
-	BufferedImage buttonimg;
-	int x=0;
-	int y=0;
-	TouhouMotherModule module;
+public class SwapButton extends TouhouMotherButton{
 	final static String GAMEDIR = "D:/Documents/Games/Touhou Mother/Data/";
 	
 	boolean controlKeyPressed;
@@ -39,15 +35,8 @@ public class Button3 {
 	
 	int slotselected=0;
 	
-	public Button3(TouhouMotherModule parentmodule, File filename, int x, int y) {
-		this.x=x;
-		this.y=y;
-		this.module=parentmodule;
-		try {
-			buttonimg = ImageIO.read(filename);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+	public SwapButton(TouhouMotherModule parentmodule, File filename, int x, int y) {
+		super(parentmodule,filename,x,y);
 	}
 	
 	public void run() {
@@ -57,7 +46,7 @@ public class Button3 {
 	}
 	
 	public void draw(Graphics g) {
-		g.drawImage(buttonimg, x, y, sigIRC.panel);
+		super.draw(g);
 		if (displaytime>0) {
 			DrawUtils.drawOutlineText(g, MyPanel.smallFont, x+buttonimg.getWidth()+4, y+buttonimg.getHeight(), 2, Color.WHITE, new Color(60,0,150), message);
 		}

@@ -11,31 +11,16 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
-import sig.DrawUtils;
-import sig.FileUtils;
-import sig.TextUtils;
 import sig.sigIRC;
 import sig.modules.TouhouMotherModule;
+import sig.utils.DrawUtils;
+import sig.utils.FileUtils;
+import sig.utils.TextUtils;
 
-public class Button2 {
-	BufferedImage buttonimg;
-	int x=0;
-	int y=0;
-	TouhouMotherModule module;
+public class KillButton extends TouhouMotherButton{
 	
-	public Button2(TouhouMotherModule parentmodule, File filename, int x, int y) {
-		this.x=x;
-		this.y=y;
-		this.module=parentmodule;
-		try {
-			buttonimg = ImageIO.read(filename);
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	public void draw(Graphics g) {
-		g.drawImage(buttonimg, x, y, sigIRC.panel);
+	public KillButton(TouhouMotherModule parentmodule, File filename, int x, int y) {
+		super(parentmodule,filename,x,y);
 	}
 	
 	public void onClickEvent(MouseEvent ev) {

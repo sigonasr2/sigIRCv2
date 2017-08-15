@@ -1,7 +1,9 @@
-package sig;
+package sig.utils;
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
+
+import sig.sigIRC;
 
 public class TextUtils {
 

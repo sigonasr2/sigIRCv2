@@ -11,33 +11,22 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
-import sig.DrawUtils;
-import sig.FileUtils;
-import sig.TextUtils;
 import sig.sigIRC;
 import sig.modules.TouhouMotherModule;
+import sig.utils.DrawUtils;
+import sig.utils.FileUtils;
+import sig.utils.TextUtils;
 
-public class Button {
-	BufferedImage buttonimg;
-	int x=0;
-	int y=0;
+public class UpdateButton extends TouhouMotherButton{
 	String[] data;
 	int currentselection=4;
-	TouhouMotherModule module;
 	boolean buttonEnabled = false;
 	
-	public Button(TouhouMotherModule parentmodule, File filename, int x, int y) {
-		this.x=x;
-		this.y=y;
+	public UpdateButton(TouhouMotherModule parentmodule, File filename, int x, int y) {
+		super(parentmodule,filename,x,y);
 		data = FileUtils.readFromFile(sigIRC.BASEDIR+"WSplits");
 		if (data.length>4) {
 			buttonEnabled=true;
-		}
-		this.module=parentmodule;
-		try {
-			buttonimg = ImageIO.read(filename);
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 	
@@ -45,7 +34,7 @@ public class Button {
 		if (buttonEnabled) {
 			DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, x-TextUtils.calculateStringBoundsFont(data[currentselection].split(",")[0], sigIRC.panel.smallFont).getWidth(), (int)module.getBounds().getY()+(int)module.getBounds().getHeight()-8, 1, Color.WHITE, new Color(30,0,86,255), 
 					data[currentselection].split(",")[0]);
-			g.drawImage(buttonimg, x, y, sigIRC.panel);
+			super.draw(g);
 		}
 	}
 	

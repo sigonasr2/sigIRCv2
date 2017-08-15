@@ -7,6 +7,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import sig.modules.TouhouMotherModule;
+import sig.utils.FileUtils;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -70,11 +71,12 @@ public class sigIRC{
 	static int chatScrollSpd=4;
 	static int rowSpacing=64;
 	static String messageFont="Gill Sans Ultra Bold Condensed";
-	static String usernameFont="Gill Sans";
+	static String usernameFont="GillSansMTStd-Book";
 	static String touhoumotherConsoleFont="Agency FB Bold";
 	static boolean touhoumothermodule_enabled=true;
 	static boolean downloadsComplete=false;
 	static boolean hardwareAcceleration=true;
+	static boolean playedoAuthSoundOnce=false;
 	
 	public static void main(String[] args) {
 		
@@ -148,10 +150,16 @@ public class sigIRC{
 		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("update.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("backcolor.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("drag_bar.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("WSplits"); manager.verifyAndFetchFileFromServer();
 	}
 
 	private static void InitializeModules() {
+		try {
+			Module.IMG_DRAGBAR = ImageIO.read(new File(sigIRC.BASEDIR+"drag_bar.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 		if (touhoumothermodule_enabled) {
 			modules.add(new TouhouMotherModule(
 					new Rectangle(0,panel.getHeight()/2,320,panel.getHeight()/2),

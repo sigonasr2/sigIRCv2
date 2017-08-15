@@ -20,6 +20,11 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.SwingUtilities;
 
+import sig.utils.DrawUtils;
+import sig.utils.FileUtils;
+import sig.utils.SoundUtils;
+import sig.utils.TextUtils;
+
 public class ScrollingText {
 	private String username;
 	private String message;
@@ -86,8 +91,14 @@ public class ScrollingText {
 		this.stringWidth = (int)TextUtils.calculateStringBoundsFont(this.message,MyPanel.programFont).getWidth();
 		this.stringHeight = (int)TextUtils.calculateStringBoundsFont(this.message,MyPanel.programFont).getHeight();
 		this.userstringWidth = (int)TextUtils.calculateStringBoundsFont(this.username,MyPanel.userFont).getWidth();
+	}
+	
+	public ScrollingText(String msg, double x, double y, boolean playSound) {
+		this(msg,x,y);
 		
-		playMessageSound(username);
+		if (playSound) {
+			playMessageSound(username);
+		}
 	}
 	
 	private void playMessageSound(String user) {

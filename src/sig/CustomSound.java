@@ -1,5 +1,6 @@
 package sig;
 
+import sig.utils.SoundUtils;
 
 public class CustomSound {
 	final static int SOUNDCOOLDOWN = 108000;

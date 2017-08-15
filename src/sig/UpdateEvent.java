@@ -24,7 +24,10 @@ public class UpdateEvent implements ActionListener{
 			} else
 			if (!sigIRC.authenticated && last_authentication_msg>=MSGTIMER) {
 				last_authentication_msg=0;
-				sigIRC.panel.addMessage("SYSTEM: Your oauthToken was not successful. Please go to the sigIRC folder and make sure your oauthToken.txt file is correct!!! SwiftRage");
+				sigIRC.panel.addMessage("SYSTEM: Your oauthToken was not successful. Please go to the sigIRC folder and make sure your oauthToken.txt file is correct!!! SwiftRage",!sigIRC.playedoAuthSoundOnce);
+				if (!sigIRC.playedoAuthSoundOnce) {
+					sigIRC.playedoAuthSoundOnce=true;
+				}
 			}
 			if (last_autosave<AUTOSAVETIMER) {
 				last_authentication_msg++;
@@ -89,7 +92,7 @@ public class UpdateEvent implements ActionListener{
 			}
 		}
 		for (Module m : sigIRC.modules) {
-			m.run();
+			m.moduleRun();
 		}
 	}
 

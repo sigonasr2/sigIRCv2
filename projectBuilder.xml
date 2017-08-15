@@ -13,7 +13,7 @@
                 <attribute name="Class-Path" value="."/>
             </manifest>
             <fileset dir="${dir.jarfile}/bin"/>
-            <zipfileset excludes="META-INF/*.SF" src="D:/Data/commons-io-2.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="D:/Downloads/commons-io-2.5.jar"/>
         </jar>
     </target>
 </project>

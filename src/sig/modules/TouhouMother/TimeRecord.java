@@ -1,8 +1,8 @@
 package sig.modules.TouhouMother;
 
-import sig.FileUtils;
 import sig.sigIRC;
 import sig.modules.TouhouMotherModule;
+import sig.utils.FileUtils;
 
 public class TimeRecord {
 	final public static int ERROR_VALUE = Integer.MAX_VALUE;

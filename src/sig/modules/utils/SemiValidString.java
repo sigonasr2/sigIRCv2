@@ -2,7 +2,7 @@ package sig.modules.utils;
 
 import java.util.Arrays;
 
-import sig.TextUtils;
+import sig.utils.TextUtils;
 
 public class SemiValidString {
 	final public static String ERROR_VALUE = "nil";

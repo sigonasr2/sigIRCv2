@@ -2,7 +2,7 @@ package sig.modules.utils;
 
 import java.util.Arrays;
 
-import sig.TextUtils;
+import sig.utils.TextUtils;
 
 public class SemiValidInteger {
 	final public static int ERROR_VALUE = Integer.MIN_VALUE;

@@ -6,6 +6,8 @@ import java.net.URL;
 
 import javax.imageio.ImageIO;
 
+import sig.utils.TextUtils;
+
 public class Emoticon {
 	private BufferedImage image=null;
 	private String emotename=null;
