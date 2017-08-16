@@ -49,7 +49,7 @@ public class TwitchModule extends Module{
 	final static int FOLLOWERANNOUNCEMENTTIME = 300;
 	int lastFollowerAnnouncement=0;
 	User announcedFollowerUser;
-	String[] followersounds = new String[]{"Pokemon Cries - #471 Glaceon.wav"};
+	String[] followersounds = new String[]{"Glaceon_cry.wav"};
 
 	public TwitchModule(Rectangle2D bounds, String moduleName) {
 		this(bounds,moduleName,true);
