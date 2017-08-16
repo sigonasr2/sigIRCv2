@@ -177,7 +177,9 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/Emotes/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/logs/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sounds/",true); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/sounds/Pokemon Cries - #471 Glaceon.wav"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/record"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/glaceon_follower.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sigIRCicon.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("kill.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("memory"); manager.verifyAndFetchFileFromServer();
