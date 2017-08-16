@@ -7,6 +7,7 @@ import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.MouseWheelEvent;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
@@ -27,6 +28,7 @@ public class Module {
 	
 	Point dragOffset;
 	boolean dragging=false;
+	public static boolean DRAGGING=false;
 
 	public Module(Rectangle2D bounds, String moduleName) {
 		this.bounds = bounds;
@@ -50,10 +52,10 @@ public class Module {
 	}
 	
 	private void enableWindowDrag(int mouseX, int mouseY) {
-		if (!dragging && inDragBounds(mouseX,mouseY)) {
+		if (!dragging && inDragBounds(mouseX,mouseY) && !DRAGGING) {
 			//Enable dragging.
 			dragOffset = new Point((int)bounds.getX() - mouseX,(int)bounds.getY()-mouseY);
-			dragging=true;
+			dragging=DRAGGING=true;
 		}
 	}
 	
@@ -65,10 +67,15 @@ public class Module {
 
 	public void mousePressed(MouseEvent ev) {
 	}
+	
+	public void ApplyConfigWindowProperties() {
+	}
 
 	public void mouseReleased(MouseEvent ev) {
 		if (dragging) {
-			dragging=false;
+			dragging=DRAGGING=false;
+			ApplyConfigWindowProperties();
+			sigIRC.config.saveProperties();
 		}
 	}
 	
@@ -149,5 +156,9 @@ public class Module {
 	}
 
 	public void keyreleased(KeyEvent ev) {
+	}
+	
+	public void windowClosed(WindowEvent ev) {
+		
 	}
 }

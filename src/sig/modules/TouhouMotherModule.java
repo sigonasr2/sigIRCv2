@@ -94,7 +94,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	@Override
 	public void actionPerformed(ActionEvent ev) {
 		memory = FileUtils.readFromFile(sigIRC.BASEDIR+"memory");
-		System.out.println(Arrays.toString(memory));
+		//System.out.println(Arrays.toString(memory));
 		if (memory.length>=14) {
 			ProcessMemoryData();
 			ValidateAndControlMonsterData();
@@ -116,6 +116,13 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		for (TouhouMotherButton tmb : moduleButtons) {
 			tmb.updatePosition(oldX,oldY,newX,newY);
 		}
+	}
+	
+	public void ApplyConfigWindowProperties() {
+		sigIRC.touhoumothermodule_X=(int)bounds.getX();
+		sigIRC.touhoumothermodule_Y=(int)bounds.getY();
+		sigIRC.config.setInteger("TOUHOUMOTHER_module_X", sigIRC.touhoumothermodule_X);
+		sigIRC.config.setInteger("TOUHOUMOTHER_module_Y", sigIRC.touhoumothermodule_Y);
 	}
 	
 	public void draw(Graphics g) {

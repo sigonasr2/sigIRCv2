@@ -1,4 +1,5 @@
 package sig.utils;
+import java.awt.Color;
 import java.awt.Font;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
@@ -72,5 +73,13 @@ public class TextUtils {
 	
 	public static String getActualChannelName() {
 		return sigIRC.channel.replaceFirst("#", "");
+	}
+	
+	/**
+	 * Converts a three CSV value to RGB value.
+	 */
+	public static Color convertStringToColor(String col) {
+		String[] split = col.split(",");
+		return new Color(Integer.parseInt(split[0]),Integer.parseInt(split[1]),Integer.parseInt(split[2]));
 	}
 }

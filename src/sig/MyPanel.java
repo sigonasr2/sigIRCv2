@@ -18,13 +18,15 @@ import java.awt.event.MouseListener;
 import java.awt.event.MouseMotionListener;
 import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 
 import javax.swing.JColorChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
-public class MyPanel extends JPanel implements MouseListener, ActionListener, MouseWheelListener, KeyListener, ComponentListener{
+public class MyPanel extends JPanel implements MouseListener, ActionListener, MouseWheelListener, KeyListener, ComponentListener, WindowListener{
 	//List<String> messages = new ArrayList<String>();
 	final public static Font programFont = new Font(sigIRC.messageFont,0,24);
 	final public static Font userFont = new Font(sigIRC.usernameFont,0,16);
@@ -198,5 +200,37 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 
 	@Override
 	public void componentHidden(ComponentEvent ev) {
+	}
+
+	@Override
+	public void windowActivated(WindowEvent ev) {
+	}
+
+	@Override
+	public void windowClosed(WindowEvent ev) {
+	}
+
+	@Override
+	public void windowClosing(WindowEvent ev) {
+		for (Module m : sigIRC.modules) {
+			m.windowClosed(ev);
+		}
+		sigIRC.config.saveProperties();
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent ev) {
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent ev) {
+	}
+
+	@Override
+	public void windowIconified(WindowEvent ev) {
+	}
+
+	@Override
+	public void windowOpened(WindowEvent ev) {
 	}
 }

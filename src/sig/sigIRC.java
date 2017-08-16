@@ -17,6 +17,8 @@ import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Rectangle;
+import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -48,7 +50,7 @@ public class sigIRC{
 	final public static int ROWSEPARATION = 64;
 	final public static String BASEDIR = "./"; 
 	final public static String WINDOWTITLE = "sigIRCv2"; 
-	static ConfigFile config;
+	public static ConfigFile config;
 	static String server;
 	static String nickname;
 	public static String channel;
@@ -77,6 +79,22 @@ public class sigIRC{
 	static boolean downloadsComplete=false;
 	static boolean hardwareAcceleration=true;
 	static boolean playedoAuthSoundOnce=false;
+	public static int twitchmodule_width=500;
+	public static int twitchmodule_height=120;
+	public static int twitchmodule_X=320;
+	public static int twitchmodule_Y=312;
+	public static String twitchmodule_follower_img="sigIRC/glaceon_follower.png";
+	public static boolean twitchmodule_follower_img_animation=true;
+	public static int twitchmodule_followerText_centerX=292;
+	public static int twitchmodule_followerText_Y=42;
+	public static int touhoumothermodule_width=320;
+	public static int touhoumothermodule_height=312;
+	public static int touhoumothermodule_X=0;
+	public static int touhoumothermodule_Y=312;
+	public static String twitchmodule_newfollowerImgBackgroundColor="90,90,90";
+	public static String twitchmodule_newfollowerShadowTextColor="26,90,150";
+	public static String twitchmodule_newfollowerTextColor="255,255,255";
+	public static int twitchmodule_newfollowerImgLogoSize=32;
 	
 	public static void main(String[] args) {
 		
@@ -101,6 +119,22 @@ public class sigIRC{
 		touhoumotherConsoleFont = config.getProperty("touhoumotherConsoleFont","Agency FB Bold");
 		touhoumothermodule_enabled = config.getBoolean("Module_touhoumother_Enabled",true);
 		twitchmodule_enabled = config.getBoolean("Module_twitch_Enabled",true);
+		twitchmodule_width = config.getInteger("TWITCH_module_width",500);
+		twitchmodule_height = config.getInteger("TWITCH_module_height",120);
+		twitchmodule_follower_img = config.getProperty("TWITCH_module_follower_img","sigIRC/glaceon_follower.png");
+		twitchmodule_follower_img_animation = config.getBoolean("TWITCH_module_follower_img_animation",true);
+		twitchmodule_followerText_centerX = config.getInteger("TWITCH_module_followerText_centerX",292);
+		twitchmodule_followerText_Y = config.getInteger("TWITCH_module_followerText_Y",42);
+		twitchmodule_newfollowerImgLogoSize = config.getInteger("TWITCH_module_newFollowerImgLogoSize",32);
+		twitchmodule_newfollowerImgBackgroundColor = config.getProperty("TWITCH_module_newFollowerImgBackgroundColor","90,90,90");
+		twitchmodule_newfollowerShadowTextColor = config.getProperty("TWITCH_module_newFollowerShadowTextColor","26,90,150");
+		twitchmodule_newfollowerTextColor = config.getProperty("TWITCH_module_newFollowerTextColor","255,255,255");
+		twitchmodule_X = config.getInteger("TWITCH_module_X",320);
+		twitchmodule_Y = config.getInteger("TWITCH_module_Y",312);
+		touhoumothermodule_X = config.getInteger("TOUHOUMOTHER_module_X",0);
+		touhoumothermodule_Y = config.getInteger("TOUHOUMOTHER_module_Y",312);
+		touhoumothermodule_width = config.getInteger("TOUHOUMOTHER_module_width",320);
+		touhoumothermodule_height = config.getInteger("TOUHOUMOTHER_module_height",312);
 		hardwareAcceleration = config.getBoolean("hardware_acceleration",true);
 		
 		DownloadAllRequiredDependencies();
@@ -118,7 +152,6 @@ public class sigIRC{
         SwingUtilities.invokeLater(new Runnable() {
             public void run() {
                 window = createAndShowGUI();
-
         		InitializeModules();
         		performTwitchEmoteUpdate();
         		downloadsComplete=true;
@@ -163,13 +196,13 @@ public class sigIRC{
 		}
 		if (touhoumothermodule_enabled) {
 			modules.add(new TouhouMotherModule(
-					new Rectangle(0,panel.getHeight()/2,320,panel.getHeight()/2),
+					new Rectangle(touhoumothermodule_X,touhoumothermodule_Y,touhoumothermodule_width,touhoumothermodule_height),
 					"Touhou Mother"
 					));
 		}
 		if (twitchmodule_enabled) {
 			modules.add(new TwitchModule(
-					new Rectangle(320,panel.getHeight()/2,panel.getWidth()-320,96),
+					new Rectangle(twitchmodule_X,twitchmodule_Y,twitchmodule_width,twitchmodule_height),
 					"Twitch"
 					));
 		}
@@ -347,6 +380,7 @@ public class sigIRC{
             f.setAlwaysOnTop(true);
         }
         //f.setOpacity(0.5f);
+        f.addWindowListener(sigIRC.panel);
         return f;
     }
 

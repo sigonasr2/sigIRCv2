@@ -60,4 +60,14 @@ public class DrawUtils {
 		g.setColor(healthbarcol);
 		g.fill3DRect((int)bounds.getX()+1, (int)bounds.getY()+1, (int)(bounds.getWidth()*pct)-1, (int)bounds.getHeight()-1, true);
 	}
+	/**
+	 * Centers the text along the X Axis.
+	 */
+	public static void drawCenteredText(Graphics g, Font font, int x, int y, Color color, String text) {
+		AttributedString as = new AttributedString(text);
+		as.addAttribute(TextAttribute.FONT, font);
+		g.setColor(color);
+		Rectangle2D textBounds = TextUtils.calculateStringBoundsFont(text, font);
+		g.drawString(as.getIterator(),(int)(x-textBounds.getWidth()/2),(int)(y+textBounds.getHeight()));
+	}
 }
