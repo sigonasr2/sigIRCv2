@@ -80,7 +80,7 @@ public class sigIRC{
 	static boolean hardwareAcceleration=true;
 	static boolean playedoAuthSoundOnce=false;
 	public static int twitchmodule_width=500;
-	public static int twitchmodule_height=120;
+	public static int twitchmodule_height=200;
 	public static int twitchmodule_X=320;
 	public static int twitchmodule_Y=312;
 	public static String twitchmodule_follower_img="sigIRC/glaceon_follower.png";
@@ -121,7 +121,7 @@ public class sigIRC{
 		touhoumothermodule_enabled = config.getBoolean("Module_touhoumother_Enabled",true);
 		twitchmodule_enabled = config.getBoolean("Module_twitch_Enabled",true);
 		twitchmodule_width = config.getInteger("TWITCH_module_width",500);
-		twitchmodule_height = config.getInteger("TWITCH_module_height",120);
+		twitchmodule_height = config.getInteger("TWITCH_module_height",200);
 		twitchmodule_follower_img = config.getProperty("TWITCH_module_follower_img","sigIRC/glaceon_follower.png");
 		twitchmodule_follower_img_animation = config.getBoolean("TWITCH_module_follower_img_animation",true);
 		twitchmodule_followerText_centerX = config.getInteger("TWITCH_module_followerText_centerX",292);
