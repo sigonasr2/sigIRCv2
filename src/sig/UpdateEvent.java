@@ -19,14 +19,18 @@ public class UpdateEvent implements ActionListener{
 
 	private void UpdateAuthenticationCountdownMessage() {
 		if (sigIRC.downloadsComplete) {
-			if (!sigIRC.authenticated && last_authentication_msg<MSGTIMER) {
+			if ((!sigIRC.authenticated || sigIRC.testMode) && last_authentication_msg<MSGTIMER) {
 				last_authentication_msg++;
 			} else
-			if (!sigIRC.authenticated && last_authentication_msg>=MSGTIMER) {
+			if ((!sigIRC.authenticated || sigIRC.testMode) && last_authentication_msg>=MSGTIMER) {
 				last_authentication_msg=0;
-				sigIRC.panel.addMessage("SYSTEM: Your oauthToken was not successful. Please go to the sigIRC folder and make sure your oauthToken.txt file is correct!!! SwiftRage",!sigIRC.playedoAuthSoundOnce);
-				if (!sigIRC.playedoAuthSoundOnce) {
-					sigIRC.playedoAuthSoundOnce=true;
+				if (!sigIRC.authenticated && !sigIRC.testMode) {
+					sigIRC.panel.addMessage("SYSTEM: Your oauthToken was not successful. Please go to the sigIRC folder and make sure your oauthToken.txt file is correct!!! SwiftRage",!sigIRC.playedoAuthSoundOnce);
+					if (!sigIRC.playedoAuthSoundOnce) {
+						sigIRC.playedoAuthSoundOnce=true;
+					}
+				} else {
+					sigIRC.panel.addMessage("SYSTEM: This is a test message for your testing convenience. Kappa",!sigIRC.playedoAuthSoundOnce);
 				}
 			}
 			if (last_autosave<AUTOSAVETIMER) {

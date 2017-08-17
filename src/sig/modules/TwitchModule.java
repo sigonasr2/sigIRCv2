@@ -3,6 +3,7 @@ package sig.modules;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -14,6 +15,7 @@ import java.text.DateFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
+import java.util.Date;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -29,10 +31,12 @@ import com.mb3364.twitch.api.models.User;
 import sig.Module;
 import sig.sigIRC;
 import sig.modules.Twitch.Announcement;
+import sig.modules.Twitch.FancyNumber;
 import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
 import sig.utils.SoundUtils;
 import sig.utils.TextUtils;
+import sig.utils.TimeUtils;
 
 public class TwitchModule extends Module{
 	public String console="Twitch module goes here.";
@@ -50,6 +54,15 @@ public class TwitchModule extends Module{
 	int lastFollowerAnnouncement=0;
 	User announcedFollowerUser;
 	String[] followersounds = new String[]{"Glaceon_cry.wav"};
+	FancyNumber viewers_numb;
+	FancyNumber followers_numb;
+	FancyNumber views_numb;
+	Date uptime;
+	String currentlyPlaying="";
+	final public static int ARROWTIMER = 3000;
+	public static BufferedImage UPARROWIMAGE;
+	public static BufferedImage DOWNARROWIMAGE;
+	public static BufferedImage UPTIMEIMAGE;
 
 	public TwitchModule(Rectangle2D bounds, String moduleName) {
 		this(bounds,moduleName,true);
@@ -62,7 +75,8 @@ public class TwitchModule extends Module{
 	
 	private void Initialize() {
 		boolean firstTime = false;
-		InitializeFollowerImage();
+		InitializeImages();
+		InitializeStatistics();
 		firstTime = CreateUserFolder();
 		if (firstTime) {
 			CreateFollowerQueueLog();
@@ -116,6 +130,12 @@ public class TwitchModule extends Module{
 		});*/
 	}
 	
+	private void InitializeStatistics() {
+		viewers_numb = new FancyNumber("icon_viewers_count.png",0);
+		views_numb = new FancyNumber("icon_views_count.png",0);
+		followers_numb = new FancyNumber("icon_follower_count.png",0);
+	}
+
 	public void run() {
 		if (lastFollowerCheck--<=0) {
 			lastFollowerCheck = FOLLOWERCHECKTIMER;
@@ -136,6 +156,14 @@ public class TwitchModule extends Module{
 	}
 
 	private void popFollowerFromQueue() {
+		if (sigIRC.testMode) {
+			User user = new User();
+			user.setDisplayName("Test User"+((int)Math.random()*100000));
+			user.setBio("I am an awesome test subject.");
+			user.setName(user.getDisplayName());
+			user.setLogo("http://45.33.13.215/sigIRCv2/sigIRC/sigIRCicon.png");
+			DisplayFollowerAnnouncement(user,true);
+		} else
 		if (follower_queue.size()>0) {
 			if (isStreamOnline()) {
 				//We have a follower to announce!
@@ -190,10 +218,13 @@ public class TwitchModule extends Module{
 		SoundUtils.playSound(SOUNDSDIR+followersounds[(int)(Math.random()*followersounds.length)]);
 	}
 
-	private void InitializeFollowerImage() {
+	private void InitializeImages() {
 		try {
 			follower_img = ImageIO.read(new File(sigIRC.BASEDIR+sigIRC.twitchmodule_follower_img));
-			System.out.println("Initialized Follower Image successfully.");
+			UPARROWIMAGE = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/icon_up_arrow.png"));
+			DOWNARROWIMAGE = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/icon_down_arrow.png"));
+			UPTIMEIMAGE = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/icon_uptime.png"));
+			//System.out.println("Initialized Follower Image successfully.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -268,8 +299,17 @@ public class TwitchModule extends Module{
 				if (arg0==null) {
 					TwitchModule.streamOnline=false;
 				} else {
-						TwitchModule.streamOnline=true;
+					TwitchModule.streamOnline=true;
+					UpdateAllStreamStatistics(arg0);
 				}
+			}
+
+			private void UpdateAllStreamStatistics(Stream data) {
+				currentlyPlaying = data.getGame();
+				uptime = data.getCreatedAt();
+				viewers_numb.updateValue(data.getViewers());
+				views_numb.updateValue((int)data.getChannel().getViews());
+				followers_numb.updateValue(data.getChannel().getFollowers());
 			}
 			
 		});
@@ -343,6 +383,35 @@ public class TwitchModule extends Module{
 		super.draw(g);
 		//DrawUtils.drawText(g, bounds.getX(), bounds.getY()+24, Color.RED, console);
 		DrawFollowerAnnouncement(g);
+		if (streamOnline) {
+			DrawStatisticsBar(g);
+		}
+	}
+
+	private void DrawStatisticsBar(Graphics g) {
+		g.setColor(new Color(25,25,25));
+		int xoffset = (int)bounds.getX()+4;
+		int yoffset = (int)(bounds.getY()+follower_img.getHeight()+sigIRC.twitchmodule_newfollowerImgLogoSize);
+		g.fillPolygon(new int[]{(int)bounds.getX(),(int)(bounds.getX()+bounds.getWidth()),(int)(bounds.getX()+bounds.getWidth()),(int)bounds.getX()}, 
+				new int[]{yoffset-4,yoffset-4,yoffset+16,yoffset+16}, 
+				4);
+		DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, xoffset, yoffset+TextUtils.calculateStringBoundsFont(currentlyPlaying, sigIRC.panel.userFont).getHeight()/2+3, 2, g.getColor(), new Color(195,195,195), currentlyPlaying);xoffset+=TextUtils.calculateStringBoundsFont(currentlyPlaying, sigIRC.panel.userFont).getWidth()+16;
+		Rectangle offsets = DrawUptime(g, xoffset, yoffset);xoffset+=offsets.getWidth();
+		offsets = views_numb.draw(g, xoffset, yoffset);xoffset+=offsets.getWidth();
+		offsets = followers_numb.draw(g, xoffset, yoffset);xoffset+=offsets.getWidth();
+		offsets = viewers_numb.draw(g, xoffset, yoffset);xoffset+=offsets.getWidth();
+	}
+
+	private Rectangle DrawUptime(Graphics g, int x, int y) {
+		int xoffset = 0;
+		int yoffset = 0;
+		g.drawImage(UPTIMEIMAGE, x+xoffset, y+yoffset-2, sigIRC.panel);xoffset+=UPTIMEIMAGE.getWidth()+4;
+		String timediff = TimeUtils.GetTimeDifferenceFromCurrentDate(uptime);
+		if (timediff.length()>0) {
+			DrawUtils.drawTextFont(g, sigIRC.panel.userFont, x+xoffset, y+yoffset+TextUtils.calculateStringBoundsFont(timediff, sigIRC.panel.userFont).getHeight()/2+3,new Color(184,181,192),timediff);xoffset+=TextUtils.calculateStringBoundsFont(timediff, sigIRC.panel.userFont).getWidth()+12;
+		}
+		yoffset+=16;
+		return new Rectangle(x,y,xoffset,yoffset);
 	}
 
 	private void DrawFollowerAnnouncement(Graphics g) {

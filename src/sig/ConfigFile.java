@@ -6,8 +6,11 @@ import java.io.FileNotFoundException;
 import java.io.FileReader;
 import java.io.FileWriter;
 import java.io.IOException;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
+
+import sig.utils.FileUtils;
 
 public class ConfigFile {
 	String basepath;
@@ -90,10 +93,18 @@ public class ConfigFile {
 	public void saveProperties() {
 		try {
 			properties.store(GetFileWriter(basepath), "Properties file for sigIRCv2\n");
+			SortConfigProperties();
 			System.out.println("Properties successfully saved.");
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
+	}
+
+	private void SortConfigProperties() {
+		String[] contents = FileUtils.readFromFile(sigIRC.BASEDIR+basepath);
+		Arrays.sort(contents);
+		//System.out.println(Arrays.toString(contents));
+		FileUtils.writetoFile(contents, sigIRC.BASEDIR+basepath);
 	}
 
 	private FileReader GetFileReader(String basepath) {

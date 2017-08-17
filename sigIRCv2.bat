@@ -1,0 +1,1 @@
+java -jar ./sigIRCv2.jar

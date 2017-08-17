@@ -95,6 +95,7 @@ public class sigIRC{
 	public static String twitchmodule_newfollowerShadowTextColor="26,90,150";
 	public static String twitchmodule_newfollowerTextColor="255,255,255";
 	public static int twitchmodule_newfollowerImgLogoSize=32;
+	public static boolean testMode=false;
 	
 	public static void main(String[] args) {
 		
@@ -131,6 +132,7 @@ public class sigIRC{
 		twitchmodule_newfollowerTextColor = config.getProperty("TWITCH_module_newFollowerTextColor","255,255,255");
 		twitchmodule_X = config.getInteger("TWITCH_module_X",320);
 		twitchmodule_Y = config.getInteger("TWITCH_module_Y",312);
+		testMode = config.getBoolean("Testing_Mode",false);
 		touhoumothermodule_X = config.getInteger("TOUHOUMOTHER_module_X",0);
 		touhoumothermodule_Y = config.getInteger("TOUHOUMOTHER_module_Y",312);
 		touhoumothermodule_width = config.getInteger("TOUHOUMOTHER_module_width",320);
@@ -181,6 +183,12 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/record"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/glaceon_follower.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sigIRCicon.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/icon_down_arrow.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/icon_follower_count.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/icon_up_arrow.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/icon_uptime.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/icon_viewers_count.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/icon_views_count.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("kill.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("memory"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();
