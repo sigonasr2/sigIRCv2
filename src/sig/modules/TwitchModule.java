@@ -57,8 +57,8 @@ public class TwitchModule extends Module{
 	FancyNumber viewers_numb;
 	FancyNumber followers_numb;
 	FancyNumber views_numb;
-	Date uptime;
-	String currentlyPlaying="";
+	Date uptime = Calendar.getInstance().getTime();
+	String currentlyPlaying=" ";
 	final public static int ARROWTIMER = 3000;
 	public static BufferedImage UPARROWIMAGE;
 	public static BufferedImage DOWNARROWIMAGE;
@@ -305,16 +305,23 @@ public class TwitchModule extends Module{
 			}
 
 			private void UpdateAllStreamStatistics(Stream data) {
-				currentlyPlaying = data.getGame();
-				uptime = data.getCreatedAt();
-				viewers_numb.updateValue(data.getViewers());
-				views_numb.updateValue((int)data.getChannel().getViews());
-				followers_numb.updateValue(data.getChannel().getFollowers());
+				if (data!=null) {
+					if (data.getGame()!=null && data.getGame().length()>0) {
+						currentlyPlaying = data.getGame();
+					}
+					if (data.getCreatedAt()!=null) {
+						uptime = data.getCreatedAt();
+					}
+					viewers_numb.updateValue(data.getViewers());
+					views_numb.updateValue((int)data.getChannel().getViews());
+					followers_numb.updateValue(data.getChannel().getFollowers());
+				}
 			}
 			
 		});
 		return TwitchModule.streamOnline;
-		//return false;
+		//TwitchModule.streamOnline=true;
+		//return true;
 	}
 
 	protected void addFollower(ChannelFollow f, boolean streamOnline, boolean silent) {
@@ -395,7 +402,9 @@ public class TwitchModule extends Module{
 		g.fillPolygon(new int[]{(int)bounds.getX(),(int)(bounds.getX()+bounds.getWidth()),(int)(bounds.getX()+bounds.getWidth()),(int)bounds.getX()}, 
 				new int[]{yoffset-4,yoffset-4,yoffset+16,yoffset+16}, 
 				4);
-		DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, xoffset, yoffset+TextUtils.calculateStringBoundsFont(currentlyPlaying, sigIRC.panel.userFont).getHeight()/2+3, 2, g.getColor(), new Color(195,195,195), currentlyPlaying);xoffset+=TextUtils.calculateStringBoundsFont(currentlyPlaying, sigIRC.panel.userFont).getWidth()+16;
+		if (currentlyPlaying!=null && currentlyPlaying.length()>0) {
+			DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, xoffset, yoffset+TextUtils.calculateStringBoundsFont(currentlyPlaying, sigIRC.panel.userFont).getHeight()/2+3, 2, g.getColor(), new Color(195,195,195), currentlyPlaying);xoffset+=TextUtils.calculateStringBoundsFont(currentlyPlaying, sigIRC.panel.userFont).getWidth()+16;
+		}
 		Rectangle offsets = DrawUptime(g, xoffset, yoffset);xoffset+=offsets.getWidth();
 		offsets = views_numb.draw(g, xoffset, yoffset);xoffset+=offsets.getWidth();
 		offsets = followers_numb.draw(g, xoffset, yoffset);xoffset+=offsets.getWidth();
@@ -453,7 +462,9 @@ public class TwitchModule extends Module{
 					//g.drawRect(img_startx, img_starty, image_size, image_size);
 					g.drawImage(followerUserLogo, img_startx, img_starty, img_startx+image_size, img_starty+image_size, 0, 0, followerUserLogo.getWidth(), followerUserLogo.getHeight(), TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerImgBackgroundColor), sigIRC.panel);
 				}
-				DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, bounds.getX()+bounds.getWidth()-ticksPassed*3, bounds.getY()+follower_img.getHeight()+2+8, 2, TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerTextColor), TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerShadowTextColor), announcedFollowerUser.getBio());
+				if (announcedFollowerUser.getBio()!=null && announcedFollowerUser.getBio().length()>0) {
+					DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, bounds.getX()+bounds.getWidth()-ticksPassed*3, bounds.getY()+follower_img.getHeight()+2+8, 2, TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerTextColor), TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerShadowTextColor), announcedFollowerUser.getBio());
+				}
 			}
 		}
 	}
