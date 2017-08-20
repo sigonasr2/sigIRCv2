@@ -24,6 +24,7 @@ import javax.swing.SwingUtilities;
 import com.mb3364.twitch.api.Twitch;
 import com.mb3364.twitch.api.handlers.ChannelFollowsResponseHandler;
 import com.mb3364.twitch.api.handlers.StreamResponseHandler;
+import com.mb3364.twitch.api.handlers.UserResponseHandler;
 import com.mb3364.twitch.api.models.ChannelFollow;
 import com.mb3364.twitch.api.models.Stream;
 import com.mb3364.twitch.api.models.User;
@@ -82,7 +83,6 @@ public class TwitchModule extends Module{
 			CreateFollowerQueueLog();
 		}
 		manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
-		getFollowers(firstTime);
 		/*manager.streams().get("theduckishot", new StreamResponseHandler() {
 
 			@Override

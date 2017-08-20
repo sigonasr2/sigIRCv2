@@ -96,6 +96,7 @@ public class sigIRC{
 	public static String twitchmodule_newfollowerTextColor="255,255,255";
 	public static int twitchmodule_newfollowerImgLogoSize=32;
 	public static boolean testMode=false;
+	public final static String TWITCHEMOTEURL = "https://static-cdn.jtvnw.net/emoticons/v1/";
 	
 	public static void main(String[] args) {
 		
@@ -261,8 +262,15 @@ public class sigIRC{
 
 	private static void performTwitchEmoteUpdate() {
 		try {
-			JSONObject twitchemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v2/global.json");
-			JSONObject emotelist = twitchemotes.getJSONObject("emotes");
+			JSONObject twitchemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/global.json");
+			for (String emotes : twitchemotes.keySet()) {
+				JSONObject emote = twitchemotes.getJSONObject(emotes);
+				int id = emote.getInt("id");
+				String name = emote.getString("code");
+				emoticons.add(new Emoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0")));
+			}
+			JSONObject subemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/subscriber.json");
+			/*JSONObject emotelist = twitchemotes.getJSONObject("emotes");
 			JSONObject templatelist = twitchemotes.getJSONObject("template");
 			String templateurl = templatelist.getString("small");
 			for (String emotes : emotelist.keySet()) {
@@ -270,7 +278,7 @@ public class sigIRC{
 				int id = emote.getInt("image_id");
 				String emoteurl = templateurl.replace("{image_id}", ""+id);
 				emoticons.add(new Emoticon(emotes, new URL(emoteurl)));
-			}
+			}*/
 		} catch (JSONException e) {
 			e.printStackTrace();
 		} catch (IOException e) {

@@ -7,6 +7,6 @@
 			<attribute name="javadoc_location" value="jar:file:/D:/Data/commons-io-2.5-javadoc.jar!/"/>
 		</attributes>
 	</classpathentry>
-	<classpathentry exported="true" kind="lib" path="D:/Downloads/twitch-api-wrapper-0.3-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="D:/Downloads/twitch-api-wrapper-0.3-jar-with-dependencies.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>
