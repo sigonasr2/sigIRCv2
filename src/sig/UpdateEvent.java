@@ -13,8 +13,10 @@ public class UpdateEvent implements ActionListener{
 	
 	@Override
 	public void actionPerformed(ActionEvent ev) {
-	    UpdateScrollingText();
-	    UpdateAuthenticationCountdownMessage();
+		if (ev!=null) {
+		    UpdateScrollingText();
+		    UpdateAuthenticationCountdownMessage();
+		}
 	}
 
 	private void UpdateAuthenticationCountdownMessage() {
