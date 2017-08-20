@@ -3,12 +3,20 @@ package sig;
 import javax.swing.SwingUtilities;
 import javax.swing.Timer;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.mb3364.twitch.api.Twitch;
+import com.mb3364.twitch.api.handlers.ChannelResponseHandler;
+import com.mb3364.twitch.api.handlers.StreamResponseHandler;
+import com.mb3364.twitch.api.models.Channel;
+import com.mb3364.twitch.api.models.Stream;
 
 import sig.modules.TouhouMotherModule;
 import sig.modules.TwitchModule;
 import sig.utils.FileUtils;
+import sig.utils.TextUtils;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -25,6 +33,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
 import java.net.UnknownHostException;
@@ -41,6 +50,7 @@ public class sigIRC{
 	public static List<ScrollingText> textobj = new ArrayList<ScrollingText>();
 	public static List<TextRow> rowobj = new ArrayList<TextRow>();
 	public static List<Emoticon> emoticons = new ArrayList<Emoticon>();
+	public static List<Emoticon> emoticon_queue = new ArrayList<Emoticon>();
 	public static List<TwitchEmote> twitchemoticons = new ArrayList<TwitchEmote>();
 	public static List<CustomSound> customsounds = new ArrayList<CustomSound>();
 	public static List<Module> modules = new ArrayList<Module>();
@@ -97,9 +107,11 @@ public class sigIRC{
 	public static int twitchmodule_newfollowerImgLogoSize=32;
 	public static boolean testMode=false;
 	public final static String TWITCHEMOTEURL = "https://static-cdn.jtvnw.net/emoticons/v1/";
+	public static long channel_id = -1;
+
+	public static Twitch manager = new Twitch();
 	
 	public static void main(String[] args) {
-		
 		config = InitializeConfigurationFile();
 		
 		server = config.getProperty("server");
@@ -139,6 +151,8 @@ public class sigIRC{
 		touhoumothermodule_width = config.getInteger("TOUHOUMOTHER_module_width",320);
 		touhoumothermodule_height = config.getInteger("TOUHOUMOTHER_module_height",312);
 		hardwareAcceleration = config.getBoolean("hardware_acceleration",true);
+		manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
+		//System.out.println(manager.auth().hasAccessToken());
 		
 		DownloadAllRequiredDependencies();
 		
@@ -172,12 +186,13 @@ public class sigIRC{
 			ConfigFile.setAllDefaultProperties(conf);
 			conf.saveProperties();
 		}
-		return conf;
+		return conf; 
 	}
 
 	public static void DownloadAllRequiredDependencies() {
 		FileManager manager = new FileManager("sigIRC/oauthToken.txt"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/Emotes/",true); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/Emotes/subscribers.txt"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/logs/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sounds/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sounds/Glaceon_cry.wav"); manager.verifyAndFetchFileFromServer();
@@ -260,6 +275,43 @@ public class sigIRC{
 		}
 	}
 
+	private static void downloadSubEmotes(JSONObject emotes, String channelName) {
+		manager.channels().get(channelName, new ChannelResponseHandler() {
+
+			@Override
+			public void onFailure(Throwable arg0) {
+			}
+
+			@Override
+			public void onFailure(int arg0, String arg1, String arg2) {
+			}
+
+			@Override
+			public void onSuccess(Channel arg0) {
+				if (arg0!=null) {
+					channel_id=arg0.getId();
+					JSONObject channel = emotes.getJSONObject(Long.toString(channel_id));
+					JSONArray arr = channel.getJSONArray("emotes");
+					//System.out.println("Channel: "+channel);
+					for (int i=0;i<arr.length();i++) {
+						JSONObject emote = arr.getJSONObject(i);
+						int id = emote.getInt("id");
+						String name = emote.getString("code");
+						//System.out.println("Emote "+(i+1)+" has id "+id+" and code "+name+".");
+						try {
+							emoticon_queue.add(new SubEmoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0"), channelName));
+						} catch (MalformedURLException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+
+		});
+		//TwitchModule.streamOnline=true;
+		//return true;
+	}
+
 	private static void performTwitchEmoteUpdate() {
 		try {
 			JSONObject twitchemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/global.json");
@@ -270,6 +322,14 @@ public class sigIRC{
 				emoticons.add(new Emoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0")));
 			}
 			JSONObject subemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/subscriber.json");
+			String[] sub_emotes = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/Emotes/subscribers.txt");
+			for (String s : sub_emotes) {
+				if (s.length()>0) {
+					s=s.trim();
+					//System.out.println("Got sub emote info for "+s);
+					downloadSubEmotes(subemotes,s);
+				}
+			}
 			/*JSONObject emotelist = twitchemotes.getJSONObject("emotes");
 			JSONObject templatelist = twitchemotes.getJSONObject("template");
 			String templateurl = templatelist.getString("small");

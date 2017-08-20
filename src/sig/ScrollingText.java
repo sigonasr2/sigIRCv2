@@ -239,16 +239,25 @@ public class ScrollingText {
 			if (space>0) {
 				String word = basemsg.substring(marker+1, space);
 				//System.out.println("Word is '"+word+"'");
-				
+				sigIRC.emoticons.addAll(sigIRC.emoticon_queue);
+				sigIRC.emoticon_queue.clear();
 				for (Emoticon e : sigIRC.emoticons) {
+					//System.out.println("Checking for emoticon "+e.getEmoteName());
 					if (e.getEmoteName().equals(word)) {
+						if (e instanceof SubEmoticon) {
+							SubEmoticon se = (SubEmoticon)e;
+							if (!se.canUserUseEmoticon(username)) {
+								//System.out.println("User "+username+" is not subscribed to "+se.channelName+"'s channel!");
+								break;
+							}
+						}
+						//System.out.println("  Found one!");
 						basemsg = TextUtils.replaceFirst(basemsg, e.getEmoteName(), e.getSpaceFiller());
 						GenerateEmoticon(marker+1, basemsg, e);
 						space = basemsg.indexOf(" ", marker+1);
 						break;
 					}
 				}
-				
 				marker=space;
 			} else {
 				break;

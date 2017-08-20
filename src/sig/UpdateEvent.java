@@ -32,7 +32,7 @@ public class UpdateEvent implements ActionListener{
 						sigIRC.playedoAuthSoundOnce=true;
 					}
 				} else {
-					sigIRC.panel.addMessage("SYSTEM: This is a test message for your testing convenience. Kappa",!sigIRC.playedoAuthSoundOnce);
+					sigIRC.panel.addMessage("SYSTEM: This is a test message for your testing convenience. mikansBox",!sigIRC.playedoAuthSoundOnce);
 				}
 			}
 			if (last_autosave<AUTOSAVETIMER) {

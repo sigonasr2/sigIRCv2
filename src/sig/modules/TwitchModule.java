@@ -21,7 +21,6 @@ import java.util.List;
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
 
-import com.mb3364.twitch.api.Twitch;
 import com.mb3364.twitch.api.handlers.ChannelFollowsResponseHandler;
 import com.mb3364.twitch.api.handlers.StreamResponseHandler;
 import com.mb3364.twitch.api.handlers.UserResponseHandler;
@@ -41,7 +40,6 @@ import sig.utils.TimeUtils;
 
 public class TwitchModule extends Module{
 	public String console="Twitch module goes here.";
-	Twitch manager = new Twitch();
 	final public static String USERDIR = sigIRC.BASEDIR+"sigIRC/users/"; 
 	final public static String SOUNDSDIR = sigIRC.BASEDIR+"sigIRC/sounds/"; 
 	final public static String FOLLOWERQUEUEFILE = USERDIR+"followers.txt";
@@ -82,7 +80,6 @@ public class TwitchModule extends Module{
 		if (firstTime) {
 			CreateFollowerQueueLog();
 		}
-		manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
 		/*manager.streams().get("theduckishot", new StreamResponseHandler() {
 
 			@Override
@@ -244,7 +241,7 @@ public class TwitchModule extends Module{
 	}
 
 	private void getFollowers(boolean firstTime) {
-		manager.channels().getFollows(TextUtils.getActualChannelName(), new ChannelFollowsResponseHandler() {
+		sigIRC.manager.channels().getFollows(TextUtils.getActualChannelName(), new ChannelFollowsResponseHandler() {
 					@Override
 					public void onSuccess(int total, java.util.List<ChannelFollow> follows) {
 						//System.out.println("Successfully found followers for channel "+sigIRC.channel+". Total: "+total);
@@ -280,7 +277,7 @@ public class TwitchModule extends Module{
 	}
 
 	private boolean isStreamOnline() {
-		manager.streams().get(TextUtils.getActualChannelName(), new StreamResponseHandler() {
+		sigIRC.manager.streams().get(TextUtils.getActualChannelName(), new StreamResponseHandler() {
 
 			@Override
 			public void onFailure(Throwable arg0) {
