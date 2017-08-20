@@ -453,7 +453,7 @@ public class TwitchModule extends Module{
 			if (textY<bounds.getY()+bounds.getHeight() && textX+usernameTextsize.getWidth()>bounds.getX()) {
 				DrawUtils.drawCenteredText(g, sigIRC.panel.programFont, (int)bounds.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration, (int)bounds.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration, Color.BLACK, announcedFollowerUser.getDisplayName());	
 			}
-			if (!announcedFollowerUser.getBio().equalsIgnoreCase("null")) {
+			if (announcedFollowerUser.getBio()!=null && !announcedFollowerUser.getBio().equalsIgnoreCase("null")) {
 				if (followerUserLogo!=null) {
 					final int image_size = sigIRC.twitchmodule_newfollowerImgLogoSize;
 					int img_startx = (int)(bounds.getX()+bounds.getWidth()-ticksPassed*3-(image_size+4));
