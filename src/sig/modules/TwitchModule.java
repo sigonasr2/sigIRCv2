@@ -201,7 +201,12 @@ public class TwitchModule extends Module{
 		if (!user.getLogo().equalsIgnoreCase("null")) {
 			try {
 				org.apache.commons.io.FileUtils.copyURLToFile(new URL(user.getLogo()),new File(userlogo));
-				followerUserLogo = ImageIO.read(new File(userlogo));
+				File logo = new File(userlogo);
+				if (logo.exists()) {
+					followerUserLogo = ImageIO.read(logo);
+				} else {
+					followerUserLogo=null;
+				}
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
