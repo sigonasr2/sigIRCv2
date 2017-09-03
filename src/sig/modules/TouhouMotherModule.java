@@ -105,6 +105,8 @@ public class TouhouMotherModule extends Module implements ActionListener{
 			data_display_toggle=0;
 		}
 		swapButton.run();
+		updateButton.run();
+		killButton.run();
 	}
 	
 	
@@ -255,7 +257,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 				return tmbd;
 			}
 		}
-		System.out.println("Invalid boss ID specified! Could not find boss with ID "+bossID+"!");
+		//System.out.println("Invalid boss ID specified! Could not find boss with ID "+bossID+"!");
 		return null;
 	}
 	
@@ -264,7 +266,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		if (GetBossData(bossID.getValidInteger())!=null) {
 			bossHP = new SemiValidInteger(Arrays.copyOfRange(memory, 0, 8),GetBossData(bossID.getValidInteger()).getHP(),currentBoss!=null,(bossHP!=null)?bossHP.getTrustedSlot():-1);
 			gameData = new SemiValidString(Arrays.copyOfRange(memory, 9, 13));
-			System.out.println(bossHP.toString()+";"+bossID.toString()+";"+gameData.toString());
+			//System.out.println(bossHP.toString()+";"+bossID.toString()+";"+gameData.toString());
 			real_bossHP = bossHP.getValidInteger();
 			real_bossID = bossID.getValidInteger();
 			real_gameData = gameData.getValidString();

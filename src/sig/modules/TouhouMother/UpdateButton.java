@@ -11,6 +11,7 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
+import sig.MyPanel;
 import sig.sigIRC;
 import sig.modules.TouhouMotherModule;
 import sig.utils.DrawUtils;
@@ -21,6 +22,8 @@ public class UpdateButton extends TouhouMotherButton{
 	String[] data;
 	int currentselection=4;
 	boolean buttonEnabled = false;
+	int displaytime=0;
+	String message = "";
 	
 	public UpdateButton(TouhouMotherModule parentmodule, File filename, int x, int y) {
 		super(parentmodule,filename,x,y);
@@ -30,10 +33,19 @@ public class UpdateButton extends TouhouMotherButton{
 		}
 	}
 	
+	public void run() {
+		if (displaytime>0) {
+			displaytime--;
+		}
+	}
+	
 	public void draw(Graphics g) {
 		if (buttonEnabled) {
 			DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, x-TextUtils.calculateStringBoundsFont(data[currentselection].split(",")[0], sigIRC.panel.smallFont).getWidth(), (int)module.getBounds().getY()+(int)module.getBounds().getHeight()-8, 1, Color.WHITE, new Color(30,0,86,255), 
 					data[currentselection].split(",")[0]);
+			if (displaytime>0) {
+				DrawUtils.drawOutlineText(g, MyPanel.smallFont, x-module.getBounds().getWidth()+buttonimg.getWidth()*2, y+buttonimg.getHeight(), 2, Color.WHITE, new Color(60,0,150), message);
+			}
 			super.draw(g);
 		}
 	}
@@ -71,6 +83,9 @@ public class UpdateButton extends TouhouMotherButton{
 			int nextselection = currentselection+(int)Math.signum(ev.getWheelRotation());
 			nextselection = LoopSelectionAround(nextselection);
 			currentselection=nextselection;
+			if (ev.getWheelRotation()!=0) {
+				TriggerNewMessage(data[currentselection].split(",")[0],30*3);
+			}
 		}
 	}
 
@@ -82,6 +97,11 @@ public class UpdateButton extends TouhouMotherButton{
 			nextselection=4;
 		}
 		return nextselection;
+	}
+
+	private void TriggerNewMessage(String string, int time) {
+		message = string;
+		displaytime = time;
 	}
 
 	private int findLastNonBlankLine() {

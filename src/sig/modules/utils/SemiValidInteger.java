@@ -41,7 +41,7 @@ public class SemiValidInteger {
 				}
 			}
 		}
-		System.out.print("Test values: "+Arrays.toString(vals));
+		//System.out.print("Test values: "+Arrays.toString(vals));
 	}
 
 	public int getValidInteger() {
@@ -63,7 +63,7 @@ public class SemiValidInteger {
 				}
 			}
 		}
-		System.out.println("WARNING! Could not find valid value for SemiValidInteger["+values.length+"]!");
+		//System.out.println("WARNING! Could not find valid value for SemiValidInteger["+values.length+"]!");
 		return ERROR_VALUE;
 	}
 	

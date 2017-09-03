@@ -18,7 +18,7 @@ public class SemiValidString {
 				return val;
 			}
 		}
-		System.out.println("WARNING! Could not find valid value for SemiValidString["+values.length+"]!");
+		//System.out.println("WARNING! Could not find valid value for SemiValidString["+values.length+"]!");
 		return ERROR_VALUE;
 	}
 
