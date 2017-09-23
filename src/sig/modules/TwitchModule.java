@@ -138,6 +138,7 @@ public class TwitchModule extends Module{
 			lastFollowerCheck = FOLLOWERCHECKTIMER;
 			getFollowers(false);
 			popFollowerFromQueue();
+			isStreamOnline(true);
 		}
 		if (lastFollowerAnnouncement>0) {
 			lastFollowerAnnouncement--;
@@ -280,48 +281,55 @@ public class TwitchModule extends Module{
 			}
 		}
 	}
-
 	private boolean isStreamOnline() {
-		sigIRC.manager.streams().get(TextUtils.getActualChannelName(), new StreamResponseHandler() {
+		return isStreamOnline(false);
+	}
 
-			@Override
-			public void onFailure(Throwable arg0) {
-				TwitchModule.streamOnline=false;
-			}
-
-			@Override
-			public void onFailure(int arg0, String arg1, String arg2) {
-				System.out.println(arg0+","+arg1+","+arg2);
-				TwitchModule.streamOnline=false;
-			}
-
-			@Override
-			public void onSuccess(Stream arg0) {
-				//System.out.println("Stream data is available! "+arg0);
-				if (arg0==null) {
+	private boolean isStreamOnline(boolean update) {
+		if (update) {
+			sigIRC.manager.streams().get(TextUtils.getActualChannelName(), new StreamResponseHandler() {
+	
+				@Override
+				public void onFailure(Throwable arg0) {
 					TwitchModule.streamOnline=false;
-				} else {
-					TwitchModule.streamOnline=true;
-					UpdateAllStreamStatistics(arg0);
 				}
-			}
-
-			private void UpdateAllStreamStatistics(Stream data) {
-				if (data!=null) {
-					if (data.getGame()!=null && data.getGame().length()>0) {
-						currentlyPlaying = data.getGame();
-					}
-					if (data.getCreatedAt()!=null) {
-						uptime = data.getCreatedAt();
-					}
-					viewers_numb.updateValue(data.getViewers());
-					views_numb.updateValue((int)data.getChannel().getViews());
-					followers_numb.updateValue(data.getChannel().getFollowers());
+	
+				@Override
+				public void onFailure(int arg0, String arg1, String arg2) {
+					System.out.println(arg0+","+arg1+","+arg2);
+					TwitchModule.streamOnline=false;
 				}
-			}
-			
-		});
-		return TwitchModule.streamOnline;
+	
+				@Override
+				public void onSuccess(Stream arg0) {
+					//System.out.println("Stream data is available! "+arg0);
+					if (arg0==null) {
+						TwitchModule.streamOnline=false;
+					} else {
+						TwitchModule.streamOnline=true;
+						UpdateAllStreamStatistics(arg0);
+					}
+				}
+	
+				private void UpdateAllStreamStatistics(Stream data) {
+					if (data!=null) {
+						if (data.getGame()!=null && data.getGame().length()>0) {
+							currentlyPlaying = data.getGame();
+						}
+						if (data.getCreatedAt()!=null) {
+							uptime = data.getCreatedAt();
+						}
+						viewers_numb.updateValue(data.getViewers());
+						views_numb.updateValue((int)data.getChannel().getViews());
+						followers_numb.updateValue(data.getChannel().getFollowers());
+					}
+				}
+				
+			});
+			return TwitchModule.streamOnline;
+		} else {
+			return TwitchModule.streamOnline;
+		}
 		//TwitchModule.streamOnline=true;
 		//return true;
 	}
