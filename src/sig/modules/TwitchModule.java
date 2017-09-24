@@ -199,7 +199,7 @@ public class TwitchModule extends Module{
 		announcedFollowerUser = user;
 		String followerAnnouncement = user.getDisplayName()+" is now following the stream!";
 		String userlogo = USERDIR+user.getId()+"_logo";
-		if (!user.getLogo().equalsIgnoreCase("null")) {
+		if (user.getLogo()!=null && !user.getLogo().equalsIgnoreCase("null")) {
 			try {
 				org.apache.commons.io.FileUtils.copyURLToFile(new URL(user.getLogo()),new File(userlogo));
 				File logo = new File(userlogo);
