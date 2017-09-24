@@ -107,7 +107,9 @@ public class sigIRC{
 	public static int twitchmodule_newfollowerImgLogoSize=32;
 	public static boolean testMode=false;
 	public final static String TWITCHEMOTEURL = "https://static-cdn.jtvnw.net/emoticons/v1/";
+	public final static String SUBEMOTELISTFILE = "sigIRC/subemotes.json";
 	public static long channel_id = -1;
+	public static int lastSubEmoteUpdate = -1;
 
 	public static Twitch manager = new Twitch();
 	
@@ -151,9 +153,10 @@ public class sigIRC{
 		touhoumothermodule_width = config.getInteger("TOUHOUMOTHER_module_width",320);
 		touhoumothermodule_height = config.getInteger("TOUHOUMOTHER_module_height",312);
 		hardwareAcceleration = config.getBoolean("hardware_acceleration",true);
+		lastSubEmoteUpdate = config.getInteger("lastSubEmote_APIUpdate",Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
 		manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
 		//System.out.println(manager.auth().hasAccessToken());
-		
+
 		DownloadAllRequiredDependencies();
 		
 		String[] filedata = FileUtils.readFromFile(BASEDIR+"sigIRC/oauthToken.txt");
@@ -170,7 +173,9 @@ public class sigIRC{
             public void run() {
                 window = createAndShowGUI();
         		InitializeModules();
+        		//System.out.println("Modules initialized.");
         		performTwitchEmoteUpdate();
+        		//System.out.println("Twitch emote update done.");
         		downloadsComplete=true;
             }
         });
@@ -212,6 +217,7 @@ public class sigIRC{
 		manager = new FileManager("backcolor.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("drag_bar.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("WSplits"); manager.verifyAndFetchFileFromServer();
+		System.out.println("Downloaded Dependencies.");
 	}
 
 	private static void InitializeModules() {
@@ -315,21 +321,50 @@ public class sigIRC{
 	private static void performTwitchEmoteUpdate() {
 		try {
 			JSONObject twitchemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/global.json");
+			System.out.println("Twitch emote Json read.");
 			for (String emotes : twitchemotes.keySet()) {
 				JSONObject emote = twitchemotes.getJSONObject(emotes);
 				int id = emote.getInt("id");
 				String name = emote.getString("code");
 				emoticons.add(new Emoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0")));
+				System.out.println("Emote "+id+" with name "+name);
 			}
-			JSONObject subemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/subscriber.json");
-			String[] sub_emotes = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/Emotes/subscribers.txt");
-			for (String s : sub_emotes) {
-				if (s.length()>0) {
-					s=s.trim();
-					//System.out.println("Got sub emote info for "+s);
-					downloadSubEmotes(subemotes,s);
+			Thread downloadThread = new Thread(){
+				public void run() {
+					JSONObject subemotes = null;
+					try {
+						File filer = new File(SUBEMOTELISTFILE);
+						if (!filer.exists()) {
+							System.out.println("Local copy of Sub emotes not found. Downloading in background...");
+							subemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/subscriber.json",SUBEMOTELISTFILE,true);
+						} else {
+							if (lastSubEmoteUpdate == Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
+								System.out.println("Using local copy of Sub emote JSON.");
+								subemotes = FileUtils.readJsonFromFile(SUBEMOTELISTFILE);
+							} else {
+								System.out.println("Local copy of Sub emote JSON out-of-date! Re-downloading in background...");
+								subemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/subscriber.json",SUBEMOTELISTFILE,true);
+							}
+						}
+					} catch (JSONException | IOException e) {
+						e.printStackTrace();
+					}
+					lastSubEmoteUpdate = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+					config.setInteger("lastSubEmote_APIUpdate", lastSubEmoteUpdate);
+					//System.out.println("Subscriber object: "+subemotes);
+					String[] sub_emotes = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/Emotes/subscribers.txt");
+					//System.out.println("Sub emotes read.");
+					for (String s : sub_emotes) {
+						if (s.length()>0) {
+							s=s.trim();
+							System.out.println("Got sub emote info for "+s);
+							downloadSubEmotes(subemotes,s);
+						}
+					}
+					subemotes=null;
 				}
-			}
+			};
+			downloadThread.start();
 			/*JSONObject emotelist = twitchemotes.getJSONObject("emotes");
 			JSONObject templatelist = twitchemotes.getJSONObject("template");
 			String templateurl = templatelist.getString("small");
