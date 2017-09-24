@@ -332,7 +332,6 @@ public class sigIRC{
 			Thread downloadThread = new Thread(){
 				public void run() {
 					JSONObject subemotes = null;
-					JSONObject subemotes2 = null;
 					try {
 						File filer = new File(SUBEMOTELISTFILE);
 						if (!filer.exists()) {
@@ -345,7 +344,17 @@ public class sigIRC{
 							} else {
 								System.out.println("Local copy of Sub emote JSON out-of-date! Re-downloading in background...");
 								subemotes = FileUtils.readJsonFromFile(SUBEMOTELISTFILE);
-								subemotes2 = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/subscriber.json",SUBEMOTELISTFILE,true);
+								new Thread(){
+									public void run() {
+										try {
+											FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/subscriber.json",SUBEMOTELISTFILE,true);
+										} catch (JSONException e) {
+											e.printStackTrace();
+										} catch (IOException e) {
+											e.printStackTrace();
+										}
+									}
+								}.start();
 							}
 						}
 					} catch (JSONException | IOException e) {
