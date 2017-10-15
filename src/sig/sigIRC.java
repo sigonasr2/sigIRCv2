@@ -110,6 +110,9 @@ public class sigIRC{
 	public final static String SUBEMOTELISTFILE = "sigIRC/subemotes.json";
 	public static long channel_id = -1;
 	public static int lastSubEmoteUpdate = -1;
+	
+	static int lastWindowX = 0;
+	static int lastWindowY = 0;
 
 	public static Twitch manager = new Twitch();
 	

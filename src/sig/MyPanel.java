@@ -1,9 +1,11 @@
 package sig;
 
 import java.awt.Color;
+import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
 import java.awt.PointerInfo;
 import java.awt.Toolkit;
@@ -166,23 +168,17 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 
 	@Override
 	public void componentResized(ComponentEvent ev) {
-		sigIRC.windowX = sigIRC.window.getX(); 
-		sigIRC.windowY = sigIRC.window.getY();
-		sigIRC.windowWidth = sigIRC.window.getWidth(); 
-		sigIRC.windowHeight = sigIRC.window.getHeight();
-		sigIRC.config.setInteger("windowX", sigIRC.windowX);
-		sigIRC.config.setInteger("windowY", sigIRC.windowY);
-		sigIRC.config.setInteger("windowWidth", sigIRC.windowWidth);
-		sigIRC.config.setInteger("windowHeight", sigIRC.windowHeight);
-		sigIRC.button.x = sigIRC.panel.getX()+sigIRC.panel.getWidth()-96;
-		sigIRC.button.y = 64+sigIRC.rowobj.size()*sigIRC.rowSpacing;
-		sigIRC.config.saveProperties();
+		UpdateComponent(ev.getComponent());
 	}
 
 	@Override
 	public void componentMoved(ComponentEvent ev) {
-		sigIRC.windowX = sigIRC.window.getX(); 
-		sigIRC.windowY = sigIRC.window.getY();
+		UpdateComponent(ev.getComponent());
+	}
+
+	public static void UpdateComponent(Component com) {
+		sigIRC.windowX = (int)sigIRC.window.getLocationOnScreen().getX(); 
+		sigIRC.windowY = (int)sigIRC.window.getLocationOnScreen().getY();
 		sigIRC.windowWidth = sigIRC.window.getWidth(); 
 		sigIRC.windowHeight = sigIRC.window.getHeight();
 		sigIRC.config.setInteger("windowX", sigIRC.windowX);
@@ -191,6 +187,8 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 		sigIRC.config.setInteger("windowHeight", sigIRC.windowHeight);
 		sigIRC.button.x = sigIRC.panel.getX()+sigIRC.panel.getWidth()-96;
 		sigIRC.button.y = 64+sigIRC.rowobj.size()*sigIRC.rowSpacing;
+		com.repaint();
+		sigIRC.panel.repaint();
 		sigIRC.config.saveProperties();
 	}
 

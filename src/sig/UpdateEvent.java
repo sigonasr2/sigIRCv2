@@ -1,4 +1,5 @@
 package sig;
+import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 
@@ -10,12 +11,29 @@ public class UpdateEvent implements ActionListener{
 	long lasttime = System.currentTimeMillis();
 	int avgfps = 30;
 	int counter = 0;
+	int windowUpdateCounter=30;
 	
 	@Override
 	public void actionPerformed(ActionEvent ev) {
 		if (ev!=null) {
 		    UpdateScrollingText();
 		    UpdateAuthenticationCountdownMessage();
+		    UpdateWindowPosition();
+		}
+	}
+
+	private void UpdateWindowPosition() {
+		if (windowUpdateCounter--<=0) {
+			if (sigIRC.lastWindowX!=(int)sigIRC.window.getLocationOnScreen().getX() ||
+					sigIRC.lastWindowY!=(int)sigIRC.window.getLocationOnScreen().getY()) {
+				sigIRC.lastWindowX = (int)sigIRC.window.getLocationOnScreen().getX();
+				sigIRC.lastWindowY = (int)sigIRC.window.getLocationOnScreen().getY();
+				//Trigger Window Update.
+				for (Component c : sigIRC.window.getComponents()) {
+					MyPanel.UpdateComponent(c);
+				}
+			}
+			windowUpdateCounter=30;
 		}
 	}
 
@@ -40,8 +58,8 @@ public class UpdateEvent implements ActionListener{
 			} else
 			if (last_autosave>=AUTOSAVETIMER) {
 				last_autosave=0;
-				sigIRC.windowX = sigIRC.window.getX(); 
-				sigIRC.windowY = sigIRC.window.getY();
+				sigIRC.windowX = (int)sigIRC.window.getLocationOnScreen().getX(); 
+				sigIRC.windowY = (int)sigIRC.window.getLocationOnScreen().getY();
 				sigIRC.windowWidth = sigIRC.window.getWidth(); 
 				sigIRC.windowHeight = sigIRC.window.getHeight();
 				sigIRC.config.setInteger("windowX", sigIRC.windowX);
