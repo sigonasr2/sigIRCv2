@@ -203,7 +203,9 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/Emotes/subscribers.txt"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/logs/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sounds/",true); manager.verifyAndFetchFileFromServer();
-		manager = new FileManager("sigIRC/sounds/Glaceon_cry.wav"); manager.verifyAndFetchFileFromServer();
+		//manager = new FileManager("sigIRC/sounds/Glaceon_cry.wav"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/follower_sounds/Glaceon_cry.wav"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/follower_sounds/README.txt"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/record"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/glaceon_follower.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sigIRCicon.png"); manager.verifyAndFetchFileFromServer();

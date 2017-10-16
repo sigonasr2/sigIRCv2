@@ -41,7 +41,7 @@ import sig.utils.TimeUtils;
 public class TwitchModule extends Module{
 	public String console="Twitch module goes here.";
 	final public static String USERDIR = sigIRC.BASEDIR+"sigIRC/users/"; 
-	final public static String SOUNDSDIR = sigIRC.BASEDIR+"sigIRC/sounds/"; 
+	final public static String SOUNDSDIR = sigIRC.BASEDIR+"sigIRC/follower_sounds/"; 
 	final public static String FOLLOWERQUEUEFILE = USERDIR+"followers.txt";
 	public static boolean streamOnline = false;
 	static BufferedImage follower_img; 
@@ -76,6 +76,7 @@ public class TwitchModule extends Module{
 		boolean firstTime = false;
 		InitializeImages();
 		InitializeStatistics();
+		InitializeFollowerSounds();
 		firstTime = CreateUserFolder();
 		if (firstTime) {
 			CreateFollowerQueueLog();
@@ -127,6 +128,26 @@ public class TwitchModule extends Module{
 		});*/
 	}
 	
+	private void InitializeFollowerSounds() {
+		File follower_sounds_dir = new File(SOUNDSDIR);
+		String[] files = filterFiles(follower_sounds_dir.list());
+		followersounds = files;
+		//System.out.println(Arrays.toString(followersounds));
+	}
+
+	private static String[] filterFiles(String[] files) {
+		List<String> finallist = new ArrayList<String>();
+		for (String file : files) {
+			if (!file.equalsIgnoreCase("README.txt")) {
+				File f = new File(SOUNDSDIR+file);
+				if (!f.isDirectory()) {
+					finallist.add(file);
+				}
+			}
+		}
+		return finallist.toArray(new String[finallist.size()]);
+	}
+
 	private void InitializeStatistics() {
 		viewers_numb = new FancyNumber("icon_viewers_count.png",0);
 		views_numb = new FancyNumber("icon_views_count.png",0);
