@@ -18,10 +18,11 @@ import sig.utils.DrawUtils;
 import sig.utils.TextUtils;
 
 public class Module {
-	protected Rectangle2D bounds;
+	protected Rectangle2D position;
 	protected boolean enabled;
 	protected String name;
 	public static BufferedImage IMG_DRAGBAR;
+	public static BufferedImage MSG_SEPARATOR;
 	public static boolean inDragZone=false;
 	
 	final protected int titleHeight;
@@ -31,7 +32,7 @@ public class Module {
 	public static boolean DRAGGING=false;
 
 	public Module(Rectangle2D bounds, String moduleName) {
-		this.bounds = bounds;
+		this.position = bounds;
 		this.name = moduleName;
 		this.enabled=true;
 		
@@ -54,15 +55,15 @@ public class Module {
 	private void enableWindowDrag(int mouseX, int mouseY) {
 		if (!dragging && inDragBounds(mouseX,mouseY) && !DRAGGING) {
 			//Enable dragging.
-			dragOffset = new Point((int)bounds.getX() - mouseX,(int)bounds.getY()-mouseY);
+			dragOffset = new Point((int)position.getX() - mouseX,(int)position.getY()-mouseY);
 			dragging=DRAGGING=true;
 		}
 	}
 	
 	public boolean inDragBounds(int x, int y) {
-		return x>=bounds.getX() && x<=bounds.getX()+bounds.getWidth() &&
-				y>=(int)bounds.getY()-Module.IMG_DRAGBAR.getHeight() &&
-				y<=(int)bounds.getY();
+		return x>=position.getX() && x<=position.getX()+position.getWidth() &&
+				y>=(int)position.getY()-Module.IMG_DRAGBAR.getHeight() &&
+				y<=(int)position.getY();
 	}
 
 	public void mousePressed(MouseEvent ev) {
@@ -101,9 +102,9 @@ public class Module {
 			sigIRC.panel.repaint(getDrawBounds().getBounds());
 			int mouseX = sigIRC.panel.lastMouseX+(int)dragOffset.getX();
 			int mouseY = sigIRC.panel.lastMouseY+(int)dragOffset.getY();
-			int oldX = (int)bounds.getX();
-			int oldY = (int)bounds.getY();
-			bounds = new Rectangle(mouseX, mouseY,(int)bounds.getWidth(),(int)bounds.getHeight());
+			int oldX = (int)position.getX();
+			int oldY = (int)position.getY();
+			position = new Rectangle(mouseX, mouseY,(int)position.getWidth(),(int)position.getHeight());
 			//System.out.println(sigIRC.panel.lastMouseX+","+sigIRC.panel.lastMouseY);
 			ModuleDragEvent(oldX,oldY,mouseX,mouseY);
 		}
@@ -115,6 +116,10 @@ public class Module {
 		if (sigIRC.panel.getCursor().getType()==Cursor.MOVE_CURSOR) {
 			sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}*/
+	}
+	
+	public Rectangle2D getPosition() {
+		return position;
 	}
 	
 	public void run() {
@@ -131,16 +136,16 @@ public class Module {
 
 	private void drawModuleHeader(Graphics g) {
 		g.drawImage(Module.IMG_DRAGBAR, 
-			(int)bounds.getX()+2, 
-			(int)bounds.getY()-Module.IMG_DRAGBAR.getHeight(),
-			(int)bounds.getWidth()-4,
+			(int)position.getX()+2, 
+			(int)position.getY()-Module.IMG_DRAGBAR.getHeight(),
+			(int)position.getWidth()-4,
 			Module.IMG_DRAGBAR.getHeight(),
 			sigIRC.panel);
-		DrawUtils.drawTextFont(g, sigIRC.panel.smallFont, (int)bounds.getX(), (int)bounds.getY()-titleHeight/2+4, Color.BLACK, this.name);
+		DrawUtils.drawTextFont(g, sigIRC.panel.smallFont, (int)position.getX(), (int)position.getY()-titleHeight/2+4, Color.BLACK, this.name);
 	}
 	
 	private Rectangle2D getDrawBounds() {
-		Rectangle2D drawBounds = new Rectangle((int)bounds.getX(),(int)bounds.getY()-titleHeight+3,(int)bounds.getWidth(),(int)bounds.getHeight()+titleHeight);
+		Rectangle2D drawBounds = new Rectangle((int)position.getX(),(int)position.getY()-titleHeight+3,(int)position.getWidth(),(int)position.getHeight()+titleHeight);
 		return drawBounds;
 	}
 	

@@ -121,8 +121,8 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	}
 	
 	public void ApplyConfigWindowProperties() {
-		sigIRC.touhoumothermodule_X=(int)bounds.getX();
-		sigIRC.touhoumothermodule_Y=(int)bounds.getY();
+		sigIRC.touhoumothermodule_X=(int)position.getX();
+		sigIRC.touhoumothermodule_Y=(int)position.getY();
 		sigIRC.config.setInteger("TOUHOUMOTHER_module_X", sigIRC.touhoumothermodule_X);
 		sigIRC.config.setInteger("TOUHOUMOTHER_module_Y", sigIRC.touhoumothermodule_Y);
 	}
@@ -133,7 +133,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 			if (currentBoss!=null) {
 				DrawBossAndPlayerInfo(g);
 			} else {
-				DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, (int)bounds.getX()+4, (int)bounds.getY()+4+16, 1, Color.WHITE, new Color(30,0,86,255), 
+				DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, (int)position.getX()+4, (int)position.getY()+4+16, 1, Color.WHITE, new Color(30,0,86,255), 
 						DataProperty.getDataPropertyBasedOnID(data_display_id).getDisplayName());
 				DrawSortedHealthbarsBasedOnDataProperty(g, DataProperty.getDataPropertyBasedOnID(data_display_id), 0, -64);
 			}
@@ -144,24 +144,24 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	}
 	
 	public void DrawBossAndPlayerInfo(Graphics g) {
-		g.drawImage(bossImage, (int)bounds.getX()+4, (int)bounds.getY()+4, sigIRC.panel);
-		DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, Math.min(bossImage.getWidth()+4,160)+(int)bounds.getX()+4, (int)bounds.getY()+4+16, 1, Color.WHITE, new Color(30,0,86,255), 
+		g.drawImage(bossImage, (int)position.getX()+4, (int)position.getY()+4, sigIRC.panel);
+		DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+4, (int)position.getY()+4+16, 1, Color.WHITE, new Color(30,0,86,255), 
 				currentBoss.getName());
-		DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, Math.min(bossImage.getWidth()+4,160)+(int)bounds.getX()+4, (int)bounds.getY()+4+48, 1, Color.WHITE, new Color(30,0,86,255), 
+		DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+4, (int)position.getY()+4+48, 1, Color.WHITE, new Color(30,0,86,255), 
 				real_bossHP+" / "+bossMaxHP +" ("+Math.round(((real_bossHP/(double)bossMaxHP)*100))+"%)");
 		DrawUtils.drawHealthbar(g, new Rectangle(
-				Math.min(bossImage.getWidth()+4,160)+(int)bounds.getX()+4,
-				(int)bounds.getY()+4+20,
+				Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+4,
+				(int)position.getY()+4+20,
 				(int)TextUtils.calculateStringBoundsFont(bossMaxHP+" / "+bossMaxHP +" ("+Math.round((1d*100))+"%", sigIRC.panel.userFont).getWidth(),
 				8
 				), real_bossHP/(double)bossMaxHP, ChooseHealthbarColor(real_bossHP/(double)bossMaxHP));
-		DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, Math.min(bossImage.getWidth()+4,160)+(int)bounds.getX()+16, (int)bounds.getY()+4+68, 1, Color.WHITE, new Color(30,0,86,255), 
+		DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+16, (int)position.getY()+4+68, 1, Color.WHITE, new Color(30,0,86,255), 
 				TextUtils.convertSecondsToTimeFormat(secondsCount));
 		int record = TimeRecord.getRecord(currentBoss.getID());
 		if (record!=TimeRecord.ERROR_VALUE) {
-			DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, Math.min(bossImage.getWidth()+4,160)+(int)bounds.getX()+
+			DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+
 					TextUtils.calculateStringBoundsFont(TextUtils.convertSecondsToTimeFormat(secondsCount), sigIRC.panel.userFont).getWidth()+20, 
-					(int)bounds.getY()+4+72, 1, Color.WHITE, new Color(30,0,86,255), 
+					(int)position.getY()+4+72, 1, Color.WHITE, new Color(30,0,86,255), 
 					"RECORD "+TextUtils.convertSecondsToTimeFormat(record));
 		}
 		DrawSortedHealthbarsBasedOnDataProperty(g, DataProperty.CURRENTDAMAGE, 0, 0);
@@ -175,18 +175,18 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		int totaldmg = calculateDataPropertyTotalValue(property);
 		for (int i=0;i<sorteddmg.length;i++) {
 			if (sorteddmg[i]!=-1 && characterDatabase[sorteddmg[i]].getDataProperty(property)>0) {
-				DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, Math.min(((bossImage!=null)?bossImage.getWidth():0)+4,160)+(int)bounds.getX()+4-Math.min(50, (bossImage!=null)?bossImage.getWidth():0)+x, (int)bounds.getY()+4+96+pos+y, 1, Color.WHITE, new Color(30,0,86,255), 
+				DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, Math.min(((bossImage!=null)?bossImage.getWidth():0)+4,160)+(int)position.getX()+4-Math.min(50, (bossImage!=null)?bossImage.getWidth():0)+x, (int)position.getY()+4+96+pos+y, 1, Color.WHITE, new Color(30,0,86,255), 
 						characterDatabase[sorteddmg[i]].getName());
 				DrawUtils.drawHealthbar(g, 
 						new Rectangle(
-								Math.min(((bossImage!=null)?bossImage.getWidth():0)+4,160)+(int)bounds.getX()+4+Math.max(0, 50-((bossImage!=null)?bossImage.getWidth():0))+x,
-								(int)bounds.getY()+4+86+pos+y,
+								Math.min(((bossImage!=null)?bossImage.getWidth():0)+4,160)+(int)position.getX()+4+Math.max(0, 50-((bossImage!=null)?bossImage.getWidth():0))+x,
+								(int)position.getY()+4+86+pos+y,
 								96,
 								10
 								)
 						, (double)characterDatabase[sorteddmg[i]].getDataProperty(property)/maxdmg, characterDatabase[sorteddmg[i]].getColor());
 				DecimalFormat df = new DecimalFormat("0.0");
-				DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, Math.min((bossImage!=null)?bossImage.getWidth():0+4,160)+(int)bounds.getX()+4+Math.max(0, 50-((bossImage!=null)?bossImage.getWidth():0))+108+x, (int)bounds.getY()+4+96+pos+y, 1, Color.WHITE, new Color(30,0,86,255), 
+				DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, Math.min((bossImage!=null)?bossImage.getWidth():0+4,160)+(int)position.getX()+4+Math.max(0, 50-((bossImage!=null)?bossImage.getWidth():0))+108+x, (int)position.getY()+4+96+pos+y, 1, Color.WHITE, new Color(30,0,86,255), 
 						characterDatabase[sorteddmg[i]].getDataProperty(property)+" "+"("+df.format(((((double)characterDatabase[sorteddmg[i]].getDataProperty(property)/totaldmg))*100))+"%)");
 				pos+=16;
 			}
@@ -507,19 +507,19 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	private void DefineButton() {
 		updateButton = new UpdateButton(this, //56x20 pixels
 				new File(sigIRC.BASEDIR+"update.png"),
-				(int)bounds.getX()+320-56,(int)bounds.getY()+sigIRC.panel.getHeight()/2-20);
+				(int)position.getX()+320-56,(int)position.getY()+sigIRC.panel.getHeight()/2-20);
 		killButton = new KillButton(this,
 				new File(sigIRC.BASEDIR+"kill.png"),
-				(int)bounds.getX(),(int)bounds.getY()+sigIRC.panel.getHeight()/2-20);
+				(int)position.getX(),(int)position.getY()+sigIRC.panel.getHeight()/2-20);
 		swapButton = new SwapButton(this,
 				new File(sigIRC.BASEDIR+"swap.png"),
-				(int)bounds.getX(),(int)bounds.getY()+sigIRC.panel.getHeight()/2-40);
+				(int)position.getX(),(int)position.getY()+sigIRC.panel.getHeight()/2-40);
 		moduleButtons.add(updateButton);
 		moduleButtons.add(killButton);
 		moduleButtons.add(swapButton);
 	}
 	
 	public Rectangle2D getBounds() {
-		return bounds;
+		return position;
 	}
 }

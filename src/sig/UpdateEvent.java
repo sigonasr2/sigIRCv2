@@ -119,6 +119,12 @@ public class UpdateEvent implements ActionListener{
 		for (Module m : sigIRC.modules) {
 			m.moduleRun();
 		}
+		for (int i=0;i<sigIRC.chatlogtwitchemoticons.size();i++) {
+	    	boolean keep = sigIRC.chatlogtwitchemoticons.get(i).run();
+	    	if (!keep) {
+	    		sigIRC.chatlogtwitchemoticons.remove(i--);
+	    	}
+	    }
 	}
 
 	private void ProcessTextRows() {

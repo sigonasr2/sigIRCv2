@@ -19,6 +19,8 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import sig.modules.ChatLog.ChatLogMessage;
+
 public class FileUtils {
 	public static String[] readFromFile(String filename) {
 		File file = new File(filename);
@@ -112,6 +114,7 @@ public class FileUtils {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			ChatLogMessage.importMessages(message);
 		}
 	  
 	  public static void writetoFile(String[] data, String filename) {

@@ -168,8 +168,8 @@ public class TwitchModule extends Module{
 	}
 	
 	public void ApplyConfigWindowProperties() {
-		sigIRC.twitchmodule_X=(int)bounds.getX();
-		sigIRC.twitchmodule_Y=(int)bounds.getY();
+		sigIRC.twitchmodule_X=(int)position.getX();
+		sigIRC.twitchmodule_Y=(int)position.getY();
 		sigIRC.config.setInteger("TWITCH_module_X", sigIRC.twitchmodule_X);
 		sigIRC.config.setInteger("TWITCH_module_Y", sigIRC.twitchmodule_Y);
 	}
@@ -428,9 +428,9 @@ public class TwitchModule extends Module{
 
 	private void DrawStatisticsBar(Graphics g) {
 		g.setColor(new Color(25,25,25));
-		int xoffset = (int)bounds.getX()+4;
-		int yoffset = (int)(bounds.getY()+follower_img.getHeight()+sigIRC.twitchmodule_newfollowerImgLogoSize);
-		g.fillPolygon(new int[]{(int)bounds.getX(),(int)(bounds.getX()+bounds.getWidth()),(int)(bounds.getX()+bounds.getWidth()),(int)bounds.getX()}, 
+		int xoffset = (int)position.getX()+4;
+		int yoffset = (int)(position.getY()+follower_img.getHeight()+sigIRC.twitchmodule_newfollowerImgLogoSize);
+		g.fillPolygon(new int[]{(int)position.getX(),(int)(position.getX()+position.getWidth()),(int)(position.getX()+position.getWidth()),(int)position.getX()}, 
 				new int[]{yoffset-4,yoffset-4,yoffset+16,yoffset+16}, 
 				4);
 		if (currentlyPlaying!=null && currentlyPlaying.length()>0) {
@@ -476,25 +476,25 @@ public class TwitchModule extends Module{
 			//System.out.println(yAlteration);
 			//g.drawImage(follower_img, (int)bounds.getX()+xAlteration, (int)bounds.getY()+yAlteration, sigIRC.panel);
 			//g.drawImage(follower_img, (int)bounds.getX(), (int)bounds.getY(), , , sigIRC.panel)
-			g.drawImage(follower_img, (int)bounds.getX(), (int)bounds.getY()+canvasYOffset, (int)bounds.getX()+follower_img.getWidth()+canvasXOffset, (int)bounds.getY()+follower_img.getHeight(),
+			g.drawImage(follower_img, (int)position.getX(), (int)position.getY()+canvasYOffset, (int)position.getX()+follower_img.getWidth()+canvasXOffset, (int)position.getY()+follower_img.getHeight(),
 					-xAlteration, 0, follower_img.getWidth(), follower_img.getHeight()-yAlteration, sigIRC.panel);
 			Rectangle2D usernameTextsize = TextUtils.calculateStringBoundsFont(announcedFollowerUser.getDisplayName(), sigIRC.panel.programFont);
-			int textY = (int)bounds.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration;
-			int textX = (int)bounds.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration;
-			if (textY<bounds.getY()+bounds.getHeight() && textX+usernameTextsize.getWidth()>bounds.getX()) {
-				DrawUtils.drawCenteredText(g, sigIRC.panel.programFont, (int)bounds.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration, (int)bounds.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration, Color.BLACK, announcedFollowerUser.getDisplayName());	
+			int textY = (int)position.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration;
+			int textX = (int)position.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration;
+			if (textY<position.getY()+position.getHeight() && textX+usernameTextsize.getWidth()>position.getX()) {
+				DrawUtils.drawCenteredText(g, sigIRC.panel.programFont, (int)position.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration, (int)position.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration, Color.BLACK, announcedFollowerUser.getDisplayName());	
 			}
 			if (announcedFollowerUser.getBio()!=null && !announcedFollowerUser.getBio().equalsIgnoreCase("null")) {
 				if (followerUserLogo!=null) {
 					final int image_size = sigIRC.twitchmodule_newfollowerImgLogoSize;
-					int img_startx = (int)(bounds.getX()+bounds.getWidth()-ticksPassed*3-(image_size+4));
-					int img_starty = (int)(bounds.getY()+follower_img.getHeight()+2-image_size/2);
+					int img_startx = (int)(position.getX()+position.getWidth()-ticksPassed*3-(image_size+4));
+					int img_starty = (int)(position.getY()+follower_img.getHeight()+2-image_size/2);
 					//g.setColor(Color.BLACK);
 					//g.drawRect(img_startx, img_starty, image_size, image_size);
 					g.drawImage(followerUserLogo, img_startx, img_starty, img_startx+image_size, img_starty+image_size, 0, 0, followerUserLogo.getWidth(), followerUserLogo.getHeight(), TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerImgBackgroundColor), sigIRC.panel);
 				}
 				if (announcedFollowerUser.getBio()!=null && announcedFollowerUser.getBio().length()>0) {
-					DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, bounds.getX()+bounds.getWidth()-ticksPassed*3, bounds.getY()+follower_img.getHeight()+2+8, 2, TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerTextColor), TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerShadowTextColor), announcedFollowerUser.getBio());
+					DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, position.getX()+position.getWidth()-ticksPassed*3, position.getY()+follower_img.getHeight()+2+8, 2, TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerTextColor), TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerShadowTextColor), announcedFollowerUser.getBio());
 				}
 			}
 		}

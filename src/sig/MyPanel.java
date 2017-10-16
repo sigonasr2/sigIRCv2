@@ -28,6 +28,9 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+import sig.modules.ChatLogModule;
+import sig.modules.ChatLog.ChatLogMessage;
+
 public class MyPanel extends JPanel implements MouseListener, ActionListener, MouseWheelListener, KeyListener, ComponentListener, WindowListener{
 	//List<String> messages = new ArrayList<String>();
 	final public static Font programFont = new Font(sigIRC.messageFont,0,24);
@@ -93,6 +96,11 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         for (Module m : sigIRC.modules) {
         	m.draw(g);
         }
+        for (int i=0;i<sigIRC.chatlogtwitchemoticons.size();i++) {
+        	if (sigIRC.chatlogtwitchemoticons.get(i).textRefIsVisible()) {
+        		sigIRC.chatlogtwitchemoticons.get(i).draw(g);
+        	}
+        }
         if (!sigIRC.overlayMode) {
         	sigIRC.button.draw(g);
         }
@@ -107,6 +115,7 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
     	TextRow row = TextRow.PickRandomTextRow(text.getUsername());
     	sigIRC.textobj.add(text);
     	row.updateRow(text);
+    	//ChatLogMessage.importMessages(message);
     }
 
 	@Override

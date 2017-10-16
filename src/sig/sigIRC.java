@@ -13,8 +13,11 @@ import com.mb3364.twitch.api.handlers.StreamResponseHandler;
 import com.mb3364.twitch.api.models.Channel;
 import com.mb3364.twitch.api.models.Stream;
 
+import sig.modules.ChatLogModule;
 import sig.modules.TouhouMotherModule;
 import sig.modules.TwitchModule;
+import sig.modules.ChatLog.ChatLogMessage;
+import sig.modules.ChatLog.ChatLogTwitchEmote;
 import sig.utils.FileUtils;
 import sig.utils.TextUtils;
 
@@ -52,6 +55,7 @@ public class sigIRC{
 	public static List<Emoticon> emoticons = new ArrayList<Emoticon>();
 	public static List<Emoticon> emoticon_queue = new ArrayList<Emoticon>();
 	public static List<TwitchEmote> twitchemoticons = new ArrayList<TwitchEmote>();
+	public static List<ChatLogTwitchEmote> chatlogtwitchemoticons = new ArrayList<ChatLogTwitchEmote>();
 	public static List<CustomSound> customsounds = new ArrayList<CustomSound>();
 	public static List<Module> modules = new ArrayList<Module>();
 	static UpdateEvent updater = new UpdateEvent();
@@ -84,8 +88,9 @@ public class sigIRC{
 	static String messageFont="Gill Sans Ultra Bold Condensed";
 	static String usernameFont="GillSansMTStd-Book";
 	static String touhoumotherConsoleFont="Agency FB Bold";
-	static boolean touhoumothermodule_enabled=true;
+	static boolean touhoumothermodule_enabled=false;
 	static boolean twitchmodule_enabled=true;
+	static boolean chatlogmodule_enabled=true;
 	static boolean downloadsComplete=false;
 	static boolean hardwareAcceleration=true;
 	static boolean playedoAuthSoundOnce=false;
@@ -101,6 +106,11 @@ public class sigIRC{
 	public static int touhoumothermodule_height=312;
 	public static int touhoumothermodule_X=0;
 	public static int touhoumothermodule_Y=312;
+	public static int chatlogmodule_width=320;
+	public static int chatlogmodule_height=312;
+	public static int chatlogmodule_X=0;
+	public static int chatlogmodule_Y=312;
+	public static int chatlogMessageHistory=50;
 	public static String twitchmodule_newfollowerImgBackgroundColor="90,90,90";
 	public static String twitchmodule_newfollowerShadowTextColor="26,90,150";
 	public static String twitchmodule_newfollowerTextColor="255,255,255";
@@ -136,8 +146,9 @@ public class sigIRC{
 		messageFont = config.getProperty("messageFont","Gill Sans Ultra Bold Condensed");
 		usernameFont = config.getProperty("usernameFont","Gill Sans");
 		touhoumotherConsoleFont = config.getProperty("touhoumotherConsoleFont","Agency FB Bold");
-		touhoumothermodule_enabled = config.getBoolean("Module_touhoumother_Enabled",true);
+		touhoumothermodule_enabled = config.getBoolean("Module_touhoumother_Enabled",false);
 		twitchmodule_enabled = config.getBoolean("Module_twitch_Enabled",true);
+		chatlogmodule_enabled = config.getBoolean("Module_chatlog_Enabled",true);
 		twitchmodule_width = config.getInteger("TWITCH_module_width",500);
 		twitchmodule_height = config.getInteger("TWITCH_module_height",200);
 		twitchmodule_follower_img = config.getProperty("TWITCH_module_follower_img","sigIRC/glaceon_follower.png");
@@ -155,6 +166,11 @@ public class sigIRC{
 		touhoumothermodule_Y = config.getInteger("TOUHOUMOTHER_module_Y",312);
 		touhoumothermodule_width = config.getInteger("TOUHOUMOTHER_module_width",320);
 		touhoumothermodule_height = config.getInteger("TOUHOUMOTHER_module_height",312);
+		chatlogmodule_X = config.getInteger("CHATLOG_module_X",0);
+		chatlogmodule_Y = config.getInteger("CHATLOG_module_Y",312);
+		chatlogmodule_width = config.getInteger("CHATLOG_module_width",320);
+		chatlogmodule_height = config.getInteger("CHATLOG_module_height",312);
+		chatlogMessageHistory = config.getInteger("CHATLOG_module_MessageHistory",50);
 		hardwareAcceleration = config.getBoolean("hardware_acceleration",true);
 		lastSubEmoteUpdate = config.getInteger("lastSubEmote_APIUpdate",Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
 		manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
@@ -228,6 +244,7 @@ public class sigIRC{
 	private static void InitializeModules() {
 		try {
 			Module.IMG_DRAGBAR = ImageIO.read(new File(sigIRC.BASEDIR+"drag_bar.png"));
+			Module.MSG_SEPARATOR = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/message_separator.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -241,6 +258,12 @@ public class sigIRC{
 			modules.add(new TwitchModule(
 					new Rectangle(twitchmodule_X,twitchmodule_Y,twitchmodule_width,twitchmodule_height),
 					"Twitch"
+					));
+		}
+		if (chatlogmodule_enabled) {
+			modules.add(new ChatLogModule(
+					new Rectangle(chatlogmodule_X,chatlogmodule_Y,chatlogmodule_width,chatlogmodule_height),
+					"Chat Log"
 					));
 		}
 	}
@@ -528,5 +551,9 @@ public class sigIRC{
 	
 	public static void createEmoticon(Emoticon emote, ScrollingText textref, int x, int y) {
 		twitchemoticons.add(new TwitchEmote(emote,textref,x,y));
+	}
+	
+	public static void createEmoticon(Emoticon emote, ChatLogMessage textref, int x, int y) {
+		chatlogtwitchemoticons.add(new ChatLogTwitchEmote(emote,textref,x,y));
 	}
 }

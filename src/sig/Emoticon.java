@@ -1,4 +1,5 @@
 package sig;
+import java.awt.Font;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -12,6 +13,7 @@ public class Emoticon {
 	private BufferedImage image=null;
 	private String emotename=null;
 	private String spacefiller="";
+	private String spacefillersmall="";
 	
 	public Emoticon(String emoteName, URL onlinePath) {
 		try {
@@ -29,7 +31,8 @@ public class Emoticon {
 				System.out.println("Saved to "+file.getName()+".");
 				emotename = emoteName;
 			}
-			spacefiller = GetSpaceLength();
+			spacefiller = GetSpaceLength(sigIRC.panel.programFont);
+			spacefillersmall = GetSpaceLength(sigIRC.panel.userFont);
 			//System.out.println("Space size for "+emotename+" is "+spacefiller.length());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -46,23 +49,24 @@ public class Emoticon {
 				image = ImageIO.read(file);
 				emotename = emoteName;
 			}
-			spacefiller = GetSpaceLength();
+			spacefiller = GetSpaceLength(sigIRC.panel.programFont);
+			spacefillersmall = GetSpaceLength(sigIRC.panel.userFont);
 			//System.out.println("Space size for "+emotename+" is "+spacefiller.length());
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 	}
 
-	private String GetSpaceLength() {
+	private String GetSpaceLength(Font f) {
 		StringBuilder spaces = new StringBuilder();
-		while (SpaceFilledIsSmallerThanImageWidth(spaces)) {
+		while (SpaceFilledIsSmallerThanImageWidth(spaces,f)) {
 			spaces.append(" ");
 		}
 		return spaces.toString();
 	}
 
-	public boolean SpaceFilledIsSmallerThanImageWidth(StringBuilder spaces) {
-		return TextUtils.calculateStringBoundsFont(spaces.toString(), sigIRC.panel.programFont).getWidth()<image.getWidth();
+	public boolean SpaceFilledIsSmallerThanImageWidth(StringBuilder spaces, Font font) {
+		return TextUtils.calculateStringBoundsFont(spaces.toString(), font).getWidth()<image.getWidth();
 	}
 
 	public String getEmoteName() {
@@ -75,5 +79,9 @@ public class Emoticon {
 
 	public String getSpaceFiller() {
 		return spacefiller;
+	}
+
+	public String getSmallSpaceFiller() {
+		return spacefillersmall;
 	}
 }
