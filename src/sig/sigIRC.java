@@ -231,6 +231,7 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/icon_uptime.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/icon_viewers_count.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/icon_views_count.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/message_separator"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("kill.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("memory"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();

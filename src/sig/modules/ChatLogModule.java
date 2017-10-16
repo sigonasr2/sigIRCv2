@@ -87,6 +87,13 @@ public class ChatLogModule extends Module{
 		}
 	}
 	
+	public void ApplyConfigWindowProperties() {
+		sigIRC.chatlogmodule_X=(int)position.getX();
+		sigIRC.chatlogmodule_Y=(int)position.getY();
+		sigIRC.config.setInteger("CHATLOG_module_X", sigIRC.chatlogmodule_X);
+		sigIRC.config.setInteger("CHATLOG_module_Y", sigIRC.chatlogmodule_Y);
+	}
+	
 	public void mouseWheel(MouseWheelEvent ev) {
 		if (mouseInBounds(ev.getX(),ev.getY())) {
 			int scrollMult = 8;
