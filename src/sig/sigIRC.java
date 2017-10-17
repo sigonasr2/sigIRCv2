@@ -257,7 +257,9 @@ public class sigIRC{
 		updatedir.mkdirs();
 		File programFile = new File(sigIRC.BASEDIR+"sigIRC/updates/sigIRCv2.jar");
 		try {
-			programFile.createNewFile();
+			if (programFile.exists()) {
+				programFile.delete();
+			}
 			org.apache.commons.io.FileUtils.copyURLToFile(new URL(sigIRC.PROGRAM_EXECUTABLE_URL),programFile);
 		} catch (IOException e) {
 			e.printStackTrace();
