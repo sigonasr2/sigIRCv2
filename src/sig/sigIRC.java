@@ -249,7 +249,7 @@ public class sigIRC{
 		manager = new FileManager("drag_bar.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("WSplits"); manager.verifyAndFetchFileFromServer();
 		DownloadProgramUpdate();
-		System.out.println("Downloaded Dependencies.");
+		System.out.println("Downloaded Dependencies. ");
 	}
 
 	private static void DownloadProgramUpdate() {
