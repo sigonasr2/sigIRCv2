@@ -14,6 +14,7 @@ import java.net.URL;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONException;
@@ -55,18 +56,135 @@ public class FileUtils {
 	    }
 	    return sb.toString();
 	  }
+	
+	  private static String readFilter(Reader rd, HashMap<Long,String> channel_ids) throws IOException {
+	    StringBuilder sb = new StringBuilder();
+	    boolean allowed=false;
+	    boolean quotation_mark=false;
+	    boolean endquotation_mark=false;
+	    boolean foundChannel=false;
+	    boolean nextBrace=false;
+	    boolean outputStuff=false;
+	    String numb = "";
+	    int braceCount=0;
+	    int channelCount=0;
+	    int vals=0;
+	    int cp;
+	    while ((cp = rd.read()) != -1) {
+	    	if (braceCount==0) {
+	    		allowed=true;
+	    	} else 
+	    	if (braceCount==1 && !quotation_mark){
+	    		quotation_mark=true;
+	    		numb="";
+	    		allowed=false;
+	    	} else
+	    	if (!endquotation_mark) {
+	    	  if ((char)cp >= '0' &&
+	    			  (char)cp <= '9') {
+	    		  allowed=false;
+	    		  numb+=(char)cp;
+	    	  } else {
+	    		  allowed=false;
+	    		  endquotation_mark=true;
+	    		  try {
+		    		  if (channel_ids.containsKey(Long.parseLong(numb))) {
+		    			  if (channelCount>=1) {
+		    				  sb.append(",");
+		    			  }
+		    			  sb.append("\""+numb+"\"");
+		    			  foundChannel=true;
+		    			  System.out.println("Found channel "+numb);
+		    			  outputStuff=true;
+		    		  }
+	    		  } catch (NumberFormatException e) {
+	    			  
+	    		  }
+	    	  }
+	    	} else 
+	    	if (!nextBrace && foundChannel) {
+	    		allowed=true;
+	    		if ((char)cp == '{') {
+	    			nextBrace=true;
+	    		}
+	    	} else
+	    	if (foundChannel) {
+	    		allowed=true;
+	    		if (braceCount==1) {
+	    			allowed=false;
+	    			channelCount++;
+	    			quotation_mark=false;
+	    			endquotation_mark=false;
+	    			foundChannel=false;
+	    			nextBrace=false;
+	    		}
+	    	} else {
+	    		allowed=false;
+	    		if (braceCount==1) {
+	    			allowed=false;
+	    			quotation_mark=false;
+	    			endquotation_mark=false;
+	    			foundChannel=false;
+	    			nextBrace=false;
+	    		}
+	    	}
+	    	
+	    	/*if (outputStuff && vals++<1000) {
+	    		System.out.print((char)cp);
+	    	}*/
+	    	  if ((char)cp == '{') {
+	    		  braceCount++;
+	    		  //System.out.println("Brace count is "+braceCount+".");
+	    	  } else
+    		  if ((char)cp == '}') {
+	    		  braceCount--;
+	    		  //System.out.println("Brace count is "+braceCount+".");
+	    	  }
+	    	
+		      if (allowed) {
+		    	  sb.append((char) cp);
+		      }
+	     }
+	    sb.append("}");
+	   // System.out.println("=============");
+	    System.out.println(sb.toString());
+	    return sb.toString();
+	  }
 
-	  public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
-	    InputStream is = new URL(url).openStream();
+	  public static JSONObject readJsonFromUrlWithFilter(String url, HashMap<Long,String> filter) throws IOException, JSONException {
+	    return readJsonFromUrlWithFilter(url,filter,null,false);
+	  }
+
+	  public static JSONObject readJsonFromFileWithFilter(String file, HashMap<Long,String> filter) throws IOException, JSONException {
+	    InputStream is = new FileInputStream(new File(file));
 	    try {
 	      BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
-	      String jsonText = readAll(rd);
+	      String jsonText = readFilter(rd,filter);
 	      JSONObject json = new JSONObject(jsonText);
 	      jsonText=null;
 	      return json;
 	    } finally {
 	      is.close();
 	    }
+	  }
+
+	  public static JSONObject readJsonFromUrlWithFilter(String url, HashMap<Long,String> filter, String file, boolean writeToFile) throws IOException, JSONException {
+	    InputStream is = new URL(url).openStream();
+	    try {
+	      BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+	      String jsonText = readFilter(rd,filter);
+	      if (writeToFile) {
+	    	  writetoFile(new String[]{jsonText},file);
+	      }
+	      JSONObject json = new JSONObject(jsonText);
+	      return json;
+	    } finally {
+	      is.close();
+	    }
+	  }
+
+	  public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
+	    return readJsonFromUrl(url,null,false);
 	  }
 
 	  public static JSONObject readJsonFromFile(String file) throws IOException, JSONException {

@@ -42,6 +42,7 @@ import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
+import java.util.HashMap;
 import java.util.List;
 
 import javax.imageio.ImageIO;
@@ -120,6 +121,11 @@ public class sigIRC{
 	public final static String SUBEMOTELISTFILE = "sigIRC/subemotes.json";
 	public static long channel_id = -1;
 	public static int lastSubEmoteUpdate = -1;
+	
+	public static int subchannelCount = 0;
+	public static HashMap<Long,String> subchannelIds = new HashMap<Long,String>();
+	
+	public static boolean downloadedSubEmotes=false;
 	
 	static int lastWindowX = 0;
 	static int lastWindowY = 0;
@@ -310,9 +316,8 @@ public class sigIRC{
 		}
 	}
 
-	private static void downloadSubEmotes(JSONObject emotes, String channelName) {
+	private static void getSubChannels(String channelName) {
 		manager.channels().get(channelName, new ChannelResponseHandler() {
-
 			@Override
 			public void onFailure(Throwable arg0) {
 			}
@@ -323,26 +328,32 @@ public class sigIRC{
 
 			@Override
 			public void onSuccess(Channel arg0) {
-				if (arg0!=null) {
-					channel_id=arg0.getId();
-					JSONObject channel = emotes.getJSONObject(Long.toString(channel_id));
-					JSONArray arr = channel.getJSONArray("emotes");
-					//System.out.println("Channel: "+channel);
-					for (int i=0;i<arr.length();i++) {
-						JSONObject emote = arr.getJSONObject(i);
-						int id = emote.getInt("id");
-						String name = emote.getString("code");
-						//System.out.println("Emote "+(i+1)+" has id "+id+" and code "+name+".");
-						try {
-							emoticon_queue.add(new SubEmoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0"), channelName));
-						} catch (MalformedURLException e) {
-							e.printStackTrace();
-						}
-					}
-				}
+				subchannelIds.put(arg0.getId(),channelName);
+				//System.out.println("Got ID "+arg0.getId()+" for channel "+channelName);
 			}
 
 		});
+		//TwitchModule.streamOnline=true;
+		//return true;
+	}
+
+	public static void downloadSubEmotes(JSONObject data) {
+		for (Long l : subchannelIds.keySet()) {
+			JSONObject channel = data.getJSONObject(Long.toString(l));
+			JSONArray arr = channel.getJSONArray("emotes");
+			//System.out.println("Channel: "+channel);
+			for (int i=0;i<arr.length();i++) {
+				JSONObject emote = arr.getJSONObject(i);
+				int id = emote.getInt("id");
+				String name = emote.getString("code");
+				//System.out.println("Emote "+(i+1)+" has id "+id+" and code "+name+".");
+				try {
+					emoticon_queue.add(new SubEmoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0"), subchannelIds.get(l)));
+				} catch (MalformedURLException e) {
+					e.printStackTrace();
+				}
+			}
+		}
 		//TwitchModule.streamOnline=true;
 		//return true;
 	}
@@ -358,53 +369,17 @@ public class sigIRC{
 				emoticons.add(new Emoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0")));
 				System.out.println("Emote "+id+" with name "+name);
 			}
-			Thread downloadThread = new Thread(){
-				public void run() {
-					JSONObject subemotes = null;
-					try {
-						File filer = new File(SUBEMOTELISTFILE);
-						if (!filer.exists()) {
-							System.out.println("Local copy of Sub emotes not found. Downloading in background...");
-							subemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/subscriber.json",SUBEMOTELISTFILE,true);
-						} else {
-							if (lastSubEmoteUpdate == Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
-								System.out.println("Using local copy of Sub emote JSON.");
-								subemotes = FileUtils.readJsonFromFile(SUBEMOTELISTFILE);
-							} else {
-								System.out.println("Local copy of Sub emote JSON out-of-date! Re-downloading in background...");
-								subemotes = FileUtils.readJsonFromFile(SUBEMOTELISTFILE);
-								new Thread(){
-									public void run() {
-										try {
-											FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/subscriber.json",SUBEMOTELISTFILE,true);
-										} catch (JSONException e) {
-											e.printStackTrace();
-										} catch (IOException e) {
-											e.printStackTrace();
-										}
-									}
-								}.start();
-							}
-						}
-					} catch (JSONException | IOException e) {
-						e.printStackTrace();
-					}
-					lastSubEmoteUpdate = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
-					config.setInteger("lastSubEmote_APIUpdate", lastSubEmoteUpdate);
 					//System.out.println("Subscriber object: "+subemotes);
-					String[] sub_emotes = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/Emotes/subscribers.txt");
-					//System.out.println("Sub emotes read.");
-					for (String s : sub_emotes) {
+					String[] channel_names = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/Emotes/subscribers.txt");
+					subchannelCount = channel_names.length;
+					//System.out.println("Expecting "+subchannelCount+" Channel IDs.");
+					for (String s : channel_names) {
 						if (s.length()>0) {
 							s=s.trim();
-							System.out.println("Got sub emote info for "+s);
-							downloadSubEmotes(subemotes,s);
+							//System.out.println("Got sub emote info for "+s);
+							getSubChannels(s);
 						}
 					}
-					subemotes=null;
-				}
-			};
-			downloadThread.start();
 			/*JSONObject emotelist = twitchemotes.getJSONObject("emotes");
 			JSONObject templatelist = twitchemotes.getJSONObject("template");
 			String templateurl = templatelist.getString("small");

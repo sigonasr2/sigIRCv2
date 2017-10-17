@@ -2,6 +2,14 @@ package sig;
 import java.awt.Component;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
+import java.io.File;
+import java.io.IOException;
+import java.util.Calendar;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import sig.utils.FileUtils;
 
 public class UpdateEvent implements ActionListener{
 	final static int MSGTIMER = 300;
@@ -19,7 +27,57 @@ public class UpdateEvent implements ActionListener{
 		    UpdateScrollingText();
 		    UpdateAuthenticationCountdownMessage();
 		    UpdateWindowPosition();
+		    UpdateSubEmoticons();
 		}
+	}
+
+	private void UpdateSubEmoticons() {
+		if (!sigIRC.downloadedSubEmotes &&
+				sigIRC.subchannelCount==sigIRC.subchannelIds.size()) {
+			Thread downloadThread = new Thread(){
+				public void run() {
+						JSONObject data = GetSubEmoteJson();
+						sigIRC.downloadSubEmotes(data);
+					}
+				};
+			downloadThread.start();
+			sigIRC.downloadedSubEmotes=true;
+		}
+	}
+
+	private JSONObject GetSubEmoteJson() {
+		JSONObject subemotes = null;
+		try {
+			File filer = new File(sigIRC.SUBEMOTELISTFILE);
+			if (!filer.exists()) {
+				System.out.println("Local copy of Sub emotes not found. Downloading in background...");
+				subemotes = FileUtils.readJsonFromUrlWithFilter("https://twitchemotes.com/api_cache/v3/subscriber.json",sigIRC.subchannelIds,sigIRC.SUBEMOTELISTFILE,true);
+			} else {
+				if (sigIRC.lastSubEmoteUpdate == Calendar.getInstance().get(Calendar.DAY_OF_YEAR)) {
+					System.out.println("Using local copy of Sub emote JSON.");
+					subemotes = FileUtils.readJsonFromFileWithFilter(sigIRC.SUBEMOTELISTFILE,sigIRC.subchannelIds);
+				} else {
+					System.out.println("Local copy of Sub emote JSON out-of-date! Re-downloading in background...");
+					subemotes = FileUtils.readJsonFromFileWithFilter(sigIRC.SUBEMOTELISTFILE,sigIRC.subchannelIds);
+					new Thread(){
+						public void run() {
+							try {
+								FileUtils.readJsonFromUrlWithFilter("https://twitchemotes.com/api_cache/v3/subscriber.json",sigIRC.subchannelIds,sigIRC.SUBEMOTELISTFILE,true);
+							} catch (JSONException e) {
+								e.printStackTrace();
+							} catch (IOException e) {
+								e.printStackTrace();
+							}
+						}
+					}.start();
+				}
+			}
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		sigIRC.lastSubEmoteUpdate = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
+		sigIRC.config.setInteger("lastSubEmote_APIUpdate", sigIRC.lastSubEmoteUpdate);
+		return subemotes;
 	}
 
 	private void UpdateWindowPosition() {
