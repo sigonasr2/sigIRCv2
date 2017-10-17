@@ -36,6 +36,7 @@ import java.io.File;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.OutputStreamWriter;
+import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Socket;
 import java.net.URL;
@@ -64,7 +65,9 @@ public class sigIRC{
 	final public static int BASESCROLLSPD = 4;
 	final public static int ROWSEPARATION = 64;
 	final public static String BASEDIR = "./"; 
+	final public static String PROGRAM_UPDATE_FILE = sigIRC.BASEDIR+"sigIRC/updates/sigIRCv2.jar";
 	final public static String WINDOWTITLE = "sigIRCv2"; 
+	public final static String PROGRAM_EXECUTABLE_URL = "https://github.com/sigonasr2/sigIRCv2/raw/master/sigIRCv2.jar";
 	public static ConfigFile config;
 	static String server;
 	static String nickname;
@@ -245,7 +248,20 @@ public class sigIRC{
 		manager = new FileManager("backcolor.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("drag_bar.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("WSplits"); manager.verifyAndFetchFileFromServer();
+		DownloadProgramUpdate();
 		System.out.println("Downloaded Dependencies.");
+	}
+
+	private static void DownloadProgramUpdate() {
+		File updatedir = new File(sigIRC.BASEDIR+"sigIRC/updates/");
+		updatedir.mkdirs();
+		File programFile = new File(sigIRC.BASEDIR+"sigIRC/updates/sigIRCv2.jar");
+		try {
+			programFile.createNewFile();
+			org.apache.commons.io.FileUtils.copyURLToFile(new URL(sigIRC.PROGRAM_EXECUTABLE_URL),programFile);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static void InitializeModules() {

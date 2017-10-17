@@ -22,6 +22,8 @@ import java.awt.event.MouseWheelEvent;
 import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.io.File;
+import java.io.IOException;
 
 import javax.swing.JColorChooser;
 import javax.swing.JMenuItem;
@@ -30,6 +32,7 @@ import javax.swing.JPopupMenu;
 
 import sig.modules.ChatLogModule;
 import sig.modules.ChatLog.ChatLogMessage;
+import sig.utils.FileUtils;
 
 public class MyPanel extends JPanel implements MouseListener, ActionListener, MouseWheelListener, KeyListener, ComponentListener, WindowListener{
 	//List<String> messages = new ArrayList<String>();
@@ -223,6 +226,11 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 			m.windowClosed(ev);
 		}
 		sigIRC.config.saveProperties();
+		try {
+			FileUtils.copyFile(new File(sigIRC.PROGRAM_UPDATE_FILE), new File(sigIRC.BASEDIR+"sigIRCv2.jar"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
