@@ -17,6 +17,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -186,6 +187,10 @@ public class FileUtils {
 	  public static JSONObject readJsonFromUrl(String url) throws IOException, JSONException {
 	    return readJsonFromUrl(url,null,false);
 	  }
+	  
+	  public static JSONArray readJsonArrayFromUrl(String url) throws IOException, JSONException {
+		    return readJsonArrayFromUrl(url,null,false);
+		  }
 
 	  public static JSONObject readJsonFromFile(String file) throws IOException, JSONException {
 	    InputStream is = new FileInputStream(new File(file));
@@ -209,6 +214,21 @@ public class FileUtils {
 	    	  writetoFile(new String[]{jsonText},file);
 	      }
 	      JSONObject json = new JSONObject(jsonText);
+	      return json;
+	    } finally {
+	      is.close();
+	    }
+	  }
+
+	  public static JSONArray readJsonArrayFromUrl(String url, String file, boolean writeToFile) throws IOException, JSONException {
+	    InputStream is = new URL(url).openStream();
+	    try {
+	      BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
+	      String jsonText = readAll(rd);
+	      if (writeToFile) {
+	    	  writetoFile(new String[]{jsonText},file);
+	      }
+	      JSONArray json = new JSONArray(jsonText);
 	      return json;
 	    } finally {
 	      is.close();

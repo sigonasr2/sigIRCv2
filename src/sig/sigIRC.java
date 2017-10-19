@@ -19,6 +19,7 @@ import sig.modules.TwitchModule;
 import sig.modules.ChatLog.ChatLogMessage;
 import sig.modules.ChatLog.ChatLogTwitchEmote;
 import sig.utils.FileUtils;
+import sig.utils.GithubUtils;
 import sig.utils.TextUtils;
 
 import java.awt.Color;
@@ -124,11 +125,13 @@ public class sigIRC{
 	public final static String SUBEMOTELISTFILE = "sigIRC/subemotes.json";
 	public static long channel_id = -1;
 	public static int lastSubEmoteUpdate = -1;
+	public static boolean autoUpdateProgram = true;
 	
 	public static int subchannelCount = 0;
 	public static HashMap<Long,String> subchannelIds = new HashMap<Long,String>();
 	
 	public static boolean downloadedSubEmotes=false;
+	public static boolean subEmotesCompleted=false;
 	
 	static int lastWindowX = 0;
 	static int lastWindowY = 0;
@@ -181,6 +184,7 @@ public class sigIRC{
 		chatlogmodule_height = config.getInteger("CHATLOG_module_height",312);
 		chatlogMessageHistory = config.getInteger("CHATLOG_module_MessageHistory",50);
 		hardwareAcceleration = config.getBoolean("hardware_acceleration",true);
+		autoUpdateProgram = config.getBoolean("Automatically_Update_Program", true);
 		lastSubEmoteUpdate = config.getInteger("lastSubEmote_APIUpdate",Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
 		manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
 		//System.out.println(manager.auth().hasAccessToken());
@@ -229,8 +233,11 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/logs/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sounds/",true); manager.verifyAndFetchFileFromServer();
 		//manager = new FileManager("sigIRC/sounds/Glaceon_cry.wav"); manager.verifyAndFetchFileFromServer();
-		manager = new FileManager("sigIRC/follower_sounds/Glaceon_cry.wav"); manager.verifyAndFetchFileFromServer();
-		manager = new FileManager("sigIRC/follower_sounds/README.txt"); manager.verifyAndFetchFileFromServer();
+		File follower_sounds_folder = new File(BASEDIR+"sigIRC/follower_sounds");
+		if (!follower_sounds_folder.exists()) {
+			manager = new FileManager("sigIRC/follower_sounds/Glaceon_cry.wav"); manager.verifyAndFetchFileFromServer();
+			manager = new FileManager("sigIRC/follower_sounds/README.txt"); manager.verifyAndFetchFileFromServer();
+		}
 		manager = new FileManager("sigIRC/record"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/glaceon_follower.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sigIRCicon.png"); manager.verifyAndFetchFileFromServer();
@@ -253,16 +260,24 @@ public class sigIRC{
 	}
 
 	private static void DownloadProgramUpdate() {
-		File updatedir = new File(sigIRC.BASEDIR+"sigIRC/updates/");
-		updatedir.mkdirs();
-		File programFile = new File(sigIRC.BASEDIR+"sigIRC/updates/sigIRCv2.jar");
-		try {
-			if (programFile.exists()) {
-				programFile.delete();
+		//System.out.println("Last commit size was "+GithubUtils.getSizeOfFileFromLatestGithubCommit("sigIRCv2.jar")+"B");
+		if (autoUpdateProgram) {
+			File updatedir = new File(sigIRC.BASEDIR+"sigIRC/updates/");
+			updatedir.mkdirs();
+			File programFile = new File(sigIRC.BASEDIR+"sigIRC/updates/sigIRCv2.jar");
+			System.out.println("File size is "+programFile.length());
+			long fileSize = GithubUtils.getSizeOfFileFromLatestGithubCommit("sigIRCv2.jar");
+			System.out.println("File size on Github is "+fileSize);
+			if ((programFile.exists() && fileSize!=programFile.length()) || !programFile.exists()) {
+				try {
+					if (programFile.exists()) {
+						programFile.delete();
+					}
+					org.apache.commons.io.FileUtils.copyURLToFile(new URL(sigIRC.PROGRAM_EXECUTABLE_URL),programFile);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
 			}
-			org.apache.commons.io.FileUtils.copyURLToFile(new URL(sigIRC.PROGRAM_EXECUTABLE_URL),programFile);
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
 	}
 

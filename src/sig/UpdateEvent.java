@@ -15,7 +15,7 @@ public class UpdateEvent implements ActionListener{
 	final static int MSGTIMER = 300;
 	final static int AUTOSAVETIMER = 600;
 	int last_authentication_msg = MSGTIMER;
-	int last_autosave = AUTOSAVETIMER;
+	int last_autosave = AUTOSAVETIMER;  
 	long lasttime = System.currentTimeMillis();
 	int avgfps = 30;
 	int counter = 0;
@@ -38,6 +38,7 @@ public class UpdateEvent implements ActionListener{
 				public void run() {
 						JSONObject data = GetSubEmoteJson();
 						sigIRC.downloadSubEmotes(data);
+						sigIRC.subEmotesCompleted=true;
 					}
 				};
 			downloadThread.start();

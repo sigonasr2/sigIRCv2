@@ -50,9 +50,9 @@ public class ChatLogModule extends Module{
 	
 	public void run() {
 		super.run();
-		if (delay>0) {
+		if (delay>0 && sigIRC.subEmotesCompleted) {
 			delay--;
-		} else
+		} else 
 		if (!initialized)
 		{
 			Initialize();
