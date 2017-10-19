@@ -18,6 +18,7 @@ import javax.swing.SwingUtilities;
 import sig.Module;
 import sig.sigIRC;
 import sig.modules.ChatLog.ChatLogMessage;
+import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
 
 public class ChatLogModule extends Module{
@@ -27,11 +28,13 @@ public class ChatLogModule extends Module{
 	boolean initialized=false;
 	public static ChatLogModule chatlogmodule;
 	public int scrolllog_yoffset = 0;
+	public Color backgroundColor;
 
 	public ChatLogModule(Rectangle2D bounds, String moduleName) {
 		super(bounds, moduleName);
 		//Initialize();
 		chatlogmodule = this;
+		backgroundColor = DrawUtils.convertStringToColor(sigIRC.chatlogmodule_backgroundColor);
 	}
 
 	private void Initialize() {
@@ -45,7 +48,7 @@ public class ChatLogModule extends Module{
 				logContents = Arrays.copyOfRange(logContents, logContents.length-messageHistoryCount-1, logContents.length);
 			}
 			ChatLogMessage.importMessages(logContents);
-		}
+		} 
 	}
 	
 	public void run() {
@@ -72,7 +75,7 @@ public class ChatLogModule extends Module{
 	
 	public void draw(Graphics g) {
 		super.draw(g);
-		g.setColor(new Color(195,195,195,255));
+		g.setColor(backgroundColor);
 		g.fill3DRect((int)position.getX(), (int)position.getY(), (int)position.getWidth(), (int)position.getHeight(), true);
 		g.setColor(Color.BLACK);
 		for (int i=0; i<messageHistory.size();i++) {

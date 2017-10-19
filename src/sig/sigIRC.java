@@ -119,6 +119,7 @@ public class sigIRC{
 	public static String twitchmodule_newfollowerImgBackgroundColor="90,90,90";
 	public static String twitchmodule_newfollowerShadowTextColor="26,90,150";
 	public static String twitchmodule_newfollowerTextColor="255,255,255";
+	public static String chatlogmodule_backgroundColor="195,195,195,255";
 	public static int twitchmodule_newfollowerImgLogoSize=32;
 	public static boolean testMode=false;
 	public final static String TWITCHEMOTEURL = "https://static-cdn.jtvnw.net/emoticons/v1/";
@@ -182,6 +183,7 @@ public class sigIRC{
 		chatlogmodule_Y = config.getInteger("CHATLOG_module_Y",312);
 		chatlogmodule_width = config.getInteger("CHATLOG_module_width",320);
 		chatlogmodule_height = config.getInteger("CHATLOG_module_height",312);
+		chatlogmodule_backgroundColor = config.getProperty("CHATLOG_module_BackgroundColor", "195,195,195,255");
 		chatlogMessageHistory = config.getInteger("CHATLOG_module_MessageHistory",50);
 		hardwareAcceleration = config.getBoolean("hardware_acceleration",true);
 		autoUpdateProgram = config.getBoolean("Automatically_Update_Program", true);
@@ -229,7 +231,7 @@ public class sigIRC{
 	public static void DownloadAllRequiredDependencies() {
 		FileManager manager = new FileManager("sigIRC/oauthToken.txt"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/Emotes/",true); manager.verifyAndFetchFileFromServer();
-		manager = new FileManager("sigIRC/Emotes/subscribers.txt"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/subscribers.txt"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/logs/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sounds/",true); manager.verifyAndFetchFileFromServer();
 		//manager = new FileManager("sigIRC/sounds/Glaceon_cry.wav"); manager.verifyAndFetchFileFromServer();
@@ -270,6 +272,7 @@ public class sigIRC{
 			long fileSize = GithubUtils.getSizeOfFileFromLatestGithubCommit("sigIRCv2.jar");
 			System.out.println("File size on Github is "+fileSize);
 			if (fileSize!=programFile.length()) {
+				System.out.println("File size on Github varies from currently running program... Downloading new program.");
 				try {
 					if (programFile.exists()) {
 						programFile.delete();
@@ -404,7 +407,7 @@ public class sigIRC{
 				System.out.println("Emote "+id+" with name "+name);
 			}
 					//System.out.println("Subscriber object: "+subemotes);
-					String[] channel_names = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/Emotes/subscribers.txt");
+					String[] channel_names = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/subscribers.txt");
 					subchannelCount = channel_names.length;
 					//System.out.println("Expecting "+subchannelCount+" Channel IDs.");
 					for (String s : channel_names) {

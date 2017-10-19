@@ -81,6 +81,9 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         	lastMouseY = -1;
         }*/
 		//
+        for (Module m : sigIRC.modules) {
+        	m.draw(g);
+        }
         for (int i=0;i<sigIRC.textobj.size();i++) {
         	if (sigIRC.textobj.get(i).isActive()) {
         		if (sigIRC.overlayMode) {
@@ -95,9 +98,6 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         			sigIRC.textobj.get(i).draw(g);
         		}
         	}
-        }
-        for (Module m : sigIRC.modules) {
-        	m.draw(g);
         }
         for (int i=0;i<sigIRC.chatlogtwitchemoticons.size();i++) {
         	if (sigIRC.chatlogtwitchemoticons.get(i).textRefIsVisible()) {
@@ -226,10 +226,12 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 			m.windowClosed(ev);
 		}
 		sigIRC.config.saveProperties();
-		try {
-			FileUtils.copyFile(new File(sigIRC.PROGRAM_UPDATE_FILE), new File(sigIRC.BASEDIR+"sigIRCv2.jar"));
-		} catch (IOException e) {
-			e.printStackTrace();
+		if (sigIRC.autoUpdateProgram) {
+			try {
+				FileUtils.copyFile(new File(sigIRC.PROGRAM_UPDATE_FILE), new File(sigIRC.BASEDIR+"sigIRCv2.jar"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 		}
 	}
 

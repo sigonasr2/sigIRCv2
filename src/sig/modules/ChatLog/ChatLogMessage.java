@@ -43,17 +43,17 @@ public class ChatLogMessage {
 		}
 		this.position.setLocation(this.position.getX(), this.position.getY()-messageDisplaySize.getY()+ChatLogModule.chatlogmodule.scrolllog_yoffset);
 		//System.out.println(displayMessage);
-		DetectUsername(displayMessage);
+		this.username = DetectUsername(displayMessage);
 		if (this.username!=null) {
-			displayMessage.set(0,GetMessage(displayMessage.get(0)));
+			displayMessage.set(0,GetMessage(displayMessage.get(0)+" "));
 			usernameWidth = (int)TextUtils.calculateStringBoundsFont(this.username, sigIRC.panel.userFont).getWidth();
 		}
 		for (int i=0;i<displayMessage.size();i++) {
-			displayMessage.set(i, ReplaceMessageWithEmoticons(displayMessage.get(i)+" ",i*MESSAGE_SPACING));
+			displayMessage.set(i, ReplaceMessageWithEmoticons(displayMessage.get(i)+" ",(i==0)?usernameWidth:0,i*MESSAGE_SPACING));
 		}
 	}
 	
-	private String ReplaceMessageWithEmoticons(String basemsg, int ypos) {
+	private String ReplaceMessageWithEmoticons(String basemsg, int xpos, int ypos) {
 		int marker = basemsg.indexOf(" ");
 		while (marker<basemsg.length()) {
 			//Find a space.
@@ -64,7 +64,7 @@ public class ChatLogMessage {
 				sigIRC.emoticons.addAll(sigIRC.emoticon_queue);
 				sigIRC.emoticon_queue.clear();
 				for (Emoticon e : sigIRC.emoticons) {
-					//System.out.println("Checking for emoticon "+e.getEmoteName());
+					//System.out.println("Checking for emoticon "+e.getEmoteName()+" vs \""+word+"\"");
 					try {
 						if (e.getEmoteName().equals(word)) {
 							if (e instanceof SubEmoticon) {
@@ -76,7 +76,7 @@ public class ChatLogMessage {
 							}
 							//System.out.println("  Found one!");
 							basemsg = TextUtils.replaceFirst(basemsg, e.getEmoteName(), e.getSmallSpaceFiller());
-							GenerateEmoticon(marker+1, ypos, basemsg, e);
+							GenerateEmoticon(marker+1, xpos, ypos, basemsg, e);
 							space = basemsg.indexOf(" ", marker+1);
 							break;
 						}
@@ -94,11 +94,12 @@ public class ChatLogMessage {
 		return basemsg;
 	}
 
-	private void GenerateEmoticon(int textpos, int ypos, String basemsg, Emoticon e) {
+	private void GenerateEmoticon(int textpos, int xpos, int ypos, String basemsg, Emoticon e) {
 		String cutstring = basemsg.substring(0, textpos);
 		double width = TextUtils.calculateStringBoundsFont(cutstring, sigIRC.panel.userFont).getWidth();
 		//System.out.println("Width of '"+cutstring+"' is "+width);
-		sigIRC.createEmoticon(e, this, (int)(width), ypos+16);
+		//System.out.println("Offsetting emote by "+xpos+"+"+width);
+		sigIRC.createEmoticon(e, this, (int)(xpos+width), ypos+16);
 		//textMaxHeight = Math.max(textMaxHeight, e.getImage().getHeight());
 		//textMaxWidth = (int)(width + e.getImage().getWidth()+1);
 	}
@@ -107,16 +108,17 @@ public class ChatLogMessage {
 		String basemsg = " "+msg.substring(msg.indexOf(":")+2, msg.length())+" ";
 		//basemsg = ConvertMessageSymbols(basemsg);
 		//basemsg = ReplaceMessageWithEmoticons(basemsg);
-		return basemsg.replaceFirst(" ", "").substring(0,basemsg.length()-1);
+		return basemsg.substring(0,basemsg.length()-1);
 	}
 	
-	private void DetectUsername(List<String> messages) {
+	private String DetectUsername(List<String> messages) {
 		if (messages.size()>0) {
 			String username = GetUsername(messages.get(0));
 			if (username!=null) {
-				this.username = username;
+				return username;
 			}
 		}
+		return null;
 	}
 	
 	private Color GetUserNameColor(String username) {
@@ -221,10 +223,12 @@ public class ChatLogMessage {
 
 	public static void importMessages(String...logContents) {
 		for (String s : logContents) {
-			if (ChatLogModule.chatlogmodule.messageHistory.size()>=ChatLogModule.messageHistoryCount) {
-				ChatLogModule.chatlogmodule.messageHistory.remove(0).cleanup();
+			if (s!=null) {
+				if (ChatLogModule.chatlogmodule.messageHistory.size()>=ChatLogModule.messageHistoryCount) {
+					ChatLogModule.chatlogmodule.messageHistory.remove(0).cleanup();
+				}
+				ChatLogModule.chatlogmodule.messageHistory.add(new ChatLogMessage(s));
 			}
-			ChatLogModule.chatlogmodule.messageHistory.add(new ChatLogMessage(s));
 		}
 	}
 	

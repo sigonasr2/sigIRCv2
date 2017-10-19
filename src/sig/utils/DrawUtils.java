@@ -70,4 +70,24 @@ public class DrawUtils {
 		Rectangle2D textBounds = TextUtils.calculateStringBoundsFont(text, font);
 		g.drawString(as.getIterator(),(int)(x-textBounds.getWidth()/2),(int)(y+textBounds.getHeight()));
 	}
+	
+	public static Color convertStringToColor(String s) {
+		String[] split = s.split(",");
+		if (split.length==3) {
+			return new Color(
+					Math.min(Math.abs(Integer.parseInt(split[0])),255),
+					Math.min(Math.abs(Integer.parseInt(split[1])),255),
+					Math.min(Math.abs(Integer.parseInt(split[2])),255));
+		} else 
+		if (split.length==4) {
+			return new Color(
+					Math.min(Math.abs(Integer.parseInt(split[0])),255),
+					Math.min(Math.abs(Integer.parseInt(split[1])),255),
+					Math.min(Math.abs(Integer.parseInt(split[2])),255),
+					Math.min(Math.abs(Integer.parseInt(split[3])),255));
+		} else {
+			System.out.println("WARNING! Invalid Color string specified ("+s+").");
+			return null;
+		}
+	}
 }

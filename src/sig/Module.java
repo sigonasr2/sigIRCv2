@@ -53,7 +53,7 @@ public class Module {
 	}
 	
 	private void enableWindowDrag(int mouseX, int mouseY) {
-		if (!dragging && inDragBounds(mouseX,mouseY) && !DRAGGING) {
+		if (!sigIRC.overlayMode && !dragging && inDragBounds(mouseX,mouseY) && !DRAGGING) {
 			//Enable dragging.
 			dragOffset = new Point((int)position.getX() - mouseX,(int)position.getY()-mouseY);
 			dragging=DRAGGING=true;
@@ -87,13 +87,15 @@ public class Module {
 	}
 
 	private void modifyCursor() {
-		int cursortype = sigIRC.panel.getCursor().getType();
-		if (inDragZone &&
-				cursortype!=Cursor.MOVE_CURSOR) {
-			sigIRC.panel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-		} else 
-		if (!inDragZone && cursortype!=Cursor.DEFAULT_CURSOR) {
-			sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+		if (!sigIRC.overlayMode) {
+			int cursortype = sigIRC.panel.getCursor().getType();
+			if (inDragZone &&
+					cursortype!=Cursor.MOVE_CURSOR) {
+				sigIRC.panel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+			} else 
+			if (!inDragZone && cursortype!=Cursor.DEFAULT_CURSOR) {
+				sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+			}
 		}
 	}
 
@@ -135,13 +137,15 @@ public class Module {
 	}
 
 	private void drawModuleHeader(Graphics g) {
-		g.drawImage(Module.IMG_DRAGBAR, 
-			(int)position.getX()+2, 
-			(int)position.getY()-Module.IMG_DRAGBAR.getHeight(),
-			(int)position.getWidth()-4,
-			Module.IMG_DRAGBAR.getHeight(),
-			sigIRC.panel);
-		DrawUtils.drawTextFont(g, sigIRC.panel.smallFont, (int)position.getX(), (int)position.getY()-titleHeight/2+4, Color.BLACK, this.name);
+		if (!sigIRC.overlayMode) {
+			g.drawImage(Module.IMG_DRAGBAR, 
+				(int)position.getX()+2, 
+				(int)position.getY()-Module.IMG_DRAGBAR.getHeight(),
+				(int)position.getWidth()-4,
+				Module.IMG_DRAGBAR.getHeight(),
+				sigIRC.panel);
+			DrawUtils.drawTextFont(g, sigIRC.panel.smallFont, (int)position.getX(), (int)position.getY()-titleHeight/2+4, Color.BLACK, this.name);
+		}
 	}
 	
 	private Rectangle2D getDrawBounds() {
