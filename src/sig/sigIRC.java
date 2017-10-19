@@ -265,10 +265,11 @@ public class sigIRC{
 			File updatedir = new File(sigIRC.BASEDIR+"sigIRC/updates/");
 			updatedir.mkdirs();
 			File programFile = new File(sigIRC.BASEDIR+"sigIRC/updates/sigIRCv2.jar");
-			System.out.println("File size is "+programFile.length());
+			File currentProgramFile = new File(sigIRC.BASEDIR+"sigIRCv2.jar");
+			System.out.println("File size is "+currentProgramFile.length());
 			long fileSize = GithubUtils.getSizeOfFileFromLatestGithubCommit("sigIRCv2.jar");
 			System.out.println("File size on Github is "+fileSize);
-			if ((programFile.exists() && fileSize!=programFile.length()) || !programFile.exists()) {
+			if (fileSize!=programFile.length()) {
 				try {
 					if (programFile.exists()) {
 						programFile.delete();
