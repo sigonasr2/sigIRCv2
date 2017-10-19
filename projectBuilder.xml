@@ -15,6 +15,8 @@
             <fileset dir="${dir.jarfile}/bin"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/commons-io-2.5.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/twitch-api-wrapper-0.3-jar-with-dependencies.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jinput-2.0.5.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jutils-1.0.0.jar"/>
         </jar>
     </target>
 </project>

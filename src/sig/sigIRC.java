@@ -14,6 +14,7 @@ import com.mb3364.twitch.api.models.Channel;
 import com.mb3364.twitch.api.models.Stream;
 
 import sig.modules.ChatLogModule;
+import sig.modules.ControllerModule;
 import sig.modules.TouhouMotherModule;
 import sig.modules.TwitchModule;
 import sig.modules.ChatLog.ChatLogMessage;
@@ -116,6 +117,11 @@ public class sigIRC{
 	public static int chatlogmodule_X=0;
 	public static int chatlogmodule_Y=312;
 	public static int chatlogMessageHistory=50;
+	public static boolean controllermodule_enabled=true;
+	public static int controllermodule_width=320;
+	public static int controllermodule_height=312;
+	public static int controllermodule_X=0;
+	public static int controllermodule_Y=312;
 	public static String twitchmodule_newfollowerImgBackgroundColor="90,90,90";
 	public static String twitchmodule_newfollowerShadowTextColor="26,90,150";
 	public static String twitchmodule_newfollowerTextColor="255,255,255";
@@ -183,6 +189,10 @@ public class sigIRC{
 		chatlogmodule_Y = config.getInteger("CHATLOG_module_Y",312);
 		chatlogmodule_width = config.getInteger("CHATLOG_module_width",320);
 		chatlogmodule_height = config.getInteger("CHATLOG_module_height",312);
+		controllermodule_X = config.getInteger("CONTROLLER_module_X",0);
+		controllermodule_Y = config.getInteger("CONTROLLER_module_Y",312);
+		controllermodule_width = config.getInteger("CONTROLLER_module_width",320);
+		controllermodule_height = config.getInteger("CONTROLLER_module_height",312);
 		chatlogmodule_backgroundColor = config.getProperty("CHATLOG_module_BackgroundColor", "195,195,195,255");
 		chatlogMessageHistory = config.getInteger("CHATLOG_module_MessageHistory",50);
 		hardwareAcceleration = config.getBoolean("hardware_acceleration",true);
@@ -256,7 +266,11 @@ public class sigIRC{
 		manager = new FileManager("update.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("backcolor.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("drag_bar.png"); manager.verifyAndFetchFileFromServer();
-		manager = new FileManager("WSplits"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("jinput-dx8.dll"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("jinput-dx8_64.dll"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("jinput-raw.dll"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("jinput-raw_64.dll"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("jinput-wintab.dll"); manager.verifyAndFetchFileFromServer();
 		DownloadProgramUpdate();
 		System.out.println("Downloaded Dependencies. ");
 	}
@@ -308,6 +322,12 @@ public class sigIRC{
 			modules.add(new ChatLogModule(
 					new Rectangle(chatlogmodule_X,chatlogmodule_Y,chatlogmodule_width,chatlogmodule_height),
 					"Chat Log"
+					));
+		}
+		if (controllermodule_enabled)  {
+			modules.add(new ControllerModule(
+					new Rectangle(controllermodule_X,controllermodule_Y,controllermodule_width,controllermodule_height),
+					"Controller"
 					));
 		}
 	}

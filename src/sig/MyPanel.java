@@ -161,7 +161,6 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 
 	@Override
 	public void keyTyped(KeyEvent e) {
-		
 	}
 
 	@Override

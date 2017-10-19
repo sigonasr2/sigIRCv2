@@ -1,1 +1,1 @@
-java -jar ./sigIRCv2.jar
+java -jar ./sigIRCv2.jar -Djava.library.path=lib/
