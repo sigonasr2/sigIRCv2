@@ -180,7 +180,7 @@ public class ChatLogMessage {
 					if (textWidth<maxWidth) {
 						marker = tempmarker+1;
 					}
-					System.out.println(msg.substring(0, marker)+" | "+textWidth);
+					//System.out.println(msg.substring(0, marker)+" | "+textWidth);
 				} else {
 					marker=msg.length();
 					break;

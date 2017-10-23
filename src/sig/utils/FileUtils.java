@@ -236,6 +236,10 @@ public class FileUtils {
 	  }
 	  
 	  public static void logToFile(String message, String filename) {
+		 logToFile(message,filename,false);  
+	  }
+	  
+	  public static void logToFile(String message, String filename, boolean outputToChatLog) {
 		  File file = new File(filename);
 			try {
 
@@ -252,7 +256,9 @@ public class FileUtils {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			ChatLogMessage.importMessages(message);
+			if (outputToChatLog) {
+				ChatLogMessage.importMessages(message);
+			}
 		}
 	  
 	  public static void writetoFile(String[] data, String filename) {
