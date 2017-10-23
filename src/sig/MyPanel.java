@@ -59,14 +59,6 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         super.paintComponent(g);
         // Draw Text
         //int counter=18;
-        for (int i=0;i<sigIRC.twitchemoticons.size();i++) {
-        	if (sigIRC.twitchemoticons.get(i).isActive() &&
-        			sigIRC.twitchemoticons.get(i).textRefIsVisible()) {
-        		sigIRC.twitchemoticons.get(i).draw(g);
-        	} else {
-        		break;
-        	}
-        }
         if (sigIRC.panel!=null) {
 	        lastMouseX = (int)(MouseInfo.getPointerInfo().getLocation().getX()-sigIRC.panel.getLocationOnScreen().getX());
 	        lastMouseY = (int)(MouseInfo.getPointerInfo().getLocation().getY()-sigIRC.panel.getLocationOnScreen().getY());
@@ -84,6 +76,11 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         for (Module m : sigIRC.modules) {
         	m.draw(g);
         }
+        for (int i=0;i<sigIRC.chatlogtwitchemoticons.size();i++) {
+        	if (sigIRC.chatlogtwitchemoticons.get(i).textRefIsVisible()) {
+        		sigIRC.chatlogtwitchemoticons.get(i).draw(g);
+        	}
+        }
         for (int i=0;i<sigIRC.textobj.size();i++) {
         	if (sigIRC.textobj.get(i).isActive()) {
         		if (sigIRC.overlayMode) {
@@ -99,9 +96,12 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         		}
         	}
         }
-        for (int i=0;i<sigIRC.chatlogtwitchemoticons.size();i++) {
-        	if (sigIRC.chatlogtwitchemoticons.get(i).textRefIsVisible()) {
-        		sigIRC.chatlogtwitchemoticons.get(i).draw(g);
+        for (int i=0;i<sigIRC.twitchemoticons.size();i++) {
+        	if (sigIRC.twitchemoticons.get(i).isActive() &&
+        			sigIRC.twitchemoticons.get(i).textRefIsVisible()) {
+        		sigIRC.twitchemoticons.get(i).draw(g);
+        	} else {
+        		break;
         	}
         }
         if (!sigIRC.overlayMode) {

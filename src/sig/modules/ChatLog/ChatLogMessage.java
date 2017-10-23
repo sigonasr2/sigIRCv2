@@ -49,7 +49,9 @@ public class ChatLogMessage {
 			usernameWidth = (int)TextUtils.calculateStringBoundsFont(this.username, sigIRC.panel.userFont).getWidth();
 		}
 		for (int i=0;i<displayMessage.size();i++) {
-			displayMessage.set(i, ReplaceMessageWithEmoticons(displayMessage.get(i)+" ",(i==0)?usernameWidth:0,i*MESSAGE_SPACING));
+			//System.out.println("displayMessage["+i+"] before: "+displayMessage.get(i));
+			displayMessage.set(i, ReplaceMessageWithEmoticons(" "+displayMessage.get(i)+" ",(i==0)?usernameWidth:0,i*MESSAGE_SPACING));
+			//System.out.println("displayMessage["+i+"] after: "+displayMessage.get(i));
 		}
 	}
 	
@@ -58,9 +60,10 @@ public class ChatLogMessage {
 		while (marker<basemsg.length()) {
 			//Find a space.
 			int space = basemsg.indexOf(" ", marker+1);
+			//System.out.println(" Marker is at position "+space+" for word \""+basemsg+"\"");
 			if (space>0) {
 				String word = basemsg.substring(marker+1, space);
-				//System.out.println("Word is '"+word+"'");
+				//System.out.println(" Word is '"+word+"'");
 				sigIRC.emoticons.addAll(sigIRC.emoticon_queue);
 				sigIRC.emoticon_queue.clear();
 				for (Emoticon e : sigIRC.emoticons) {
@@ -156,7 +159,7 @@ public class ChatLogMessage {
 		int textWidth = (int)TextUtils.calculateStringBoundsFont(rawmessage, sigIRC.panel.userFont).getWidth();
 		int maxWidth = (int)refModule.getPosition().getWidth()-BORDER_SPACING;
 		do {
-			rawmessage = BreakTextAtNextSection(rawmessage,maxWidth);
+			rawmessage = BreakTextAtNextSection(rawmessage+" ",maxWidth);
 			textWidth = (int)TextUtils.calculateStringBoundsFont(rawmessage, sigIRC.panel.userFont).getWidth();
 		} while (textWidth>maxWidth);
 		if (rawmessage.length()>0) {
@@ -177,7 +180,7 @@ public class ChatLogMessage {
 					if (textWidth<maxWidth) {
 						marker = tempmarker+1;
 					}
-					//System.out.println(msg.substring(0, marker)+" | "+textWidth);
+					System.out.println(msg.substring(0, marker)+" | "+textWidth);
 				} else {
 					marker=msg.length();
 					break;
