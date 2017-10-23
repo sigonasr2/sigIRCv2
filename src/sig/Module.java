@@ -149,7 +149,7 @@ public class Module {
 	}
 	
 	private Rectangle2D getDrawBounds() {
-		Rectangle2D drawBounds = new Rectangle((int)position.getX(),(int)position.getY()-titleHeight+3,(int)position.getWidth(),(int)position.getHeight()+titleHeight);
+		Rectangle2D drawBounds = new Rectangle((int)position.getX()-2,(int)position.getY()-titleHeight+3-1,(int)position.getWidth()+2,(int)position.getHeight()+titleHeight+1);
 		return drawBounds;
 	}
 	

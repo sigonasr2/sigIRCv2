@@ -118,7 +118,7 @@ public class ScrollingText {
 
 	private void LogMessageToFile(String message) {
 		Calendar cal = Calendar.getInstance();
-		FileUtils.logToFile(message, sigIRC.BASEDIR+"sigIRC/logs/log_"+(cal.get(Calendar.MONTH)+1)+"_"+cal.get(Calendar.DAY_OF_MONTH)+"_"+cal.get(Calendar.YEAR)+".txt");
+		FileUtils.logToFile(message, sigIRC.BASEDIR+"sigIRC/logs/log_"+(cal.get(Calendar.MONTH)+1)+"_"+cal.get(Calendar.DAY_OF_MONTH)+"_"+cal.get(Calendar.YEAR)+".txt",true);
 	}
 
 	private Color GetUserNameColor(String username) {
