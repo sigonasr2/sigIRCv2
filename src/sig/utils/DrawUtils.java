@@ -43,16 +43,20 @@ public class DrawUtils {
 		g2.drawString(as.getIterator(),(int)x,(int)y);
 	}
 	public static void drawText(Graphics g, double x, double y, Color color, String message) {
-		AttributedString as = new AttributedString(message);
-		as.addAttribute(TextAttribute.FONT, MyPanel.programFont);
-		g.setColor(color);
-		g.drawString(as.getIterator(),(int)x,(int)y);
+		if (message.length()>0) {
+			AttributedString as = new AttributedString(message);
+			as.addAttribute(TextAttribute.FONT, MyPanel.programFont);
+			g.setColor(color);
+			g.drawString(as.getIterator(),(int)x,(int)y);
+		}
 	}
 	public static void drawTextFont(Graphics g, Font font, double x, double y, Color color, String message) {
-		AttributedString as = new AttributedString(message);
-		as.addAttribute(TextAttribute.FONT, font);
-		g.setColor(color);
-		g.drawString(as.getIterator(),(int)x,(int)y);
+		if (message.length()>0) {
+			AttributedString as = new AttributedString(message);
+			as.addAttribute(TextAttribute.FONT, font);
+			g.setColor(color);
+			g.drawString(as.getIterator(),(int)x,(int)y);
+		}
 	}
 	public static void drawHealthbar(Graphics g, Rectangle bounds, double pct, Color healthbarcol) {
 		g.setColor(Color.BLACK);

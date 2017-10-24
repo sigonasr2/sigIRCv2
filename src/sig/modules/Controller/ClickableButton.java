@@ -11,9 +11,9 @@ import sig.utils.DrawUtils;
 import sig.utils.TextUtils;
 
 public class ClickableButton {
-	int x,y,width,height;
-	String label;
-	ControllerModule module;
+	protected int x,y,width,height;
+	protected String label;
+	protected ControllerModule module;
 	
 	public ClickableButton(Rectangle position, String button_label, ControllerModule parent_module) {
 		this.x = (int)position.getX();
@@ -25,14 +25,14 @@ public class ClickableButton {
 	}
 	
 	public void onClickEvent(MouseEvent ev) {
-		if (mouseInsideBounds(ev)) {
-			System.out.println("Click performed!");
-		}
+		/*if (mouseInsideBounds(ev)) {
+			//System.out.println("Click performed!");
+		}*/
 	}
 
-	private boolean mouseInsideBounds(MouseEvent ev) {
-		return ev.getX()>=x && ev.getX()<=x+width &&
-				ev.getY()>=y && ev.getY()<=y+height;
+	protected boolean mouseInsideBounds(MouseEvent ev) {
+		return ev.getX()>=module.getPosition().getX()+x && ev.getX()<=module.getPosition().getX()+x+width &&
+				ev.getY()>=module.getPosition().getY()+y && ev.getY()<=module.getPosition().getY()+y+height;
 	}
 	
 	public void draw(Graphics g) {

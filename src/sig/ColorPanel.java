@@ -12,7 +12,7 @@ public class ColorPanel extends JPanel{
 		}
 		
 		public Color getBackgroundColor() {
-			return JColorChooser.showDialog(this, "Background Color Picker", Color.CYAN);
+			return JColorChooser.showDialog(this, "Background Color Picker", sigIRC.backgroundcol);
 		}
 
 	    public Dimension getPreferredSize() {

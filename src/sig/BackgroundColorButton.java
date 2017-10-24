@@ -44,9 +44,11 @@ public class BackgroundColorButton {
 			if (ev.getX()>=x && ev.getX()<=x+buttonimg.getWidth() &&
 					ev.getY()>=y && ev.getY()<=y+buttonimg.getHeight()) {
 				sigIRC.backgroundcol=sigIRC.colorpanel.getBackgroundColor();
-				sigIRC.config.setProperty("backgroundColor", Integer.toString(sigIRC.backgroundcol.getRGB()));
-				sigIRC.config.saveProperties();
-				sigIRC.panel.setBackground(sigIRC.backgroundcol);
+				if (sigIRC.backgroundcol!=null) {
+					sigIRC.config.setProperty("backgroundColor", Integer.toString(sigIRC.backgroundcol.getRGB()));
+					sigIRC.config.saveProperties();
+					sigIRC.panel.setBackground(sigIRC.backgroundcol);
+				}
 			}
 		}
 	}
