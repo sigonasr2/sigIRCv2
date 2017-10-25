@@ -143,6 +143,7 @@ public class ControllerModule extends Module{
 								Math.abs((end_drag.getY()-start_drag.getY())/controller_img.getHeight(sigIRC.panel)));
 						//buttons.add(new Button(pct_rect.getX(),pct_rect.getY(),pct_rect.getWidth(),pct_rect.getHeight(),controllers.get(0),Identifier.Button._3,Color.RED,this));
 						//resetDragPoints();
+						sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 						MODE=EditMode.BUTTONSET;
 					}
 				}
@@ -185,7 +186,6 @@ public class ControllerModule extends Module{
 				status="Drag a button onto the controller template.";
 			}break;
 			case BUTTONSET:{
-				sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				status="Press controller button to set button";
 			}break;
 			case COLORSET:{
@@ -193,10 +193,6 @@ public class ControllerModule extends Module{
 			}break;
 			default:{
 				status="";
-				int cursortype = sigIRC.panel.getCursor().getType();
-				if (cursortype!=Cursor.DEFAULT_CURSOR) {
-					sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				}
 			}
 		}
 		super.run();

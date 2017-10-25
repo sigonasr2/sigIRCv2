@@ -106,7 +106,7 @@ public class Module {
 			int mouseY = sigIRC.panel.lastMouseY+(int)dragOffset.getY();
 			int oldX = (int)position.getX();
 			int oldY = (int)position.getY();
-			position = new Rectangle(mouseX, mouseY,(int)position.getWidth(),(int)position.getHeight());
+			position = new Rectangle((int)Math.min(Math.max(0,mouseX),sigIRC.window.getWidth()-position.getWidth()), (int)Math.min(Math.max(titleHeight,mouseY),sigIRC.window.getHeight()-position.getHeight()-titleHeight*2),(int)position.getWidth(),(int)position.getHeight());
 			//System.out.println(sigIRC.panel.lastMouseX+","+sigIRC.panel.lastMouseY);
 			ModuleDragEvent(oldX,oldY,mouseX,mouseY);
 		}
@@ -145,6 +145,7 @@ public class Module {
 				Module.IMG_DRAGBAR.getHeight(),
 				sigIRC.panel);
 			DrawUtils.drawTextFont(g, sigIRC.panel.smallFont, (int)position.getX(), (int)position.getY()-titleHeight/2+4, Color.BLACK, this.name);
+			//g.fillRect((int)position.getX(), (int)position.getY(), (int)position.getWidth(), (int)position.getHeight());
 		}
 	}
 	
