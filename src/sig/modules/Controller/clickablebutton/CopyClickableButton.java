@@ -6,6 +6,7 @@ import java.awt.event.MouseEvent;
 import sig.modules.ControllerModule;
 import sig.modules.Controller.ClickableButton;
 import sig.modules.Controller.ControlConfigurationWindow;
+import sig.modules.Controller.DialogType;
 import sig.modules.Controller.EditMode;
 
 public class CopyClickableButton extends ClickableButton{
@@ -18,7 +19,7 @@ public class CopyClickableButton extends ClickableButton{
 	public void onClickEvent(MouseEvent ev) {
 		super.onClickEvent(ev);
 		if (mouseInsideBounds(ev)) {
-			window = new ControlConfigurationWindow();
+			window = new ControlConfigurationWindow(DialogType.BUTTON_AXIS_SELECTION,module);
 		}
 	}
 }

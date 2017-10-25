@@ -16,24 +16,25 @@ public class Button {
 	double pct_width = 0;
 	double pct_height = 0;
 	Identifier ident;
+	float value;
 	Controller parent_controller;
 	Color pressed_col;
 	ControllerModule parent;
 	boolean square;
 	
-	public Button(Rectangle2D.Double rect, Controller parent_controller, Identifier button_identifier, Color col, ControllerModule module) {
-		this(rect.getX(),rect.getY(),rect.getWidth(),rect.getHeight(),parent_controller,button_identifier,col,module,false);
+	public Button(Rectangle2D.Double rect, Controller parent_controller, Identifier button_identifier, float button_val, Color col, ControllerModule module) {
+		this(rect.getX(),rect.getY(),rect.getWidth(),rect.getHeight(),parent_controller,button_identifier,button_val,col,module,false);
 	}
 	
-	public Button(Rectangle2D.Double rect, Controller parent_controller, Identifier button_identifier, Color col, ControllerModule module, boolean square) {
-		this(rect.getX(),rect.getY(),rect.getWidth(),rect.getHeight(),parent_controller,button_identifier,col,module,square);
+	public Button(Rectangle2D.Double rect, Controller parent_controller, Identifier button_identifier, float button_val, Color col, ControllerModule module, boolean square) {
+		this(rect.getX(),rect.getY(),rect.getWidth(),rect.getHeight(),parent_controller,button_identifier,button_val,col,module,square);
 	}
 	
-	public Button(double pct_x, double pct_y, double pct_width, double pct_height, Controller parent_controller, Identifier button_identifier, Color col, ControllerModule module) {
-		this(pct_x,pct_y,pct_width,pct_height,parent_controller,button_identifier,col,module,false);
+	public Button(double pct_x, double pct_y, double pct_width, double pct_height, Controller parent_controller, Identifier button_identifier, float button_val, Color col, ControllerModule module) {
+		this(pct_x,pct_y,pct_width,pct_height,parent_controller,button_identifier,button_val,col,module,false);
 	}
 	
-	public Button(double pct_x, double pct_y, double pct_width, double pct_height, Controller parent_controller, Identifier button_identifier, Color col, ControllerModule module, boolean square) {
+	public Button(double pct_x, double pct_y, double pct_width, double pct_height, Controller parent_controller, Identifier button_identifier, float button_val, Color col, ControllerModule module, boolean square) {
 		this.pct_x = pct_x;
 		this.pct_y = pct_y;
 		this.pct_width=pct_width;
@@ -43,10 +44,11 @@ public class Button {
 		this.pressed_col=col;
 		this.parent = module;
 		this.square = square;
+		this.value = button_val;
 	}
 	
 	public void draw(Graphics g) {
-		if (parent_controller.getComponent(ident).getPollData()==1) {
+		if (parent_controller.getComponent(ident).getPollData()==value) {
 			Color col_identity = g.getColor();
 			g.setColor(pressed_col);
 			g.fillOval((int)(parent.getPosition().getX()
@@ -66,6 +68,7 @@ public class Button {
 		sb.append(pct_width);sb.append(",");
 		sb.append(pct_height);sb.append(",");
 		sb.append(ident.getName());sb.append(",");
+		sb.append(value);sb.append(",");
 		sb.append(pressed_col.getRed());sb.append(",");
 		sb.append(pressed_col.getGreen());sb.append(",");
 		sb.append(pressed_col.getBlue());sb.append(",");
@@ -76,21 +79,23 @@ public class Button {
 	
 	public static Button loadFromString(String s, Controller controller, ControllerModule module) {
 		String[] split = s.split(",");
+		int i=0;
 		return new Button(
-				Double.parseDouble(split[0]),
-				Double.parseDouble(split[1]),
-				Double.parseDouble(split[2]),
-				Double.parseDouble(split[3]),
+				Double.parseDouble(split[i++]),
+				Double.parseDouble(split[i++]),
+				Double.parseDouble(split[i++]),
+				Double.parseDouble(split[i++]),
 				controller,
-				GrabIdentifierFromString(split[4],controller),
+				GrabIdentifierFromString(split[i++],controller),
+				Float.parseFloat(split[i++]),
 				new Color(
-						Integer.parseInt(split[5]),
-						Integer.parseInt(split[6]),
-						Integer.parseInt(split[7]),
-						Integer.parseInt(split[8])
+						Integer.parseInt(split[i++]),
+						Integer.parseInt(split[i++]),
+						Integer.parseInt(split[i++]),
+						Integer.parseInt(split[i++])
 						),
 				module,
-				Boolean.parseBoolean(split[9]));
+				Boolean.parseBoolean(split[i++]));
 	}
 
 	private static Identifier GrabIdentifierFromString(String string, Controller controller) {

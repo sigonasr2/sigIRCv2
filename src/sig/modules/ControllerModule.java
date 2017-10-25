@@ -24,6 +24,7 @@ import sig.Module;
 import sig.sigIRC;
 import sig.modules.Controller.Button;
 import sig.modules.Controller.ClickableButton;
+import sig.modules.Controller.ControlConfigurationWindow;
 import sig.modules.Controller.EditMode;
 import sig.modules.Controller.clickablebutton.AddClickableButton;
 import sig.modules.Controller.clickablebutton.CopyClickableButton;
@@ -42,8 +43,10 @@ public class ControllerModule extends Module{
 	Point start_drag,end_drag;
 	Rectangle2D.Double stored_rect;
 	Identifier stored_controller_button;
+	float stored_controller_value;
 	Color buttoncol;
 	Controller controller;
+	ControlConfigurationWindow configure_window;
 
 	public ControllerModule(Rectangle2D bounds, String moduleName) {
 		super(bounds, moduleName);
@@ -75,6 +78,10 @@ public class ControllerModule extends Module{
 				0,(int)position.getHeight()-20,96,20),"Delete Button",this));
 		click_buttons.add(new ClickableButton(new Rectangle(
 				97,(int)position.getHeight()-20,96,20),"Edit Button",this));
+	}
+	
+	public List<Controller> getControllers() {
+		return controllers;
 	}
 
 	public void resetDragPoints() {
@@ -151,6 +158,10 @@ public class ControllerModule extends Module{
 	public Rectangle2D getPosition() {
 		return position;
 	}
+	
+	public void setConfigureWindow(ControlConfigurationWindow window) {
+		this.configure_window=window;
+	}
 
 	public void run() {
 		for (Controller c : controllers) {
@@ -193,8 +204,9 @@ public class ControllerModule extends Module{
 			stored_controller_button=null;
 			for (Controller c : controllers) {
 				for (Component cp : c.getComponents()) {
-					if (!cp.isAnalog() && cp.getPollData()==1.0f) {
+					if (!cp.isAnalog() && cp.getPollData()!=0.0f) {
 						stored_controller_button = cp.getIdentifier();
+						stored_controller_value = cp.getPollData();
 						controller=c;
 						MODE=EditMode.COLORSET;
 						buttoncol = PopupColorPanel();
@@ -208,6 +220,9 @@ public class ControllerModule extends Module{
 				}
 			}
 		}
+		if (configure_window!=null) {
+			configure_window.run();
+		}
 	}
 	
 	public Image getControllerImage() {
@@ -218,12 +233,12 @@ public class ControllerModule extends Module{
 		super.draw(g);
 		for (int i=0;i<controllers.get(0).getComponents().length;i++) {
 			Component cp = controllers.get(0).getComponents()[i];
-			if (!cp.isAnalog()) {
+			/*if (!cp.isAnalog()) {
 				if (cp.getPollData()!=0) {
-					//System.out.println("Button "+cp.getIdentifier()+" held down!");
+					//System.out.println("Button "+cp.getIdentifier()+" held down! Value: "+cp.getPollData());
 					//DrawUtils.drawText(g,position.getX(),position.getY(),Color.BLACK,"Button "+cp.getIdentifier()+" held down!");
 				}
-			}
+			}*/
 		}
 		g.drawImage(controller_img, (int)(position.getX()), (int)(position.getY()), sigIRC.panel);
 		DrawUtils.drawText(g, position.getX(), position.getY()+8, Color.BLACK, status);
@@ -262,7 +277,7 @@ public class ControllerModule extends Module{
 	}
 
 	private void AddButton() {
-		buttons.add(new Button(stored_rect,controller,stored_controller_button,buttoncol,this));
+		buttons.add(new Button(stored_rect,controller,stored_controller_button,stored_controller_value,buttoncol,this));
 		StringBuilder sb = new StringBuilder();
 		for (Button b : buttons) {
 			sb.append(b.getSaveString()+"\n");
