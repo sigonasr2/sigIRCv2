@@ -51,12 +51,21 @@ public class Button {
 		if (parent_controller.getComponent(ident).getPollData()==value) {
 			Color col_identity = g.getColor();
 			g.setColor(pressed_col);
-			g.fillOval((int)(parent.getPosition().getX()
+			if (square) {
+				g.fillRect((int)(parent.getPosition().getX()
 						+parent.getControllerImage().getWidth(sigIRC.panel)*pct_x)
 					,(int)(parent.getPosition().getY()
 						+parent.getControllerImage().getHeight(sigIRC.panel)*pct_y)
 					,(int)(parent.getControllerImage().getWidth(sigIRC.panel)*pct_width),
 					(int)(parent.getControllerImage().getHeight(sigIRC.panel)*pct_height));
+			} else {
+				g.fillOval((int)(parent.getPosition().getX()
+							+parent.getControllerImage().getWidth(sigIRC.panel)*pct_x)
+						,(int)(parent.getPosition().getY()
+							+parent.getControllerImage().getHeight(sigIRC.panel)*pct_y)
+						,(int)(parent.getControllerImage().getWidth(sigIRC.panel)*pct_width),
+						(int)(parent.getControllerImage().getHeight(sigIRC.panel)*pct_height));
+			}
 			g.setColor(col_identity);
 		}
 	}

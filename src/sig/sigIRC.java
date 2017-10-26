@@ -166,6 +166,7 @@ public class sigIRC{
 		usernameFont = config.getProperty("usernameFont","Gill Sans");
 		touhoumotherConsoleFont = config.getProperty("touhoumotherConsoleFont","Agency FB Bold");
 		touhoumothermodule_enabled = config.getBoolean("Module_touhoumother_Enabled",false);
+		controllermodule_enabled = config.getBoolean("Module_controller_Enabled",false);
 		twitchmodule_enabled = config.getBoolean("Module_twitch_Enabled",true);
 		chatlogmodule_enabled = config.getBoolean("Module_chatlog_Enabled",true);
 		twitchmodule_width = config.getInteger("TWITCH_module_width",500);

@@ -8,11 +8,10 @@ import javax.swing.JPanel;
 
 public class ColorPanel extends JPanel{
 		public ColorPanel() {
-			
 		}
 		
 		public Color getBackgroundColor() {
-			return JColorChooser.showDialog(this, "Background Color Picker", sigIRC.backgroundcol);
+			return JColorChooser.showDialog(this, "Color Picker", sigIRC.backgroundcol);
 		}
 
 	    public Dimension getPreferredSize() {

@@ -20,6 +20,7 @@ public class CopyClickableButton extends ClickableButton{
 		super.onClickEvent(ev);
 		if (mouseInsideBounds(ev)) {
 			window = new ControlConfigurationWindow(DialogType.BUTTON_AXIS_SELECTION,module);
+			module.resetDragPoints();
 		}
 	}
 }

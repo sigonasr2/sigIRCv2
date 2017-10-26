@@ -6,10 +6,12 @@ import java.awt.Color;
 import java.awt.Container;
 import java.awt.Dimension;
 import java.awt.Graphics;
+import java.awt.LayoutManager;
 import java.awt.event.ActionEvent;
 import java.awt.event.ActionListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
 import java.text.DecimalFormat;
@@ -17,9 +19,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.BorderFactory;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ButtonGroup;
+import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
 import javax.swing.JFrame;
@@ -27,9 +31,17 @@ import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
+import javax.swing.JTextField;
+import javax.swing.SwingUtilities;
+import javax.swing.border.Border;
+import javax.swing.event.DocumentEvent;
+import javax.swing.event.DocumentListener;
 
 import net.java.games.input.Component;
+import net.java.games.input.Component.Identifier;
 import net.java.games.input.Controller;
+import sig.ColorPanel;
+import sig.sigIRC;
 import sig.modules.ControllerModule;
 
 public class ControlConfigurationWindow extends JFrame implements WindowListener{
@@ -40,6 +52,15 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 	ControllerModule module;
 	DecimalFormat df = new DecimalFormat("0.000");
 	PreviewPanel previewpanel;
+	JRadioButton two_axis_button;
+	Container twowayAxis_adjustContainer;
+	Container twowayAxis_adjustOrientationContainer;
+	LinkedTextField twowayAxis_range1,twowayAxis_range2;
+	Color axis_background_col = Color.BLACK;
+	Color axis_indicator_col = Color.WHITE;
+	int axis_width=32,axis_height=32;
+	JButton backgroundColor,indicatorColor;
+	int orientation=0; //0=Left-to-Right, 1=Right-to-Left, 2=Bottom-to-Top, 3=Top-to-Bottom
 	ActionListener checkboxListener = new ActionListener(){
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -64,11 +85,14 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 		}
 	};
 	ActionListener axisListener = new ActionListener(){
+
 		@Override
 		public void actionPerformed(ActionEvent ev) {
 			switch (ev.getActionCommand()) {
 				case "four":{
 					previewpanel.setAxis(false);
+					twowayAxis_adjustContainer.setVisible(false);
+					twowayAxis_adjustOrientationContainer.setVisible(false);
 				}break;
 				case "two":{
 					previewpanel.setAxis(true);
@@ -82,8 +106,54 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 							}
 						}
 					}
+					twowayAxis_adjustContainer.setVisible(true);
+					twowayAxis_adjustOrientationContainer.setVisible(true);
 				}break;
 			}
+		}
+	};
+	ActionListener backgroundColorListener = new ActionListener(){
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Color selectedcol = sigIRC.colorpanel.getBackgroundColor();
+			if (selectedcol!=null) {
+				axis_background_col = selectedcol;
+				backgroundColor.setBackground(axis_background_col);
+			}
+		}
+	};
+	ActionListener indicatorColorListener = new ActionListener(){
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			Color selectedcol = sigIRC.colorpanel.getBackgroundColor();
+			if (selectedcol!=null) {
+				axis_indicator_col = selectedcol;
+				indicatorColor.setBackground(axis_indicator_col);
+			}
+		}
+	};
+	ActionListener twoWayAxis_OrientationListener = new ActionListener(){
+		@Override
+		public void actionPerformed(ActionEvent e) {
+			orientation=Integer.parseInt(e.getActionCommand());
+		}
+	};
+	ActionListener createbuttonListener = new ActionListener(){
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			if (DataIsValid()) {
+				Axis a = ConstructTemporaryAxis();
+				module.setTemporaryAxis(a);
+				module.setMode(EditMode.DRAGAXISSELECTION);
+				//module.setMouseWaitTimer(4);
+				module.getConfigurationWindow().dispatchEvent(new WindowEvent(module.getConfigurationWindow(),WindowEvent.WINDOW_CLOSING));
+				//module.getConfigurationWindow().setVisible(false);
+				//module.getConfigurationWindow().dispose();
+			}
+		}
+
+		private boolean DataIsValid() {
+			return true;
 		}
 	};
 	
@@ -92,6 +162,18 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 		this.module = parent_module;
 		this.module.setConfigureWindow(this);
 		this.dialog = type;
+		
+		JTextField twowayAxis_range1 = new JTextField("-1.0",2);
+		JTextField twowayAxis_range2 = new JTextField("1.0",2);
+		this.twowayAxis_range1 = new LinkedTextField(twowayAxis_range1);
+		this.twowayAxis_range2 = new LinkedTextField(twowayAxis_range2);
+		this.setTitle("Axis Configuration Window");
+		try {
+			this.setIconImage(ImageIO.read(new File(sigIRC.BASEDIR+"/sigIRC/sigIRCicon.png")));
+		} catch (IOException e1) {
+			e1.printStackTrace();
+		}
+		
 		switch (dialog) {
 			case AXIS_OPTIONS:
 				
@@ -129,7 +211,7 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 				four_axis_button.setActionCommand("four");
 				four_axis_button.addActionListener(axisListener);
 				selectionFrame.add(selectionPanel2);
-				JRadioButton two_axis_button = new JRadioButton("2-way Axis");
+				two_axis_button = new JRadioButton("2-way Axis");
 				two_axis_button.setActionCommand("two");
 				two_axis_button.addActionListener(axisListener);
 				axisSelection.add(four_axis_button);
@@ -164,25 +246,139 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 				container.add(selectionFrame);
 				
 				JComponent previewLabelPanel = new JPanel();
+				twowayAxis_adjustContainer = new Container();
+				JPanel twowayAxis_adjustPanel1 = new JPanel();
+				JLabel twowayAxis_fromLabel = new JLabel("From");
+				JLabel twowayAxis_toLabel = new JLabel("to");
+				JPanel twowayAxis_adjustPanel2 = new JPanel();
+				twowayAxis_adjustContainer.setLayout(new BoxLayout(twowayAxis_adjustContainer,BoxLayout.PAGE_AXIS));
+				twowayAxis_adjustPanel2.setLayout(new BoxLayout(twowayAxis_adjustPanel2,BoxLayout.LINE_AXIS));
+				JLabel twowayAxis_label = new JLabel("Axis Range:",JLabel.LEFT);
+				
+				twowayAxis_range1.getDocument().addDocumentListener(this.twowayAxis_range1);
+				twowayAxis_range2.getDocument().addDocumentListener(this.twowayAxis_range2);
+				
+				twowayAxis_adjustPanel1.add(twowayAxis_label);
+				twowayAxis_adjustPanel2.add(twowayAxis_fromLabel);
+				twowayAxis_adjustPanel2.add(twowayAxis_range1);
+				twowayAxis_adjustPanel2.add(twowayAxis_toLabel);
+				twowayAxis_adjustPanel2.add(twowayAxis_range2);
+				
+				twowayAxis_adjustContainer.add(twowayAxis_adjustPanel1);
+				twowayAxis_adjustContainer.add(twowayAxis_adjustPanel2);
+				
 				JLabel previewLabel = new JLabel("Axis Preview:  ");
 				previewLabel.setVerticalAlignment(JLabel.TOP);
 				previewLabel.setHorizontalAlignment(JLabel.RIGHT);
 				previewLabelPanel.setPreferredSize(new Dimension(120,24));
 				previewpanel = new PreviewPanel();
 				previewpanel.setWindow(this);
-				previewpanel.setPreferredSize(new Dimension(240,32));
+				previewpanel.setPreferredSize(new Dimension(32,32));
+				//Border previewBorder = BorderFactory.createEmptyBorder(axis_width, axis_height, axis_width, axis_height);
+				//previewLabelPanel.setBorder(BorderFactory.createTitledBorder("Axis Preview"));
 				//previewpanel.add(previewLabel);
 
+				if (!two_axis_button.isSelected()) {
+					twowayAxis_adjustContainer.setVisible(false);
+				}
 				
-				previewLabelPanel.add(previewLabel,BorderLayout.NORTH);
-				previewLabelPanel.add(previewpanel,BorderLayout.CENTER);
+				Container sizePanel = new Container();
+				sizePanel.setLayout(new BoxLayout(sizePanel,BoxLayout.PAGE_AXIS));
+				JLabel widthLabel = new JLabel("Width: ");
+				JTextField width_field = new JTextField("32",3);
+				ResizeTextField width_field_listener = new ResizeTextField(width_field,this,SizeType.WIDTH);
+				width_field.getDocument().addDocumentListener(width_field_listener);
+				JLabel heightLabel = new JLabel("Height: ");
+				JTextField height_field = new JTextField("32",3);
+				ResizeTextField height_field_listener = new ResizeTextField(height_field,this,SizeType.HEIGHT);
+				height_field.getDocument().addDocumentListener(height_field_listener);
+				
+				sizePanel.add(widthLabel);
+				sizePanel.add(width_field);
+				sizePanel.add(Box.createRigidArea(new Dimension(4,0)));
+				sizePanel.add(heightLabel);
+				sizePanel.add(height_field);
+				sizePanel.setPreferredSize(new Dimension(56,96));
+				
+				ButtonGroup twoWayAxisOrientationGroup = new ButtonGroup();
+				JRadioButton twoWayAxis_LeftToRight = new JRadioButton("Left-to-Right",true);
+				twoWayAxis_LeftToRight.setActionCommand("0");
+				twoWayAxis_LeftToRight.addActionListener(twoWayAxis_OrientationListener);
+				JRadioButton twoWayAxis_RightToLeft = new JRadioButton("Right-to-Left");
+				twoWayAxis_RightToLeft.setActionCommand("1");
+				twoWayAxis_RightToLeft.addActionListener(twoWayAxis_OrientationListener);
+				JRadioButton twoWayAxis_BottomToTop = new JRadioButton("Bottom-to-Top");
+				twoWayAxis_BottomToTop.setActionCommand("2");
+				twoWayAxis_BottomToTop.addActionListener(twoWayAxis_OrientationListener);
+				JRadioButton twoWayAxis_TopToBottom = new JRadioButton("Top-to-Bottom");
+				twoWayAxis_TopToBottom.setActionCommand("3");
+				twoWayAxis_TopToBottom.addActionListener(twoWayAxis_OrientationListener);
+				twoWayAxisOrientationGroup.add(twoWayAxis_LeftToRight);
+				twoWayAxisOrientationGroup.add(twoWayAxis_RightToLeft);
+				twoWayAxisOrientationGroup.add(twoWayAxis_BottomToTop);
+				twoWayAxisOrientationGroup.add(twoWayAxis_TopToBottom);
+				
+				twowayAxis_adjustOrientationContainer = new Container();
+				twowayAxis_adjustOrientationContainer.setLayout(new BoxLayout(twowayAxis_adjustOrientationContainer,BoxLayout.LINE_AXIS));
+				
+				twowayAxis_adjustOrientationContainer.add(twoWayAxis_LeftToRight);
+				twowayAxis_adjustOrientationContainer.add(twoWayAxis_RightToLeft);
+				twowayAxis_adjustOrientationContainer.add(twoWayAxis_BottomToTop);
+				twowayAxis_adjustOrientationContainer.add(twoWayAxis_TopToBottom);
+
+				if (!two_axis_button.isSelected()) {
+					twowayAxis_adjustOrientationContainer.setVisible(false);
+				}
+				
+				Container colorPickerContainer = new Container();
+				colorPickerContainer.setLayout(new BoxLayout(colorPickerContainer,BoxLayout.LINE_AXIS));
+				colorPickerContainer.setPreferredSize(new Dimension(640,64));
+				backgroundColor = new JButton("");
+				indicatorColor = new JButton("");
+				backgroundColor.setBackground(Color.BLACK);
+				backgroundColor.setPreferredSize(new Dimension(32,32));
+				backgroundColor.addActionListener(backgroundColorListener);
+				indicatorColor.setBackground(Color.WHITE);
+				indicatorColor.setPreferredSize(new Dimension(32,32));
+				indicatorColor.addActionListener(indicatorColorListener);
+				
+				JPanel backgroundColorPanel = new JPanel();
+				backgroundColorPanel.setPreferredSize(new Dimension(32,32));
+				backgroundColorPanel.setBorder(BorderFactory.createTitledBorder("Background Color"));
+				JPanel indicatorColorPanel = new JPanel();
+				indicatorColorPanel.setPreferredSize(new Dimension(32,32));
+				indicatorColorPanel.setBorder(BorderFactory.createTitledBorder("Indicator Color"));
+				backgroundColorPanel.add(backgroundColor);
+				indicatorColorPanel.add(indicatorColor);
+				
+				colorPickerContainer.add(Box.createHorizontalGlue());
+				colorPickerContainer.add(backgroundColorPanel);
+				colorPickerContainer.add(indicatorColorPanel);
+				colorPickerContainer.add(Box.createHorizontalGlue());
+				
+				JPanel submitPanel = new JPanel();
+				submitPanel.setPreferredSize(new Dimension(640,32));
+				JButton createButton = new JButton("Create Axis");
+				submitPanel.add(createButton);
+				createButton.addActionListener(createbuttonListener);
+				createButton.setMaximumSize(new Dimension(64,24));
+				
+				previewLabelPanel.add(twowayAxis_adjustContainer);
+				previewLabelPanel.add(Box.createRigidArea(new Dimension(10,1)));
+				previewLabelPanel.add(previewLabel);
+				previewLabelPanel.add(previewpanel);
+				previewLabelPanel.add(Box.createHorizontalBox());
+				previewLabelPanel.add(sizePanel);
+				previewLabelPanel.add(twowayAxis_adjustOrientationContainer);
+				previewLabelPanel.add(colorPickerContainer);
+				previewLabelPanel.add(submitPanel);
 				//previewLabelPanel.setBackground(Color.BLUE);
 				
 				
 				container.add(previewLabelPanel);
 				container.setLayout(new BoxLayout(container,BoxLayout.PAGE_AXIS));
 				
-				this.setMinimumSize(new Dimension(640,480));
+				this.setMinimumSize(new Dimension(640,548));
 				this.add(container);
 				//this.pack();
 				this.repaint();
@@ -243,6 +439,46 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 	@Override
 	public void windowOpened(WindowEvent arg0) {
 	}
+
+	protected Axis ConstructTemporaryAxis() {
+		Axis a;
+		if (two_axis_button.isSelected()) {
+			Identifier ident=null;
+			for (int i=0;i<analog_controller_component_labels.size();i++) {
+				if (analog_controller_component_labels.get(i).isSelected()) {
+					ident=analog_controller_components.get(i).getIdentifier();
+					break;
+				}
+			}
+			a = new Axis(new Rectangle2D.Double(),
+					module.getControllers().get(0),
+					ident,
+					Double.parseDouble(twowayAxis_range1.getTextField().getText()),
+					Double.parseDouble(twowayAxis_range2.getTextField().getText()),
+					orientation,
+					axis_background_col,
+					axis_indicator_col,
+					module);
+		} else {
+			List<Identifier> ident=new ArrayList<Identifier>();
+			ident.add(null);
+			ident.add(null);
+			int count=0;
+			for (int i=0;i<analog_controller_component_labels.size();i++) {
+				if (analog_controller_component_labels.get(i).isSelected()) {
+					ident.set(count++,analog_controller_components.get(i).getIdentifier());
+				}
+			}
+			a = new Axis(new Rectangle2D.Double(),
+					module.getControllers().get(0),
+					ident.get(0),
+					ident.get(1),
+					axis_background_col,
+					axis_indicator_col,
+					module);
+		}
+		return a;
+	}
 }
 
 class PreviewPanel extends JPanel{
@@ -256,27 +492,6 @@ class PreviewPanel extends JPanel{
 	}
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
-        if (twoAxis) {
-        	g.fillRect(0, 0, 32, 32);
-        } else {
-        	double xval=0;
-        	double yval=0;
-        	for (int i=0;i<window.analog_controller_component_labels.size();i++) {
-        		if (window.analog_controller_component_labels.get(i).isSelected() &&
-        				window.analog_controller_component_labels.get(i).getText().contains("X")) {
-        			xval=window.analog_controller_components.get(i).getPollData();
-        		} else
-        		if (window.analog_controller_component_labels.get(i).isSelected() &&
-        				window.analog_controller_component_labels.get(i).getText().contains("Y")) {
-        			yval=window.analog_controller_components.get(i).getPollData();
-        		}
-        	}
-        	Color color_identity = g.getColor();
-        	g.setColor(Color.BLACK);
-    		g.fillOval(0, 0, 32, 32);
-        	g.setColor(Color.WHITE);
-        	g.drawOval((int)((xval+1)*12), (int)((yval+1)*12), 8, 8);
-        	g.setColor(color_identity);
-        }
+        Axis.GetAxisDisplay(g,window.ConstructTemporaryAxis(),0,0,window.axis_width,window.axis_height);
     }
 }

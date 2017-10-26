@@ -22,6 +22,7 @@ import net.java.games.input.Controller.Type;
 import net.java.games.input.ControllerEnvironment;
 import sig.Module;
 import sig.sigIRC;
+import sig.modules.Controller.Axis;
 import sig.modules.Controller.Button;
 import sig.modules.Controller.ClickableButton;
 import sig.modules.Controller.ControlConfigurationWindow;
@@ -37,6 +38,7 @@ public class ControllerModule extends Module{
 	Image controller_img;
 	double imgratio = 1;
 	List<Button> buttons = new ArrayList<Button>();
+	List<Axis> axes = new ArrayList<Axis>();
 	List<ClickableButton> click_buttons = new ArrayList<ClickableButton>();
 	EditMode MODE = EditMode.DEFAULT;
 	String status = "";
@@ -47,6 +49,8 @@ public class ControllerModule extends Module{
 	Color buttoncol;
 	Controller controller;
 	ControlConfigurationWindow configure_window;
+	Axis temporary_axis=null;
+	int mouseclickwait_timer=0;
 
 	public ControllerModule(Rectangle2D bounds, String moduleName) {
 		super(bounds, moduleName);
@@ -89,9 +93,25 @@ public class ControllerModule extends Module{
 		this.end_drag=null;
 	}
 	
+	public void setMouseWaitTimer(int ticks) {
+		this.mouseclickwait_timer=ticks;
+	}
+	
+	public Axis getTemporaryAxis() {
+		return temporary_axis;
+	}
+	
+	public void setTemporaryAxis(Axis a) {
+		this.temporary_axis=a;
+	}
+	
 	public void setDragPoints(Point startpoint,Point endpoint) {
 		this.start_drag=startpoint;
 		this.end_drag=endpoint;
+	}
+	
+	public ControlConfigurationWindow getConfigurationWindow() {
+		return configure_window;
 	}
 	
 	public EditMode getMode() {
@@ -112,26 +132,29 @@ public class ControllerModule extends Module{
 	public void mousePressed(MouseEvent ev) {
 		if (mouseInsideBounds(ev)) {
 			switch (MODE) {
-				case DRAGSELECTION:{
+				case DRAGSELECTION:
+				case DRAGAXISSELECTION:{
 					if (start_drag==null) {
 						start_drag = new Point((int)(ev.getX()-getPosition().getX()),(int)(ev.getY()-getPosition().getY()));
 					}
 				}break;
 			}	
-		}
-		super.mousePressed(ev);
-		if (MODE==EditMode.DEFAULT) {
-			for (ClickableButton cb : click_buttons) {
-				cb.onClickEvent(ev);
+			if (MODE==EditMode.DEFAULT) {
+				for (ClickableButton cb : click_buttons) {
+					cb.onClickEvent(ev);
+				}
 			}
 		}
+		super.mousePressed(ev);
 	}
 	
 	public void mouseReleased(MouseEvent ev) {
 		super.mouseReleased(ev);
 		if (mouseInsideBounds(ev)) {
 			switch (MODE) {
-				case DRAGSELECTION:{
+				case DRAGSELECTION:
+				case DRAGAXISSELECTION:
+				{
 					if (start_drag!=null) {
 						end_drag = new Point((int)(ev.getX()-getPosition().getX()),(int)(ev.getY()-getPosition().getY()));
 						double width = (end_drag.getX()-start_drag.getX())/controller_img.getWidth(sigIRC.panel);
@@ -144,7 +167,13 @@ public class ControllerModule extends Module{
 						//buttons.add(new Button(pct_rect.getX(),pct_rect.getY(),pct_rect.getWidth(),pct_rect.getHeight(),controllers.get(0),Identifier.Button._3,Color.RED,this));
 						//resetDragPoints();
 						sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-						MODE=EditMode.BUTTONSET;
+						if (MODE==EditMode.DRAGSELECTION) {
+							MODE=EditMode.BUTTONSET;
+						} else 
+						if (MODE==EditMode.DRAGAXISSELECTION) {
+							AddAxis();
+							MODE=EditMode.DEFAULT;
+						}
 					}
 				}
 			}
@@ -152,7 +181,7 @@ public class ControllerModule extends Module{
 	}
 
 	protected boolean mouseInsideBounds(MouseEvent ev) {
-		return ev.getX()>=getPosition().getX() && ev.getX()<=getPosition().getX()+getPosition().getWidth() &&
+		return mouseclickwait_timer<=0 && ev.getX()>=getPosition().getX() && ev.getX()<=getPosition().getX()+getPosition().getWidth() &&
 				ev.getY()>=getPosition().getY() && ev.getY()<=getPosition().getY()+getPosition().getHeight();
 	}
 	
@@ -177,6 +206,9 @@ public class ControllerModule extends Module{
 				}
 			}*/
 		}
+		if (mouseclickwait_timer>0) {
+			mouseclickwait_timer--;
+		}
 		switch (MODE) {
 			case DRAGSELECTION:{
 				int cursortype = sigIRC.panel.getCursor().getType();
@@ -190,6 +222,13 @@ public class ControllerModule extends Module{
 			}break;
 			case COLORSET:{
 				status="Select a color from the panel.";
+			}break;
+			case DRAGAXISSELECTION:{
+				int cursortype = sigIRC.panel.getCursor().getType();
+				if (cursortype!=Cursor.CROSSHAIR_CURSOR) {
+					sigIRC.panel.setCursor(new Cursor(Cursor.CROSSHAIR_CURSOR));
+				}
+				status="Drag the axis onto the controller template.";
 			}break;
 			default:{
 				status="";
@@ -241,6 +280,9 @@ public class ControllerModule extends Module{
 		for (Button b : buttons) {
 			b.draw(g);
 		}
+		for (Axis a : axes) {
+			a.draw(g);
+		}
 		for (ClickableButton cb : click_buttons) {
 			cb.draw(g);
 		}
@@ -258,6 +300,28 @@ public class ControllerModule extends Module{
 						Math.abs(width), Math.abs(height));
 				g.setColor(color_identity);
 			}
+		} else
+		if (MODE==EditMode.DRAGAXISSELECTION) {
+			if (start_drag!=null) {
+				Color color_identity = g.getColor();
+				g.setColor(temporary_axis.getBackgroundColor());
+				int width = sigIRC.panel.lastMouseX-
+						((int)position.getX()+(int)start_drag.getX());
+				int height = sigIRC.panel.lastMouseY-
+						((int)position.getY()+(int)start_drag.getY());
+				if (temporary_axis.isTwoWayAxis()) {
+					g.fillRect(
+					(width<0)?sigIRC.panel.lastMouseX:(int)position.getX()+(int)start_drag.getX(), 
+					(height<0)?sigIRC.panel.lastMouseY:(int)position.getY()+(int)start_drag.getY(),
+							Math.abs(width), Math.abs(height));
+				} else {
+					g.fillOval(
+					(width<0)?sigIRC.panel.lastMouseX:(int)position.getX()+(int)start_drag.getX(), 
+					(height<0)?sigIRC.panel.lastMouseY:(int)position.getY()+(int)start_drag.getY(),
+							Math.abs(width), Math.abs(height));
+				}
+				g.setColor(color_identity);
+			}
 		}
 	}
 
@@ -270,6 +334,13 @@ public class ControllerModule extends Module{
 				}
 			}
 		}
+	}
+
+	private void AddAxis() {
+		temporary_axis.setupBoundsRectangle(stored_rect);
+		temporary_axis.setVisible(true);
+		axes.add(temporary_axis);
+		temporary_axis=null;
 	}
 
 	private void AddButton() {
