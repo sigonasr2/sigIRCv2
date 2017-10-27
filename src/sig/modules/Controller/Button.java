@@ -4,9 +4,6 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.geom.Rectangle2D;
 
-import net.java.games.input.Component.Identifier;
-import net.java.games.input.Component;
-import net.java.games.input.Controller;
 import sig.sigIRC;
 import sig.modules.ControllerModule;
 
@@ -15,26 +12,26 @@ public class Button {
 	double pct_y = 0;
 	double pct_width = 0;
 	double pct_height = 0;
-	Identifier ident;
-	float value;
+	int ident;
+	byte value;
 	Controller parent_controller;
 	Color pressed_col;
 	ControllerModule parent;
 	boolean square;
 	
-	public Button(Rectangle2D.Double rect, Controller parent_controller, Identifier button_identifier, float button_val, Color col, ControllerModule module) {
+	public Button(Rectangle2D.Double rect, Controller parent_controller, int button_identifier, byte button_val, Color col, ControllerModule module) {
 		this(rect.getX(),rect.getY(),rect.getWidth(),rect.getHeight(),parent_controller,button_identifier,button_val,col,module,false);
 	}
 	
-	public Button(Rectangle2D.Double rect, Controller parent_controller, Identifier button_identifier, float button_val, Color col, ControllerModule module, boolean square) {
+	public Button(Rectangle2D.Double rect, Controller parent_controller, int button_identifier, byte button_val, Color col, ControllerModule module, boolean square) {
 		this(rect.getX(),rect.getY(),rect.getWidth(),rect.getHeight(),parent_controller,button_identifier,button_val,col,module,square);
 	}
 	
-	public Button(double pct_x, double pct_y, double pct_width, double pct_height, Controller parent_controller, Identifier button_identifier, float button_val, Color col, ControllerModule module) {
+	public Button(double pct_x, double pct_y, double pct_width, double pct_height, Controller parent_controller, int button_identifier, byte button_val, Color col, ControllerModule module) {
 		this(pct_x,pct_y,pct_width,pct_height,parent_controller,button_identifier,button_val,col,module,false);
 	}
 	
-	public Button(double pct_x, double pct_y, double pct_width, double pct_height, Controller parent_controller, Identifier button_identifier, float button_val, Color col, ControllerModule module, boolean square) {
+	public Button(double pct_x, double pct_y, double pct_width, double pct_height, Controller parent_controller, int button_identifier, byte button_val, Color col, ControllerModule module, boolean square) {
 		this.pct_x = pct_x;
 		this.pct_y = pct_y;
 		this.pct_width=pct_width;
@@ -48,7 +45,7 @@ public class Button {
 	}
 	
 	public void draw(Graphics g) {
-		if (parent_controller.getComponent(ident).getPollData()==value) {
+		if (parent_controller.getButtonValue(ident)==value) {
 			Color col_identity = g.getColor();
 			g.setColor(pressed_col);
 			if (square) {
@@ -76,7 +73,7 @@ public class Button {
 		sb.append(pct_y);sb.append(",");
 		sb.append(pct_width);sb.append(",");
 		sb.append(pct_height);sb.append(",");
-		sb.append(ident.getName());sb.append(",");
+		sb.append(ident);sb.append(",");
 		sb.append(value);sb.append(",");
 		sb.append(pressed_col.getRed());sb.append(",");
 		sb.append(pressed_col.getGreen());sb.append(",");
@@ -95,8 +92,8 @@ public class Button {
 				Double.parseDouble(split[i++]),
 				Double.parseDouble(split[i++]),
 				controller,
-				GrabIdentifierFromString(split[i++],controller),
-				Float.parseFloat(split[i++]),
+				Integer.parseInt(split[i++]),
+				Byte.parseByte(split[i++]),
 				new Color(
 						Integer.parseInt(split[i++]),
 						Integer.parseInt(split[i++]),
@@ -105,15 +102,5 @@ public class Button {
 						),
 				module,
 				Boolean.parseBoolean(split[i++]));
-	}
-
-	private static Identifier GrabIdentifierFromString(String string, Controller controller) {
-		for (Component cp : controller.getComponents()) {
-			Identifier id = cp.getIdentifier();
-			if (id.getName().equals(string)) {
-				return id;
-			}
-		}
-		return null;
 	}
 }

@@ -37,9 +37,6 @@ import javax.swing.border.Border;
 import javax.swing.event.DocumentEvent;
 import javax.swing.event.DocumentListener;
 
-import net.java.games.input.Component;
-import net.java.games.input.Component.Identifier;
-import net.java.games.input.Controller;
 import sig.ColorPanel;
 import sig.sigIRC;
 import sig.modules.ControllerModule;
@@ -47,7 +44,7 @@ import sig.modules.ControllerModule;
 public class ControlConfigurationWindow extends JFrame implements WindowListener{
 	DialogType dialog;
 	List<JPanel> panels = new ArrayList<JPanel>();
-	List<Component> analog_controller_components = new ArrayList<Component>();
+	List<Integer> analog_controller_components = new ArrayList<Integer>();
 	List<JCheckBox> analog_controller_component_labels = new ArrayList<JCheckBox>();
 	ControllerModule module;
 	DecimalFormat df = new DecimalFormat("0.000");
@@ -60,7 +57,10 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 	Color axis_indicator_col = Color.WHITE;
 	int axis_width=32,axis_height=32;
 	JButton backgroundColor,indicatorColor;
+	boolean x_invert,y_invert,axis_invert;
 	int orientation=0; //0=Left-to-Right, 1=Right-to-Left, 2=Bottom-to-Top, 3=Top-to-Bottom
+	JCheckBox width_invert,height_invert;
+	java.awt.Component extra_space;
 	ActionListener checkboxListener = new ActionListener(){
 		@Override
 		public void actionPerformed(ActionEvent ev) {
@@ -78,7 +78,7 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 
 		private void UncheckPreviouslyCheckedbox(ActionEvent ev) {
 			for (int i=0;i<analog_controller_components.size();i++) {
-				if (analog_controller_components.get(i).getName().equals(ev.getActionCommand())) {
+				if (Integer.toString(analog_controller_components.get(i)).equals(ev.getActionCommand())) {
 					analog_controller_component_labels.get(i).setSelected(false);
 				}
 			}
@@ -93,6 +93,7 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 					previewpanel.setAxis(false);
 					twowayAxis_adjustContainer.setVisible(false);
 					twowayAxis_adjustOrientationContainer.setVisible(false);
+					height_invert.setVisible(true);
 				}break;
 				case "two":{
 					previewpanel.setAxis(true);
@@ -108,8 +109,10 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 					}
 					twowayAxis_adjustContainer.setVisible(true);
 					twowayAxis_adjustOrientationContainer.setVisible(true);
+					height_invert.setVisible(false);
 				}break;
 			}
+			extra_space.setVisible(two_axis_button.isSelected());
 		}
 	};
 	ActionListener backgroundColorListener = new ActionListener(){
@@ -154,6 +157,16 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 
 		private boolean DataIsValid() {
 			return true;
+		}
+	};
+	ActionListener invertListener = new ActionListener(){
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			if (ev.getActionCommand().equals("x")) {
+				x_invert=width_invert.isSelected();
+			} else {
+				y_invert=height_invert.isSelected();
+			}
 		}
 	};
 	
@@ -222,20 +235,19 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 				selectionPanel2.setBackground(new Color(0,0,255,96));
 				int counter=0;
 				for (Controller c : module.getControllers()) {
-					for (Component cp : c.getComponents()) {
-						if (cp.isAnalog()) {
-							analog_controller_components.add(cp);
-							JCheckBox component_checkbox = new JCheckBox(GetComponentValue(cp),false);
-							component_checkbox.setActionCommand(cp.getName());
-							component_checkbox.addActionListener(checkboxListener);
-							analog_controller_component_labels.add(component_checkbox);
-							axisPanel.add(component_checkbox);
-							counter=Math.floorMod(counter+1, 5);
-							if (counter==0) {
-								panels.add(axisPanel);
-								axisPanel = new JPanel();
-								axisPanel.setLayout(new BoxLayout(axisPanel,BoxLayout.LINE_AXIS));
-							}
+					for (int i=0;i<c.getAxes().length;i++) {
+						float axis = c.getAxisValue(i);
+						analog_controller_components.add(i);
+						JCheckBox component_checkbox = new JCheckBox(GetComponentValue(i),false);
+						component_checkbox.setActionCommand(Integer.toString(i));
+						component_checkbox.addActionListener(checkboxListener);
+						analog_controller_component_labels.add(component_checkbox);
+						axisPanel.add(component_checkbox);
+						counter=Math.floorMod(counter+1, 5);
+						if (counter==0) {
+							panels.add(axisPanel);
+							axisPanel = new JPanel();
+							axisPanel.setLayout(new BoxLayout(axisPanel,BoxLayout.LINE_AXIS));
 						}
 					}
 				}
@@ -284,21 +296,45 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 				
 				Container sizePanel = new Container();
 				sizePanel.setLayout(new BoxLayout(sizePanel,BoxLayout.PAGE_AXIS));
+				JPanel widthPanel = new JPanel();
+				widthPanel.setLayout(new BoxLayout(widthPanel,BoxLayout.LINE_AXIS));
+				widthPanel.setPreferredSize(new Dimension(164,20));
+				JPanel heightPanel = new JPanel();
+				heightPanel.setPreferredSize(new Dimension(164,20));
+				heightPanel.setLayout(new BoxLayout(heightPanel,BoxLayout.LINE_AXIS));
 				JLabel widthLabel = new JLabel("Width: ");
 				JTextField width_field = new JTextField("32",3);
+				width_field.setPreferredSize(new Dimension(32,20));
+				width_field.setMaximumSize(new Dimension(32,20));
+				width_invert = new JCheckBox("Inverted");
+				width_invert.addActionListener(invertListener);
+				width_invert.setActionCommand("x");
 				ResizeTextField width_field_listener = new ResizeTextField(width_field,this,SizeType.WIDTH);
 				width_field.getDocument().addDocumentListener(width_field_listener);
 				JLabel heightLabel = new JLabel("Height: ");
 				JTextField height_field = new JTextField("32",3);
+				height_field.setPreferredSize(new Dimension(32,20));
+				height_field.setMaximumSize(new Dimension(32,20));
+				height_invert = new JCheckBox("Inverted");
+				height_invert.addActionListener(invertListener);
+				extra_space = Box.createRigidArea(height_invert.getMaximumSize());
+				extra_space.setVisible(two_axis_button.isSelected());
+				width_invert.setActionCommand("y");
 				ResizeTextField height_field_listener = new ResizeTextField(height_field,this,SizeType.HEIGHT);
 				height_field.getDocument().addDocumentListener(height_field_listener);
 				
-				sizePanel.add(widthLabel);
-				sizePanel.add(width_field);
-				sizePanel.add(Box.createRigidArea(new Dimension(4,0)));
-				sizePanel.add(heightLabel);
-				sizePanel.add(height_field);
-				sizePanel.setPreferredSize(new Dimension(56,96));
+				widthPanel.add(widthLabel);
+				widthPanel.add(width_field);
+				widthPanel.add(width_invert);
+				heightPanel.add(heightLabel);
+				heightPanel.add(height_field);
+				heightPanel.add(height_invert);
+				heightPanel.add(extra_space);
+				
+				sizePanel.add(widthPanel);
+				sizePanel.add(Box.createRigidArea(new Dimension(0,8)));
+				sizePanel.add(heightPanel);
+				sizePanel.setPreferredSize(new Dimension(164,64));
 				
 				ButtonGroup twoWayAxisOrientationGroup = new ButtonGroup();
 				JRadioButton twoWayAxis_LeftToRight = new JRadioButton("Left-to-Right",true);
@@ -389,8 +425,9 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 		}
 	}
 
-	private String GetComponentValue(Component component) {
-		return component.getName()+": "+df.format(component.getPollData())+"     ";
+	private String GetComponentValue(int axis) {
+		float val = module.getControllers().get(0).getAxisValue(axis);
+		return "Axis "+axis+": "+df.format(val)+"     ";
 	}
 	
 	public void run() {
@@ -443,10 +480,10 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 	protected Axis ConstructTemporaryAxis() {
 		Axis a;
 		if (two_axis_button.isSelected()) {
-			Identifier ident=null;
+			int ident=-1;
 			for (int i=0;i<analog_controller_component_labels.size();i++) {
 				if (analog_controller_component_labels.get(i).isSelected()) {
-					ident=analog_controller_components.get(i).getIdentifier();
+					ident=analog_controller_components.get(i);
 					break;
 				}
 			}
@@ -458,15 +495,16 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 					orientation,
 					axis_background_col,
 					axis_indicator_col,
+					x_invert,
 					module);
 		} else {
-			List<Identifier> ident=new ArrayList<Identifier>();
+			List<Integer> ident=new ArrayList<Integer>();
 			ident.add(null);
 			ident.add(null);
 			int count=0;
 			for (int i=0;i<analog_controller_component_labels.size();i++) {
 				if (analog_controller_component_labels.get(i).isSelected()) {
-					ident.set(count++,analog_controller_components.get(i).getIdentifier());
+					ident.set(count++,analog_controller_components.get(i));
 				}
 			}
 			a = new Axis(new Rectangle2D.Double(),
@@ -475,6 +513,9 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 					ident.get(1),
 					axis_background_col,
 					axis_indicator_col,
+					x_invert,
+					y_invert,
+					axis_invert,
 					module);
 		}
 		return a;

@@ -267,16 +267,6 @@ public class sigIRC{
 		manager = new FileManager("update.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("backcolor.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("drag_bar.png"); manager.verifyAndFetchFileFromServer();
-		if (controllermodule_enabled) {
-			manager = new FileManager("jinput-dx8.dll"); manager.verifyAndFetchFileFromServer();
-			manager = new FileManager("jinput-dx8_64.dll"); manager.verifyAndFetchFileFromServer();
-			manager = new FileManager("jinput-raw.dll"); manager.verifyAndFetchFileFromServer();
-			manager = new FileManager("jinput-raw_64.dll"); manager.verifyAndFetchFileFromServer();
-			manager = new FileManager("jinput-wintab.dll"); manager.verifyAndFetchFileFromServer();
-			manager = new FileManager("libjinput-linux.so"); manager.verifyAndFetchFileFromServer();
-			manager = new FileManager("libjinput-linux64.so"); manager.verifyAndFetchFileFromServer();
-			manager = new FileManager("libjinput-osx.jnilib"); manager.verifyAndFetchFileFromServer();
-		}
 		DownloadProgramUpdate();
 		System.out.println("Downloaded Dependencies. ");
 	}
@@ -542,6 +532,8 @@ public class sigIRC{
 		}
 		System.setProperty("sun.java2d.opengl", Boolean.toString(sigIRC.hardwareAcceleration));
         JFrame f = new JFrame("sigIRCv2");
+        f.setAutoRequestFocus(true);
+        f.toFront();
         f.setDefaultCloseOperation(JFrame.EXIT_ON_CLOSE);
 		if (sigIRC.overlayMode && !sigIRC.showWindowControls) {
 			f.setUndecorated(true);

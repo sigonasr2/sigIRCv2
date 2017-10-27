@@ -15,8 +15,14 @@
             <fileset dir="${dir.jarfile}/bin"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/commons-io-2.5.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/twitch-api-wrapper-0.3-jar-with-dependencies.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/jinput-2.0.5.jar"/>
-            <zipfileset excludes="META-INF/*.SF" src="lib/jutils-1.0.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/lwjgl-glfw.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/lwjgl-glfw-natives-linux.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/lwjgl-glfw-natives-windows.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/lwjgl-glfw-natives-macos.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/lwjgl.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/lwjgl-natives-linux.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/lwjgl-natives-windows.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/lwjgl-natives-macos.jar"/>
         </jar>
     </target>
 </project>

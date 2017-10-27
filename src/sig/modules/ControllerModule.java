@@ -7,6 +7,7 @@ import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
 import java.io.IOException;
@@ -15,18 +16,19 @@ import java.util.List;
 
 import javax.imageio.ImageIO;
 
-import net.java.games.input.Component;
-import net.java.games.input.Component.Identifier;
-import net.java.games.input.Controller;
-import net.java.games.input.Controller.Type;
-import net.java.games.input.ControllerEnvironment;
+import org.lwjgl.glfw.GLFW;
+
 import sig.Module;
 import sig.sigIRC;
 import sig.modules.Controller.Axis;
 import sig.modules.Controller.Button;
 import sig.modules.Controller.ClickableButton;
+import sig.modules.Controller.Component;
 import sig.modules.Controller.ControlConfigurationWindow;
+import sig.modules.Controller.Controller;
 import sig.modules.Controller.EditMode;
+import sig.modules.Controller.Identifier;
+import sig.modules.Controller.Type;
 import sig.modules.Controller.clickablebutton.AddClickableButton;
 import sig.modules.Controller.clickablebutton.CopyClickableButton;
 import sig.utils.DrawUtils;
@@ -44,7 +46,7 @@ public class ControllerModule extends Module{
 	String status = "";
 	Point start_drag,end_drag;
 	Rectangle2D.Double stored_rect;
-	Identifier stored_controller_button;
+	int stored_controller_button;
 	float stored_controller_value;
 	Color buttoncol;
 	Controller controller;
@@ -54,18 +56,21 @@ public class ControllerModule extends Module{
 
 	public ControllerModule(Rectangle2D bounds, String moduleName) {
 		super(bounds, moduleName);
-		Controller[] ca = ControllerEnvironment.getDefaultEnvironment().getControllers();
-		for (Controller c : ca) {
-			if (c.getType()==Type.GAMEPAD) {
-				controllers.add(c);
-				System.out.println("Recognized "+c.getName()+": "+c.getType());
-				//System.out.println("Components: ");
-				/*for (Component cp : c.getComponents()) {
-					System.out.println(" "+cp.getName()+" ("+cp.getIdentifier().getName()+")");
-				}*/
-			}
-			//System.out.println(c.getName()+": "+c.getType());
+		if (!GLFW.glfwInit()) {
+			System.out.println("Failed to initialize GLFW!");
+		} else {
+			System.out.println("Successfully initialized GLFW.");
 		}
+		List<Controller> ca = new ArrayList<Controller>();
+		for (int i=0;i<GLFW.GLFW_JOYSTICK_LAST;i++) {
+			//System.out.println("Joystick "+i+": "+GLFW.glfwGetJoystickName(i));
+			if (GLFW.glfwGetJoystickName(i)!=null) {
+				Controller c = new Controller(i);
+				ca.add(c);
+				System.out.println("Recognized "+GLFW.glfwGetJoystickName(i)+": "+c.outputAxes()+","+c.outputButtons());
+			}
+		}
+		controllers.addAll(ca);
 		try {
 			controller_img = ImageIO.read(new File(CONTROLLERPATH+"controller_template.png")).getScaledInstance((int)position.getWidth(), -1, 0);
 			//System.out.println("Size of controller: "+controller_img.getWidth(sigIRC.panel)+","+controller_img.getHeight(sigIRC.panel));
@@ -73,7 +78,7 @@ public class ControllerModule extends Module{
 			e.printStackTrace();
 		}
 		//buttons.add(new Button(0.1,0.05,0.1,0.05,controllers.get(0),Identifier.Button._3,Color.RED,this));
-		LoadButtonData();
+		LoadButtonAndAxisData();
 		click_buttons.add(new AddClickableButton(new Rectangle(
 				0,(int)position.getHeight()-41,96,20),"Add Button",this));
 		click_buttons.add(new CopyClickableButton(new Rectangle(
@@ -236,12 +241,13 @@ public class ControllerModule extends Module{
 		}
 		super.run();
 		if (MODE==EditMode.BUTTONSET) {
-			stored_controller_button=null;
+			stored_controller_button=-1;
 			for (Controller c : controllers) {
-				for (Component cp : c.getComponents()) {
-					if (!cp.isAnalog() && cp.getPollData()!=0.0f) {
-						stored_controller_button = cp.getIdentifier();
-						stored_controller_value = cp.getPollData();
+				for (int i=0;i<c.getButtons().length;i++) {
+					byte b = c.getButtonValue(i);
+					if (b!=(byte)0) {
+						stored_controller_button = i;
+						stored_controller_value = b;
 						controller=c;
 						MODE=EditMode.COLORSET;
 						buttoncol = PopupColorPanel();
@@ -250,7 +256,7 @@ public class ControllerModule extends Module{
 						break;
 					}
 				}
-				if (stored_controller_button!=null) {
+				if (stored_controller_button!=-1) {
 					break;
 				}
 			}
@@ -266,16 +272,19 @@ public class ControllerModule extends Module{
 	
 	public void draw(Graphics g) {
 		super.draw(g);
-		for (int i=0;i<controllers.get(0).getComponents().length;i++) {
-			Component cp = controllers.get(0).getComponents()[i];
-			/*if (!cp.isAnalog()) {
-				if (cp.getPollData()!=0) {
-					//System.out.println("Button "+cp.getIdentifier()+" held down! Value: "+cp.getPollData());
-					//DrawUtils.drawText(g,position.getX(),position.getY(),Color.BLACK,"Button "+cp.getIdentifier()+" held down!");
-				}
-			}*/
+		if (controllers.size()>0) {
+			//System.out.println(controllers.get(0).outputAxes()+","+controllers.get(0).outputButtons());
+			for (int i=0;i<controllers.get(0).getComponents().length;i++) {
+				Component cp = controllers.get(0).getComponents()[i];
+				/*if (!cp.isAnalog()) {
+					if (cp.getPollData()!=0) {
+						//System.out.println("Button "+cp.getIdentifier()+" held down! Value: "+cp.getPollData());
+						//DrawUtils.drawText(g,position.getX(),position.getY(),Color.BLACK,"Button "+cp.getIdentifier()+" held down!");
+					}
+				}*/
+			}
+			g.drawImage(controller_img, (int)(position.getX()), (int)(position.getY()), sigIRC.panel);
 		}
-		g.drawImage(controller_img, (int)(position.getX()), (int)(position.getY()), sigIRC.panel);
 		DrawUtils.drawText(g, position.getX(), position.getY()+8, Color.BLACK, status);
 		for (Button b : buttons) {
 			b.draw(g);
@@ -325,12 +334,23 @@ public class ControllerModule extends Module{
 		}
 	}
 
-	private void LoadButtonData() {
+	private void LoadButtonAndAxisData() {
 		String[] buttondata = FileUtils.readFromFile(CONTROLLERPATH+"button_data.txt");
 		if (controllers.size()>0) {
 			for (String s : buttondata) {
 				if (s.length()>0) {
 					buttons.add(Button.loadFromString(s, controllers.get(0), this));
+				}
+			}
+		}
+		String[] axisdata = FileUtils.readFromFile(CONTROLLERPATH+"axis_data.txt");
+		if (controllers.size()>0) {
+			for (String s : axisdata) {
+				if (s.length()>0) {
+					//System.out.println("Creating new axis using string "+s+".");
+					Axis a = Axis.loadFromString(s, controllers.get(0), this);
+					a.setVisible(true);
+					axes.add(a);
 				}
 			}
 		}
@@ -341,10 +361,15 @@ public class ControllerModule extends Module{
 		temporary_axis.setVisible(true);
 		axes.add(temporary_axis);
 		temporary_axis=null;
+		StringBuilder sb = new StringBuilder();
+		for (Axis a : axes) {
+			sb.append(a.getSaveString()+"\n");
+		}
+		FileUtils.writetoFile(new String[]{sb.toString()}, CONTROLLERPATH+"axis_data.txt");
 	}
 
 	private void AddButton() {
-		buttons.add(new Button(stored_rect,controller,stored_controller_button,stored_controller_value,buttoncol,this));
+		buttons.add(new Button(stored_rect,controller,stored_controller_button,(byte)stored_controller_value,buttoncol,this));
 		StringBuilder sb = new StringBuilder();
 		for (Button b : buttons) {
 			sb.append(b.getSaveString()+"\n");
