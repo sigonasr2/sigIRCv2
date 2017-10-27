@@ -10,7 +10,6 @@ import sig.modules.Controller.DialogType;
 import sig.modules.Controller.EditMode;
 
 public class CopyClickableButton extends ClickableButton{
-	ControlConfigurationWindow window;
 
 	public CopyClickableButton(Rectangle position, String button_label, ControllerModule parent_module) {
 		super(position, button_label, parent_module);
@@ -18,8 +17,7 @@ public class CopyClickableButton extends ClickableButton{
 	
 	public void onClickEvent(MouseEvent ev) {
 		super.onClickEvent(ev);
-		if (mouseInsideBounds(ev)) {
-			window = new ControlConfigurationWindow(DialogType.BUTTON_AXIS_SELECTION,module);
+		if (mouseInsideBounds(ev)) {;
 			module.resetDragPoints();
 		}
 	}

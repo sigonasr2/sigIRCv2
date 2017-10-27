@@ -26,6 +26,7 @@ import javax.swing.ButtonGroup;
 import javax.swing.JButton;
 import javax.swing.JCheckBox;
 import javax.swing.JComponent;
+import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
@@ -118,7 +119,7 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 	ActionListener backgroundColorListener = new ActionListener(){
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Color selectedcol = sigIRC.colorpanel.getBackgroundColor();
+			Color selectedcol = sigIRC.colorpanel.getBackgroundColor(null);
 			if (selectedcol!=null) {
 				axis_background_col = selectedcol;
 				backgroundColor.setBackground(axis_background_col);
@@ -128,7 +129,7 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 	ActionListener indicatorColorListener = new ActionListener(){
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Color selectedcol = sigIRC.colorpanel.getBackgroundColor();
+			Color selectedcol = sigIRC.colorpanel.getBackgroundColor(null);
 			if (selectedcol!=null) {
 				axis_indicator_col = selectedcol;
 				indicatorColor.setBackground(axis_indicator_col);
@@ -169,10 +170,42 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 			}
 		}
 	};
+	ActionListener addButtonListener = new ActionListener(){
+		@Override
+		public void actionPerformed(ActionEvent ev) {
+			switch (ev.getActionCommand()) {
+				case "add_button":{
+					module.setMode(EditMode.DRAGSELECTION); 
+					sigIRC.panel.grabFocus();
+					module.getConfigurationWindow().dispatchEvent(new WindowEvent(module.getConfigurationWindow(),WindowEvent.WINDOW_CLOSING));
+				}break;
+				case "add_similar":{
+					if (module.getStoredRectangle()!=null) {
+						module.setMode(EditMode.POSITIONSELECTION);
+						sigIRC.panel.grabFocus();
+						module.getConfigurationWindow().dispatchEvent(new WindowEvent(module.getConfigurationWindow(),WindowEvent.WINDOW_CLOSING));
+					} else {
+						new JDialog(module.getConfigurationWindow(),"Please create a new button first.");
+					}
+				}break;
+				case "add_axis":{
+					new ControlConfigurationWindow(DialogType.BUTTON_AXIS_SELECTION,module);
+				}break;
+			}
+		}
+	};
+	
+	public void setDialogType(DialogType type) {
+		this.dialog=type;
+	}
 	
 	public ControlConfigurationWindow(DialogType type, ControllerModule parent_module) {
 		this.setVisible(true);
 		this.module = parent_module;
+		if (module.getConfigurationWindow()!=null) {
+			module.getConfigurationWindow().dispatchEvent(new WindowEvent(module.getConfigurationWindow(),WindowEvent.WINDOW_CLOSING));
+			module.setConfigureWindow(null);
+		}
 		this.module.setConfigureWindow(this);
 		this.dialog = type;
 		
@@ -422,6 +455,35 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 			case BUTTON_OPTIONS:
 				
 				break;
+			case CREATE_CONTROL:
+				container = new JPanel();
+				
+				JButton newbutton = new JButton("Add new button");
+				newbutton.setActionCommand("add_button");
+				newbutton.addActionListener(addButtonListener);
+				newbutton.setMinimumSize(new Dimension(320,24));
+				JButton copybutton = new JButton("Add similar button");
+				copybutton.setActionCommand("add_similar");
+				copybutton.addActionListener(addButtonListener);
+				copybutton.setMinimumSize(new Dimension(320,24));
+				copybutton.setToolTipText("Adds a button with the same size as the previously created button, but lets you specify a new gamepad input and new color.");
+				JButton newaxis = new JButton("Add new axis");
+				newaxis.setActionCommand("add_axis");
+				newaxis.addActionListener(addButtonListener);
+				newaxis.setMinimumSize(new Dimension(320,24));
+				
+				container.add(newbutton);
+				container.add(copybutton);
+				container.add(newaxis);
+
+				//container.setLayout(new BorderLayout());
+				this.setMinimumSize(new Dimension(320,120));
+				this.setPreferredSize(new Dimension(320,120));
+				this.add(container);
+				this.pack();
+				//this.pack();
+				this.repaint();
+				break;
 		}
 	}
 
@@ -439,12 +501,14 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 					JCheckBox mycheckbox = analog_controller_component_labels.get(i);
 					mycheckbox.setText(GetComponentValue(analog_controller_components.get(i)));
 				}
+				if (previewpanel!=null) {
+					previewpanel.repaint();
+				}
 				break;
 			case BUTTON_OPTIONS:
 				break;
-		}
-		if (previewpanel!=null) {
-			previewpanel.repaint();
+			case CREATE_CONTROL:
+				break;
 		}
 	}
 	

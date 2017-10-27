@@ -94,4 +94,8 @@ public class DrawUtils {
 			return null;
 		}
 	}
+	
+	public static Color invertColor(Color c) {
+		return new Color(255-c.getRed(),255-c.getGreen(),255-c.getBlue(),255);
+	}
 }

@@ -9,14 +9,10 @@ import java.util.List;
 import sig.sigIRC;
 import sig.modules.ControllerModule;
 
-public class Axis {
+public class Axis extends Element{
 	List<Integer> identifiers = new ArrayList<Integer>();
 	boolean twoWayAxis = false; //True = 4-way, False = 2-way
 	Color backgroundColor=Color.BLACK,indicatorColor=Color.WHITE;
-	double pct_x = 0;
-	double pct_y = 0;
-	double pct_width = 0;
-	double pct_height = 0;
 	Controller parent_controller;
 	ControllerModule parent;
 	double range1,range2; //Range of motion.
@@ -96,6 +92,10 @@ public class Axis {
 					pct_width*parent.getControllerImage().getWidth(sigIRC.panel),
 					pct_height*parent.getControllerImage().getHeight(sigIRC.panel));
 		}
+	}
+
+	public Color getSelectionColor() {
+		return backgroundColor;
 	}
 	
 	public boolean is_Xinverted() {

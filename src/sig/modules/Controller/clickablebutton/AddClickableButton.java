@@ -5,6 +5,8 @@ import java.awt.event.MouseEvent;
 
 import sig.modules.ControllerModule;
 import sig.modules.Controller.ClickableButton;
+import sig.modules.Controller.ControlConfigurationWindow;
+import sig.modules.Controller.DialogType;
 import sig.modules.Controller.EditMode;
 
 public class AddClickableButton extends ClickableButton{
@@ -15,8 +17,12 @@ public class AddClickableButton extends ClickableButton{
 	
 	public void onClickEvent(MouseEvent ev) {
 		super.onClickEvent(ev);
-		if (mouseInsideBounds(ev)) {
+		/*if (mouseInsideBounds(ev)) {
 			module.setMode(EditMode.DRAGSELECTION); 
+			module.resetDragPoints();
+		}*/
+		if (mouseInsideBounds(ev)) {
+			new ControlConfigurationWindow(DialogType.CREATE_CONTROL,module);
 			module.resetDragPoints();
 		}
 	}

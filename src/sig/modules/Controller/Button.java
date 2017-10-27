@@ -7,11 +7,7 @@ import java.awt.geom.Rectangle2D;
 import sig.sigIRC;
 import sig.modules.ControllerModule;
 
-public class Button {
-	double pct_x = 0;
-	double pct_y = 0;
-	double pct_width = 0;
-	double pct_height = 0;
+public class Button extends Element{
 	int ident;
 	byte value;
 	Controller parent_controller;
@@ -42,6 +38,11 @@ public class Button {
 		this.parent = module;
 		this.square = square;
 		this.value = button_val;
+		module.setStoredRectangle(new Rectangle2D.Double(pct_x, pct_y, pct_width, pct_height));
+	}
+	
+	public Color getSelectionColor() {
+		return pressed_col;
 	}
 	
 	public void draw(Graphics g) {

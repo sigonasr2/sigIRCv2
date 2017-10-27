@@ -7,5 +7,6 @@ public enum EditMode {
 	DELETESELECTION, //Delete a button.
 	BUTTONSET, //Asks for a controller button to set this button to.
 	COLORSET,
-	DEFAULT;
+	DEFAULT,
+	POSITIONSELECTION;
 }
