@@ -5,6 +5,7 @@ import java.awt.Image;
 import java.awt.geom.Rectangle2D;
 
 import sig.sigIRC;
+import sig.modules.ControllerModule;
 
 public class Element {
 	protected double pct_x = 0;
@@ -36,5 +37,15 @@ public class Element {
 			return a.getSelectionColor();
 		}
 		return null;
+	}
+	public void remove(ControllerModule module) {
+		if (this instanceof Button) {
+			module.getButtons().remove(this);
+			module.SaveButtonData();
+		} else
+		if (this instanceof Axis) {
+			module.getAxes().remove(this);
+			module.SaveAxisData();
+		}
 	}
 }

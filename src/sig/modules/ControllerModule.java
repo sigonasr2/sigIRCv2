@@ -6,6 +6,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.KeyEvent;
 import java.awt.event.MouseEvent;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
@@ -15,6 +16,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
 import org.lwjgl.glfw.GLFW;
 
@@ -29,6 +31,7 @@ import sig.modules.Controller.Controller;
 import sig.modules.Controller.EditMode;
 import sig.modules.Controller.Element;
 import sig.modules.Controller.Identifier;
+import sig.modules.Controller.RepeatedKey;
 import sig.modules.Controller.Type;
 import sig.modules.Controller.clickablebutton.AddClickableButton;
 import sig.modules.Controller.clickablebutton.CopyClickableButton;
@@ -38,7 +41,7 @@ import sig.utils.FileUtils;
 public class ControllerModule extends Module{
 	public final static String CONTROLLERPATH = sigIRC.BASEDIR+"sigIRC/controller/";
 	List<Controller> controllers = new ArrayList<Controller>();
-	Image controller_img;
+	Image controller_img,controller_overlay_img;
 	double imgratio = 1;
 	List<Button> buttons = new ArrayList<Button>();
 	List<Axis> axes = new ArrayList<Axis>();
@@ -69,6 +72,8 @@ public class ControllerModule extends Module{
 	boolean resizing=false;
 	double xoffset=0,yoffset=0;
 	final static int RESIZE_BORDER = 5;
+	final static double MINIMUM_ELEMENT_SIZE=8;
+	boolean proportionalResize=false;
 
 	public ControllerModule(Rectangle2D bounds, String moduleName) {
 		super(bounds, moduleName);
@@ -89,6 +94,7 @@ public class ControllerModule extends Module{
 		controllers.addAll(ca);
 		try {
 			controller_img = ImageIO.read(new File(CONTROLLERPATH+"controller_template.png")).getScaledInstance((int)position.getWidth(), -1, 0);
+			controller_overlay_img = ImageIO.read(new File(CONTROLLERPATH+"controller_overlay.png")).getScaledInstance((int)position.getWidth(), -1, 0);
 			//System.out.println("Size of controller: "+controller_img.getWidth(sigIRC.panel)+","+controller_img.getHeight(sigIRC.panel));
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -145,6 +151,13 @@ public class ControllerModule extends Module{
 		return stored_rect;
 	}
 	
+	public List<Button> getButtons() {
+		return buttons;
+	}
+	public List<Axis> getAxes() {
+		return axes;
+	}
+	
 	public void ApplyConfigWindowProperties() {
 		sigIRC.controllermodule_X=(int)position.getX();
 		sigIRC.controllermodule_Y=(int)position.getY();
@@ -165,48 +178,50 @@ public class ControllerModule extends Module{
 						start_drag = mouse_position;
 					}
 				}break;
+				case DEFAULT:{
+					for (ClickableButton cb : click_buttons) {
+						cb.onClickEvent(ev);
+					}
+					if (selectedElement!=null && resizing_direction!=0 && !resizing && extendBoundaries(selectedElement.getPixelBounds(controller_img),3).contains(mouse_position)) {
+						resizing=true;
+						resize_refpoint=mouse_position;
+					} else
+					if (selectedElement!=null && !resizing && selectedElement.getPixelBounds(controller_img).contains(mouse_position)) {
+						dragging=true;
+						xoffset = selectedElement.getPixelBounds(controller_img).getX()-mouse_position.getX();
+						yoffset = selectedElement.getPixelBounds(controller_img).getY()-mouse_position.getY();
+					} else {
+						selectedElement = findMouseoverElement(mouse_position);
+					}
+				}
 			}	
-			if (MODE==EditMode.DEFAULT) {
-				for (ClickableButton cb : click_buttons) {
-					cb.onClickEvent(ev);
-				}
-			}
-			if (selectedElement!=null && resizing_direction!=0 && !resizing && extendBoundaries(selectedElement.getPixelBounds(controller_img),3).contains(mouse_position)) {
-				resizing=true;
-				resize_refpoint=mouse_position;
-			} else
-			if (selectedElement!=null && !resizing && selectedElement.getPixelBounds(controller_img).contains(mouse_position)) {
-				dragging=true;
-				xoffset = selectedElement.getPixelBounds(controller_img).getX()-mouse_position.getX();
-				yoffset = selectedElement.getPixelBounds(controller_img).getY()-mouse_position.getY();
-			} else {
-				selectedElement=null;
-				for (Element e : buttons) {
-					//System.out.println("Checking bounds "+e.getPixelBounds(controller_img));
-					if (e.getPixelBounds(controller_img).contains(mouse_position)) {
-						selectedElement = e;
-						break;
-					}
-				}
-				if (selectedElement==null) {
-					for (Element e : axes) {
-						//System.out.println("Checking bounds "+e.getPixelBounds(controller_img));
-						if (e.getPixelBounds(controller_img).contains(mouse_position)) {
-							selectedElement = e;
-							break;
-						}
-					}
-				}
-			}
 			//System.out.println("Selected element "+selectedElement+". Mouse Point: "+ev.getPoint());
 		}
 		super.mousePressed(ev);
 	}
+
+	private Element findMouseoverElement(Point mouse_position) {
+		for (Element e : buttons) {
+			//System.out.println("Checking bounds "+e.getPixelBounds(controller_img));
+			if (e.getPixelBounds(controller_img).contains(mouse_position)) {
+				return e;
+			}
+		}
+		for (Element e : axes) {
+			//System.out.println("Checking bounds "+e.getPixelBounds(controller_img));
+			if (e.getPixelBounds(controller_img).contains(mouse_position)) {
+				return e;
+			}
+		}
+		return null;
+	}
 	
 	public void mouseReleased(MouseEvent ev) {
+		//System.out.println("Mode before is "+MODE);
 		if (resizing) {
 			Point mouse_position = new Point((int)(ev.getX()-getPosition().getX()),(int)(ev.getY()-getPosition().getY()));
 			PerformResize(mouse_position);
+			setConstraints();
 			resizing=false;
 			resizing_direction=0;
 			SaveElementData();
@@ -218,6 +233,7 @@ public class ControllerModule extends Module{
 					(mouse_position.getY()+yoffset)/controller_img.getHeight(sigIRC.panel), 
 					selectedElement.getBounds().getWidth(), 
 					selectedElement.getBounds().getHeight()));
+			setConstraints();
 			dragging=false;
 			SaveElementData();
 			return;
@@ -235,20 +251,26 @@ public class ControllerModule extends Module{
 						stored_rect = new Rectangle2D.Double(
 								(width<0)?end_drag.getX()/controller_img.getWidth(sigIRC.panel):start_drag.getX()/controller_img.getWidth(sigIRC.panel),
 								(height<0)?end_drag.getY()/controller_img.getHeight(sigIRC.panel):start_drag.getY()/controller_img.getHeight(sigIRC.panel),
-								Math.abs((end_drag.getX()-start_drag.getX())/controller_img.getWidth(sigIRC.panel)),
-								Math.abs((end_drag.getY()-start_drag.getY())/controller_img.getHeight(sigIRC.panel)));
+								Math.max(MINIMUM_ELEMENT_SIZE/controller_img.getWidth(sigIRC.panel),Math.abs((end_drag.getX()-start_drag.getX())/controller_img.getWidth(sigIRC.panel))),
+								Math.max(MINIMUM_ELEMENT_SIZE/controller_img.getHeight(sigIRC.panel),Math.abs((end_drag.getY()-start_drag.getY())/controller_img.getHeight(sigIRC.panel))));
 						//buttons.add(new Button(pct_rect.getX(),pct_rect.getY(),pct_rect.getWidth(),pct_rect.getHeight(),controllers.get(0),Identifier.Button._3,Color.RED,this));
 						//resetDragPoints();
-						sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+						if (!inDragZone) {
+							sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+						}
+						//System.out.println(MODE);
 						if (MODE==EditMode.DRAGSELECTION) {
 							MODE=EditMode.BUTTONSET;
+							//System.out.println("Set Button");
 						} else 
 						if (MODE==EditMode.DRAGAXISSELECTION) {
+							//System.out.println("Add Axis");
 							AddAxis();
 							MODE=EditMode.DEFAULT;
+							//System.out.println(MODE);
 						}
 					}
-				}
+				}break;
 				case POSITIONSELECTION:{
 					Point mouse_click = new Point((int)(ev.getX()-getPosition().getX()),(int)(ev.getY()-getPosition().getY()));
 					stored_rect = new Rectangle2D.Double(
@@ -260,9 +282,11 @@ public class ControllerModule extends Module{
 				}break;
 			}
 		}
+		//System.out.println("Mode after is "+MODE);
 	}
 
 	private void PerformResize(Point mouse_position) {
+		double aspectRatio = (double)selectedElement.getBounds().getWidth()/selectedElement.getBounds().getHeight();
 		switch (resizing_direction) {
 			case 1:{
 				AdjustY(mouse_position);
@@ -293,20 +317,33 @@ public class ControllerModule extends Module{
 				AdjustY(mouse_position);
 			}break;
 		}
+		if (proportionalResize) {
+			resizeProportionally(aspectRatio);
+		}
 		resize_refpoint=mouse_position;
+	}
+
+	private void resizeProportionally(double aspectRatio) {
+		boolean xAxisLarger = false;
+		xAxisLarger = (selectedElement.getBounds().getWidth()>selectedElement.getBounds().getHeight());
+		selectedElement.setBounds(new Rectangle2D.Double(
+				selectedElement.getBounds().getX(), 
+				selectedElement.getBounds().getY(), 
+				(xAxisLarger)?selectedElement.getBounds().getWidth():(selectedElement.getBounds().getHeight()*aspectRatio), 
+				(xAxisLarger)?selectedElement.getBounds().getWidth()*(1/aspectRatio):(selectedElement.getBounds().getHeight())));
 	}
 
 	private void AdjustY(Point mouse_position) {
 		selectedElement.setBounds(new Rectangle2D.Double(selectedElement.getBounds().getX(), 
 				(mouse_position.getY()-resize_refpoint.getY()+selectedElement.getPixelBounds(controller_img).getY())/controller_img.getHeight(sigIRC.panel), 
 				selectedElement.getBounds().getWidth(), 
-				(resize_refpoint.getY()-mouse_position.getY()+selectedElement.getPixelBounds(controller_img).getHeight())/controller_img.getHeight(sigIRC.panel)));
+				Math.max(MINIMUM_ELEMENT_SIZE/controller_img.getHeight(sigIRC.panel),(resize_refpoint.getY()-mouse_position.getY()+selectedElement.getPixelBounds(controller_img).getHeight())/controller_img.getHeight(sigIRC.panel))));
 	}
 
 	private void AdjustX(Point mouse_position) {
 		selectedElement.setBounds(new Rectangle2D.Double((mouse_position.getX()-resize_refpoint.getX()+selectedElement.getPixelBounds(controller_img).getX())/controller_img.getWidth(sigIRC.panel), 
 				selectedElement.getBounds().getY(), 
-				(resize_refpoint.getX()-mouse_position.getX()+selectedElement.getPixelBounds(controller_img).getWidth())/controller_img.getWidth(sigIRC.panel), 
+				Math.max(MINIMUM_ELEMENT_SIZE/controller_img.getWidth(sigIRC.panel),(resize_refpoint.getX()-mouse_position.getX()+selectedElement.getPixelBounds(controller_img).getWidth())/controller_img.getWidth(sigIRC.panel)), 
 				selectedElement.getBounds().getHeight()));
 	}
 
@@ -314,13 +351,13 @@ public class ControllerModule extends Module{
 		selectedElement.setBounds(new Rectangle2D.Double(selectedElement.getBounds().getX(), 
 				selectedElement.getBounds().getY(), 
 				selectedElement.getBounds().getWidth(), 
-				(mouse_position.getY()-resize_refpoint.getY()+selectedElement.getPixelBounds(controller_img).getHeight())/controller_img.getHeight(sigIRC.panel)));
+				Math.max(MINIMUM_ELEMENT_SIZE/controller_img.getHeight(sigIRC.panel),(mouse_position.getY()-resize_refpoint.getY()+selectedElement.getPixelBounds(controller_img).getHeight())/controller_img.getHeight(sigIRC.panel))));
 	}
 
 	private void AdjustWidth(Point mouse_position) {
 		selectedElement.setBounds(new Rectangle2D.Double(selectedElement.getBounds().getX(), 
 				selectedElement.getBounds().getY(), 
-				(mouse_position.getX()-resize_refpoint.getX()+selectedElement.getPixelBounds(controller_img).getWidth())/controller_img.getWidth(sigIRC.panel), 
+				Math.max(MINIMUM_ELEMENT_SIZE/controller_img.getWidth(sigIRC.panel),(mouse_position.getX()-resize_refpoint.getX()+selectedElement.getPixelBounds(controller_img).getWidth())/controller_img.getWidth(sigIRC.panel)), 
 				selectedElement.getBounds().getHeight()));
 	}
 
@@ -345,12 +382,28 @@ public class ControllerModule extends Module{
 		Point mouse_position = new Point((int)(sigIRC.panel.lastMouseX-getPosition().getX()),(int)(sigIRC.panel.lastMouseY-getPosition().getY()));
 		if (resizing) {
 			PerformResize(mouse_position);
+			setConstraints();
 		}
 		if (dragging) {
 			selectedElement.setBounds(new Rectangle2D.Double((mouse_position.getX()+xoffset)/controller_img.getWidth(sigIRC.panel), 
 					(mouse_position.getY()+yoffset)/controller_img.getHeight(sigIRC.panel), 
 					selectedElement.getBounds().getWidth(), 
 					selectedElement.getBounds().getHeight()));
+			setConstraints();
+		}
+		if (!inDragZone && selectedElement==null) {
+			if (findMouseoverElement(mouse_position)!=null) {
+				int cursortype = sigIRC.panel.getCursor().getType();
+				if (cursortype!=Cursor.HAND_CURSOR) {
+					sigIRC.panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
+				}
+			} else {
+				int cursortype = sigIRC.panel.getCursor().getType();
+				if (cursortype!=Cursor.DEFAULT_CURSOR && 
+						!inDragZone) {
+					sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+				}
+			}
 		}
 		if (selectedElement!=null && extendBoundaries(selectedElement.getPixelBounds(controller_img),3).contains(mouse_position)) {
 			if (!resizing) {
@@ -423,7 +476,8 @@ public class ControllerModule extends Module{
 				}break;
 				default:
 					int cursortype = sigIRC.panel.getCursor().getType();
-					if (cursortype!=Cursor.DEFAULT_CURSOR) {
+					if (cursortype!=Cursor.DEFAULT_CURSOR &&
+							!inDragZone) {
 						sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					}
 			}
@@ -449,7 +503,7 @@ public class ControllerModule extends Module{
 			} else 
 			if (selectedElement!=null) {
 				int cursortype = sigIRC.panel.getCursor().getType();
-				if (cursortype!=Cursor.DEFAULT_CURSOR) {
+				if (cursortype!=Cursor.DEFAULT_CURSOR && !inDragZone) {
 					sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 				}
 			}
@@ -515,6 +569,14 @@ public class ControllerModule extends Module{
 			configure_window.run();
 		}
 	}
+
+	public void setConstraints() {
+		selectedElement.setBounds(new Rectangle2D.Double(Math.max(0, Math.min((this.getPosition().getWidth()/controller_img.getWidth(sigIRC.panel))-selectedElement.getBounds().getWidth(), selectedElement.getBounds().getX())),
+				Math.max(0, Math.min((this.getPosition().getHeight()/controller_img.getHeight(sigIRC.panel))-selectedElement.getBounds().getHeight(), selectedElement.getBounds().getY())),
+				selectedElement.getBounds().getWidth(),
+				selectedElement.getBounds().getHeight()));
+		//System.out.println(selectedElement.getBounds());
+	}
 	
 	public Image getControllerImage() {
 		return controller_img;
@@ -534,78 +596,84 @@ public class ControllerModule extends Module{
 				}*/
 			}
 			g.drawImage(controller_img, (int)(position.getX()), (int)(position.getY()), sigIRC.panel);
-		}
-		for (ClickableButton cb : click_buttons) {
-			cb.draw(g);
-		}
-		for (Axis a : axes) {
-			a.draw(g);
-		}
-		for (Button b : buttons) {
-			b.draw(g);
-		}
-		if (MODE==EditMode.DRAGSELECTION) {
-			if (start_drag!=null) {
-				Color color_identity = g.getColor();
-				g.setColor(Color.GRAY);
-				int width = sigIRC.panel.lastMouseX-
-						((int)position.getX()+(int)start_drag.getX());
-				int height = sigIRC.panel.lastMouseY-
-						((int)position.getY()+(int)start_drag.getY());
-				g.fillOval(
-				(width<0)?sigIRC.panel.lastMouseX:(int)position.getX()+(int)start_drag.getX(), 
-				(height<0)?sigIRC.panel.lastMouseY:(int)position.getY()+(int)start_drag.getY(),
-						Math.abs(width), Math.abs(height));
-				g.setColor(color_identity);
+			for (ClickableButton cb : click_buttons) {
+				cb.draw(g);
 			}
-		} else
-		if (MODE==EditMode.POSITIONSELECTION) {
-			Color color_identity = g.getColor();
-			g.setColor(Color.GRAY);
-			int width = (int)((stored_rect.getWidth()*controller_img.getWidth(sigIRC.panel)));
-			int height = (int)((stored_rect.getHeight()*controller_img.getHeight(sigIRC.panel)));
-			g.fillOval(
-			sigIRC.panel.lastMouseX-width/2, 
-			sigIRC.panel.lastMouseY-height/2,
-					Math.abs(width), Math.abs(height));
-			g.setColor(color_identity);
-		} else
-		if (MODE==EditMode.DRAGAXISSELECTION) {
-			if (start_drag!=null) {
-				Color color_identity = g.getColor();
-				g.setColor(temporary_axis.getBackgroundColor());
-				int width = sigIRC.panel.lastMouseX-
-						((int)position.getX()+(int)start_drag.getX());
-				int height = sigIRC.panel.lastMouseY-
-						((int)position.getY()+(int)start_drag.getY());
-				if (temporary_axis.isTwoWayAxis()) {
-					g.fillRect(
-					(width<0)?sigIRC.panel.lastMouseX:(int)position.getX()+(int)start_drag.getX(), 
-					(height<0)?sigIRC.panel.lastMouseY:(int)position.getY()+(int)start_drag.getY(),
-							Math.abs(width), Math.abs(height));
-				} else {
+			for (Axis a : axes) {
+				a.draw(g);
+			}
+			for (Button b : buttons) {
+				b.draw(g);
+			}
+			if (MODE==EditMode.DRAGSELECTION) {
+				if (start_drag!=null) {
+					Color color_identity = g.getColor();
+					g.setColor(Color.GRAY);
+					int width = sigIRC.panel.lastMouseX-
+							((int)position.getX()+(int)start_drag.getX());
+					int height = sigIRC.panel.lastMouseY-
+							((int)position.getY()+(int)start_drag.getY());
 					g.fillOval(
 					(width<0)?sigIRC.panel.lastMouseX:(int)position.getX()+(int)start_drag.getX(), 
 					(height<0)?sigIRC.panel.lastMouseY:(int)position.getY()+(int)start_drag.getY(),
 							Math.abs(width), Math.abs(height));
+					g.setColor(color_identity);
+				}
+			} else
+			if (MODE==EditMode.POSITIONSELECTION) {
+				Color color_identity = g.getColor();
+				g.setColor(Color.GRAY);
+				int width = (int)((stored_rect.getWidth()*controller_img.getWidth(sigIRC.panel)));
+				int height = (int)((stored_rect.getHeight()*controller_img.getHeight(sigIRC.panel)));
+				g.fillOval(
+				sigIRC.panel.lastMouseX-width/2, 
+				sigIRC.panel.lastMouseY-height/2,
+						Math.abs(width), Math.abs(height));
+				g.setColor(color_identity);
+			} else
+			if (MODE==EditMode.DRAGAXISSELECTION) {
+				if (start_drag!=null) {
+					Color color_identity = g.getColor();
+					g.setColor(temporary_axis.getBackgroundColor());
+					int width = sigIRC.panel.lastMouseX-
+							((int)position.getX()+(int)start_drag.getX());
+					int height = sigIRC.panel.lastMouseY-
+							((int)position.getY()+(int)start_drag.getY());
+					if (temporary_axis.isTwoWayAxis()) {
+						g.fillRect(
+						(width<0)?sigIRC.panel.lastMouseX:(int)position.getX()+(int)start_drag.getX(), 
+						(height<0)?sigIRC.panel.lastMouseY:(int)position.getY()+(int)start_drag.getY(),
+								Math.abs(width), Math.abs(height));
+					} else {
+						g.fillOval(
+						(width<0)?sigIRC.panel.lastMouseX:(int)position.getX()+(int)start_drag.getX(), 
+						(height<0)?sigIRC.panel.lastMouseY:(int)position.getY()+(int)start_drag.getY(),
+								Math.abs(width), Math.abs(height));
+					}
+					g.setColor(color_identity);
+				}
+			}
+			g.drawImage(controller_overlay_img, (int)(position.getX()), (int)(position.getY()), sigIRC.panel);
+
+			for (Axis a : axes) {
+				a.drawIndicator(g);
+			}
+			
+			if (selectedElement!=null) {
+				Rectangle2D.Double rect = selectedElement.getPixelBounds(controller_img);
+				Color color_identity = g.getColor();
+				g.setColor(DrawUtils.invertColor(selectedElement.getElementColor()));
+				for (int i=-1;i<2;i++) {
+					for (int j=-1;j<2;j++) {
+						g.draw3DRect((int)(rect.getX()+position.getX())+i, (int)(rect.getY()+position.getY())+j, (int)rect.getWidth(), (int)rect.getHeight(), true);
+					}
 				}
 				g.setColor(color_identity);
 			}
+			DrawUtils.drawText(g, position.getX(), position.getY()+8, Color.BLACK, status);
+		} else {
+			DrawUtils.drawText(g, position.getX(), position.getY()+8, Color.BLACK, "No controller detected!");
 		}
-		
-		if (selectedElement!=null) {
-			Rectangle2D.Double rect = selectedElement.getPixelBounds(controller_img);
-			Color color_identity = g.getColor();
-			g.setColor(DrawUtils.invertColor(selectedElement.getElementColor()));
-			for (int i=-1;i<2;i++) {
-				for (int j=-1;j<2;j++) {
-					g.draw3DRect((int)(rect.getX()+position.getX())+i, (int)(rect.getY()+position.getY())+j, (int)rect.getWidth(), (int)rect.getHeight(), true);
-				}
-			}
-			g.setColor(color_identity);
-		}
-
-		DrawUtils.drawText(g, position.getX(), position.getY()+8, Color.BLACK, status);
 	}
 
 	private void LoadButtonAndAxisData() {
@@ -629,6 +697,66 @@ public class ControllerModule extends Module{
 			}
 		}
 	}
+	
+	public void keypressed(KeyEvent ev) {
+		if (ev.getKeyCode()==KeyEvent.VK_DELETE &&
+				selectedElement!=null) {
+			if (JOptionPane.showConfirmDialog(sigIRC.panel, "Are you sure you want to remove this "+((selectedElement instanceof Button)?"button":"axis")+"?","Confirm Delete",JOptionPane.YES_NO_OPTION)==JOptionPane.YES_OPTION) {
+				selectedElement.remove(this);
+				selectedElement=null;
+			}
+		}
+		if (ev.getKeyCode()==KeyEvent.VK_SHIFT) {
+			proportionalResize = true;
+		}
+		/*for (RepeatedKey rk : repeatKeys) {
+			if (rk.getKeyCode()==ev.getKeyCode()) {
+				rk.setKeyPressed(true);
+			}
+		}*/
+		if (selectedElement!=null) {
+			boolean adjust=false;
+			int[] move = new int[]{0,0};
+			switch (ev.getKeyCode()) {
+				case (KeyEvent.VK_RIGHT):{
+					adjust=true;
+					move[0]+=1;
+				}break;
+				case (KeyEvent.VK_UP):{
+					adjust=true;
+					move[1]-=1;
+				}break;
+				case (KeyEvent.VK_DOWN):{
+					adjust=true;
+					move[1]+=1;
+				}break;
+				case (KeyEvent.VK_LEFT):{
+					adjust=true;
+					move[0]-=1;
+				}break;
+			}
+			if (adjust) {
+				selectedElement.setBounds(
+						new Rectangle2D.Double(selectedElement.getBounds().getX()+(move[0]*(1d/controller_img.getWidth(sigIRC.panel))),
+						selectedElement.getBounds().getY()+(move[1]*(1d/controller_img.getWidth(sigIRC.panel))),
+						selectedElement.getBounds().getWidth(),
+						selectedElement.getBounds().getHeight()));
+				setConstraints();
+				SaveElementData();
+			}
+		}
+	}
+	
+	public void keyreleased(KeyEvent ev) {
+		if (ev.getKeyCode()==KeyEvent.VK_SHIFT) {
+			proportionalResize = false;
+		}
+		/*for (RepeatedKey rk : repeatKeys) {
+			if (rk.getKeyCode()==ev.getKeyCode()) {
+				rk.setKeyPressed(false);
+			}
+		}*/
+	}
 
 	private void AddAxis() {
 		temporary_axis.setupBoundsRectangle(stored_rect);
@@ -638,7 +766,7 @@ public class ControllerModule extends Module{
 		SaveAxisData();
 	}
 
-	private void SaveAxisData() {
+	public void SaveAxisData() {
 		StringBuilder sb = new StringBuilder();
 		for (Axis a : axes) {
 			sb.append(a.getSaveString()+"\n");
@@ -651,7 +779,7 @@ public class ControllerModule extends Module{
 		SaveButtonData();
 	}
 
-	private void SaveButtonData() {
+	public void SaveButtonData() {
 		StringBuilder sb = new StringBuilder();
 		for (Button b : buttons) {
 			sb.append(b.getSaveString()+"\n");
@@ -667,7 +795,8 @@ public class ControllerModule extends Module{
 	private Color PopupColorPanel() {
 		Color col=null;
 		do {
-			col=sigIRC.colorpanel.getBackgroundColor();
+			col=sigIRC.colorpanel.getBackgroundColor(ControlConfigurationWindow.lastpicked_back_col);
+			ControlConfigurationWindow.lastpicked_back_col=col;
 		} while (col==null);
 		return col;
 	}

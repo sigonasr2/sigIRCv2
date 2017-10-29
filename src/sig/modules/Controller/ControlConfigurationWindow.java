@@ -30,6 +30,7 @@ import javax.swing.JDialog;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JLayeredPane;
+import javax.swing.JOptionPane;
 import javax.swing.JPanel;
 import javax.swing.JRadioButton;
 import javax.swing.JTextField;
@@ -41,6 +42,7 @@ import javax.swing.event.DocumentListener;
 import sig.ColorPanel;
 import sig.sigIRC;
 import sig.modules.ControllerModule;
+import sig.utils.TextUtils;
 
 public class ControlConfigurationWindow extends JFrame implements WindowListener{
 	DialogType dialog;
@@ -59,6 +61,8 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 	int axis_width=32,axis_height=32;
 	JButton backgroundColor,indicatorColor;
 	boolean x_invert,y_invert,axis_invert;
+	public static Color lastpicked_back_col = Color.BLACK;
+	public static Color lastpicked_indicator_col = Color.WHITE;
 	int orientation=0; //0=Left-to-Right, 1=Right-to-Left, 2=Bottom-to-Top, 3=Top-to-Bottom
 	JCheckBox width_invert,height_invert;
 	java.awt.Component extra_space;
@@ -119,8 +123,9 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 	ActionListener backgroundColorListener = new ActionListener(){
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Color selectedcol = sigIRC.colorpanel.getBackgroundColor(null);
+			Color selectedcol = sigIRC.colorpanel.getBackgroundColor(lastpicked_back_col);
 			if (selectedcol!=null) {
+				lastpicked_back_col = selectedcol;
 				axis_background_col = selectedcol;
 				backgroundColor.setBackground(axis_background_col);
 			}
@@ -129,8 +134,9 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 	ActionListener indicatorColorListener = new ActionListener(){
 		@Override
 		public void actionPerformed(ActionEvent e) {
-			Color selectedcol = sigIRC.colorpanel.getBackgroundColor(null);
+			Color selectedcol = sigIRC.colorpanel.getBackgroundColor(lastpicked_indicator_col);
 			if (selectedcol!=null) {
+				lastpicked_indicator_col = selectedcol;
 				axis_indicator_col = selectedcol;
 				indicatorColor.setBackground(axis_indicator_col);
 			}
@@ -145,7 +151,8 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 	ActionListener createbuttonListener = new ActionListener(){
 		@Override
 		public void actionPerformed(ActionEvent ev) {
-			if (DataIsValid()) {
+			DataValidationReason err_check = DataIsValid();
+			if (err_check == DataValidationReason.GOOD) {
 				Axis a = ConstructTemporaryAxis();
 				module.setTemporaryAxis(a);
 				module.setMode(EditMode.DRAGAXISSELECTION);
@@ -153,11 +160,41 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 				module.getConfigurationWindow().dispatchEvent(new WindowEvent(module.getConfigurationWindow(),WindowEvent.WINDOW_CLOSING));
 				//module.getConfigurationWindow().setVisible(false);
 				//module.getConfigurationWindow().dispose();
+			} else {
+				DisplayError(err_check);
 			}
 		}
 
-		private boolean DataIsValid() {
-			return true;
+		private void DisplayError(DataValidationReason err_check) {
+			switch (err_check) {
+				case AXIS_MISSING:
+					JOptionPane.showMessageDialog(module.getConfigurationWindow(), "You did not select the correct number of axes to make this axis control!", "Error", JOptionPane.WARNING_MESSAGE);
+					break;
+				case INVALID_RANGE_SIZE:
+					JOptionPane.showMessageDialog(module.getConfigurationWindow(), "You did not specify valid range numbers for your axis. (Usually it's between -1.0 and 1.0. Make sure the box is not red.)", "Error", JOptionPane.WARNING_MESSAGE);
+					break;
+			}
+		}
+
+		private DataValidationReason DataIsValid() {
+			if ((!TextUtils.isNumeric(twowayAxis_range1.getTextField().getText()) ||
+					!TextUtils.isNumeric(twowayAxis_range2.getTextField().getText())) &&
+					two_axis_button.isSelected()) {
+				return DataValidationReason.INVALID_RANGE_SIZE;
+			} else
+			{
+				int numb_checked = 0;
+				int requirement = (two_axis_button.isSelected())?1:2;
+				for (JCheckBox cb : analog_controller_component_labels) {
+					if (cb.isSelected()) {
+						numb_checked++;
+					}
+				}
+				if (numb_checked!=requirement) {
+					return DataValidationReason.AXIS_MISSING;
+				}
+			}
+			return DataValidationReason.GOOD;
 		}
 	};
 	ActionListener invertListener = new ActionListener(){
@@ -176,6 +213,7 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 			switch (ev.getActionCommand()) {
 				case "add_button":{
 					module.setMode(EditMode.DRAGSELECTION); 
+					//System.out.println("Called Drag Selection mode.");
 					sigIRC.panel.grabFocus();
 					module.getConfigurationWindow().dispatchEvent(new WindowEvent(module.getConfigurationWindow(),WindowEvent.WINDOW_CLOSING));
 				}break;
@@ -554,8 +592,8 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 			a = new Axis(new Rectangle2D.Double(),
 					module.getControllers().get(0),
 					ident,
-					Double.parseDouble(twowayAxis_range1.getTextField().getText()),
-					Double.parseDouble(twowayAxis_range2.getTextField().getText()),
+					Double.parseDouble((!TextUtils.isNumeric(twowayAxis_range1.getTextField().getText())?Double.toString(-1):twowayAxis_range1.getTextField().getText())),
+					Double.parseDouble((!TextUtils.isNumeric(twowayAxis_range2.getTextField().getText())?Double.toString(1):twowayAxis_range2.getTextField().getText())),
 					orientation,
 					axis_background_col,
 					axis_indicator_col,

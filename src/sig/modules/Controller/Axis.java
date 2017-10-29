@@ -93,6 +93,16 @@ public class Axis extends Element{
 					pct_height*parent.getControllerImage().getHeight(sigIRC.panel));
 		}
 	}
+	
+	public void drawIndicator(Graphics g) {
+		if (visible) {
+			GetAxisIndicatorDisplay(g,this,
+					parent.getPosition().getX()+pct_x*parent.getControllerImage().getWidth(sigIRC.panel),
+					parent.getPosition().getY()+pct_y*parent.getControllerImage().getHeight(sigIRC.panel),
+					pct_width*parent.getControllerImage().getWidth(sigIRC.panel),
+					pct_height*parent.getControllerImage().getHeight(sigIRC.panel));
+		}
+	}
 
 	public Color getSelectionColor() {
 		return backgroundColor;
@@ -224,14 +234,34 @@ public class Axis extends Element{
         	Color color_identity = g.getColor();
         	g.setColor(a.backgroundColor);
     		g.fillOval((int)x, (int)y, (int)xscale, (int)yscale);
-        	g.setColor(a.indicatorColor);
-        	for (int i=-1;i<2;i++) {
-            	for (int j=-1;j<2;j++) {
-            		g.drawOval((int)(((xval+1)*12*(xscale/32d))+i+x), (int)(((yval+1)*12*(yscale/32d))+j+y), (int)(8d*(xscale/32d)), (int)(8d*(yscale/32d)));
-            	}
-        	}
         	g.setColor(color_identity);
         }
+	}
+	
+
+	
+	public static void GetAxisIndicatorDisplay(Graphics g, Axis a, double x, double y, double xscale, double yscale) {
+		if (!a.twoWayAxis) {
+        	double xval=0;
+        	double yval=0;
+        	if (a.identifiers.size()>0 && a.identifiers.get(0)!=null) {
+        		xval = a.parent_controller.getAxisValue(a.identifiers.get(0))*((a.x_invert)?-1:1);
+        	}
+        	if (a.identifiers.size()>1 && a.identifiers.get(1)!=null) {
+        		yval = a.parent_controller.getAxisValue(a.identifiers.get(1))*((a.y_invert)?-1:1);
+        	}
+        	DrawIndicator(g, a, x, y, xscale, yscale, xval, yval);
+        }
+	}
+
+	private static void DrawIndicator(Graphics g, Axis a, double x, double y, double xscale, double yscale, double xval,
+			double yval) {
+		g.setColor(a.indicatorColor);
+		for (int i=-1;i<2;i++) {
+			for (int j=-1;j<2;j++) {
+				g.drawOval((int)(((xval+1)*12*(xscale/32d))+i+x), (int)(((yval+1)*12*(yscale/32d))+j+y), (int)(8d*(xscale/32d)), (int)(8d*(yscale/32d)));
+			}
+		}
 	}
 	
 
