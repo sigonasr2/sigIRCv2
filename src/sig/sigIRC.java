@@ -261,6 +261,10 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/icon_viewers_count.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/icon_views_count.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/message_separator.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/controller/2-way_axis.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/controller/4-way_axis.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/controller/controller_overlay.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/controller/controller_template.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("kill.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("memory"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();
@@ -276,6 +280,8 @@ public class sigIRC{
 		if (autoUpdateProgram) {
 			File updatedir = new File(sigIRC.BASEDIR+"sigIRC/updates/");
 			updatedir.mkdirs();
+			File controllerdir = new File(ControllerModule.CONTROLLERPATH);
+			controllerdir.mkdirs();
 			File programFile = new File(sigIRC.BASEDIR+"sigIRC/updates/sigIRCv2.jar");
 			File currentProgramFile = new File(sigIRC.BASEDIR+"sigIRCv2.jar");
 			System.out.println("File size is "+currentProgramFile.length());

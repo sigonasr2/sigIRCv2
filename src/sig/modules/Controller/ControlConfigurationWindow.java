@@ -636,5 +636,6 @@ class PreviewPanel extends JPanel{
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
         Axis.GetAxisDisplay(g,window.ConstructTemporaryAxis(),0,0,window.axis_width,window.axis_height);
+        Axis.GetAxisIndicatorDisplay(g,window.ConstructTemporaryAxis(),0,0,window.axis_width,window.axis_height);
     }
 }
