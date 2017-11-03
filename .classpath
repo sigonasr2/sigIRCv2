@@ -13,5 +13,7 @@
 	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/lwjgl-natives-linux.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/lwjgl-natives-macos.jar"/>
 	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/lwjgl-natives-windows.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/jna-4.5.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/jna-platform-4.5.0.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -12,15 +12,28 @@ import com.mb3364.twitch.api.handlers.ChannelResponseHandler;
 import com.mb3364.twitch.api.handlers.StreamResponseHandler;
 import com.mb3364.twitch.api.models.Channel;
 import com.mb3364.twitch.api.models.Stream;
+import com.sun.jna.Memory;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.Advapi32;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinDef.DWORD;
+import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
+import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 
 import sig.modules.ChatLogModule;
 import sig.modules.ControllerModule;
+import sig.modules.RabiRibiModule;
 import sig.modules.TouhouMotherModule;
 import sig.modules.TwitchModule;
 import sig.modules.ChatLog.ChatLogMessage;
 import sig.modules.ChatLog.ChatLogTwitchEmote;
+import sig.modules.utils.MyKernel32;
+import sig.modules.utils.PsapiTools;
 import sig.utils.FileUtils;
 import sig.utils.GithubUtils;
+import sig.utils.MemoryUtils;
 import sig.utils.TextUtils;
 
 import java.awt.Color;
@@ -116,6 +129,11 @@ public class sigIRC{
 	public static int chatlogmodule_height=312;
 	public static int chatlogmodule_X=0;
 	public static int chatlogmodule_Y=312;
+	public static int rabiribimodule_width=320;
+	public static int rabiribimodule_height=312;
+	public static int rabiribimodule_X=0;
+	public static int rabiribimodule_Y=312;
+	public static boolean rabiribimodule_enabled=true;
 	public static int chatlogMessageHistory=50;
 	public static boolean controllermodule_enabled=true;
 	public static int controllermodule_width=320;
@@ -186,6 +204,11 @@ public class sigIRC{
 		touhoumothermodule_Y = config.getInteger("TOUHOUMOTHER_module_Y",312);
 		touhoumothermodule_width = config.getInteger("TOUHOUMOTHER_module_width",320);
 		touhoumothermodule_height = config.getInteger("TOUHOUMOTHER_module_height",312);
+		rabiribimodule_X = config.getInteger("RABIRIBI_module_X",0);
+		rabiribimodule_Y = config.getInteger("RABIRIBI_module_Y",312);
+		rabiribimodule_width = config.getInteger("RABIRIBI_module_width",320);
+		rabiribimodule_height = config.getInteger("RABIRIBI_module_height",312);
+		rabiribimodule_enabled = config.getBoolean("Module_rabiribi_Enabled", false);
 		chatlogmodule_X = config.getInteger("CHATLOG_module_X",0);
 		chatlogmodule_Y = config.getInteger("CHATLOG_module_Y",312);
 		chatlogmodule_width = config.getInteger("CHATLOG_module_width",320);
@@ -330,6 +353,13 @@ public class sigIRC{
 			modules.add(new ControllerModule(
 					new Rectangle(controllermodule_X,controllermodule_Y,controllermodule_width,controllermodule_height),
 					"Controller"
+					));
+		}
+		
+		if (rabiribimodule_enabled)  {
+			modules.add(new RabiRibiModule(
+					new Rectangle(rabiribimodule_X,rabiribimodule_Y,rabiribimodule_width,rabiribimodule_height),
+					"Rabi-Ribi"
 					));
 		}
 	}
