@@ -14,6 +14,12 @@ public enum MemoryOffset {
 	REGENUP_END(0xD63828),
 	PACKUP_START(0xD6382C),
 	PACKUP_END(0xD63928),
+	ERINA(0x0096DA3C), //Erina Data Pointer.
+	ERINA_HP(0x4D8),
+	ERINA_MAXHP(0x4E8),
+	ERINA_XPOS(0xC),
+	ERINA_YPOS(0x10),
+	MAPID(0xA600AC),
 	;
 	
 	long offset;
