@@ -225,12 +225,14 @@ public class ChatLogMessage {
 	}
 
 	public static void importMessages(String...logContents) {
-		for (String s : logContents) {
-			if (s!=null) {
-				if (ChatLogModule.chatlogmodule.messageHistory.size()>=ChatLogModule.messageHistoryCount) {
-					ChatLogModule.chatlogmodule.messageHistory.remove(0).cleanup();
+		if (sigIRC.chatlogmodule_enabled) {
+			for (String s : logContents) {
+				if (s!=null) {
+					if (ChatLogModule.chatlogmodule.messageHistory.size()>=ChatLogModule.messageHistoryCount) {
+						ChatLogModule.chatlogmodule.messageHistory.remove(0).cleanup();
+					}
+					ChatLogModule.chatlogmodule.messageHistory.add(new ChatLogMessage(s));
 				}
-				ChatLogModule.chatlogmodule.messageHistory.add(new ChatLogMessage(s));
 			}
 		}
 	}

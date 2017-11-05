@@ -109,7 +109,7 @@ public class sigIRC{
 	static String touhoumotherConsoleFont="Agency FB Bold";
 	static boolean touhoumothermodule_enabled=false;
 	static boolean twitchmodule_enabled=true;
-	static boolean chatlogmodule_enabled=true;
+	public static boolean chatlogmodule_enabled=true;
 	static boolean downloadsComplete=false;
 	static boolean hardwareAcceleration=true;
 	static boolean playedoAuthSoundOnce=false;
