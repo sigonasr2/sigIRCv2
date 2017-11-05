@@ -21,6 +21,7 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import sig.sigIRC;
 import sig.modules.ChatLog.ChatLogMessage;
 
 public class FileUtils {
@@ -256,7 +257,7 @@ public class FileUtils {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			if (outputToChatLog) {
+			if (outputToChatLog && sigIRC.chatlogmodule_enabled) {
 				ChatLogMessage.importMessages(message);
 			}
 		}
