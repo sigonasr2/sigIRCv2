@@ -39,6 +39,7 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 	final public static Font programFont = new Font(sigIRC.messageFont,0,24);
 	final public static Font userFont = new Font(sigIRC.usernameFont,0,16);
 	final public static Font smallFont = new Font(sigIRC.touhoumotherConsoleFont,0,12);
+	final public static Font rabiRibiMoneyDisplayFont = new Font("CP Font",0,16);
 	public int lastMouseX = 0;
 	public int lastMouseY = 0;
 

@@ -2,13 +2,20 @@ package sig.modules;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Point;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
+
+import javax.swing.SwingUtilities;
 
 import com.sun.jna.Memory;
 import com.sun.jna.Pointer;
@@ -19,9 +26,12 @@ import com.sun.jna.platform.win32.WinNT.HANDLE;
 import sig.Module;
 import sig.sigIRC;
 import sig.modules.RabiRibi.Entity;
+import sig.modules.RabiRibi.EntityLookupData;
 import sig.modules.RabiRibi.MemoryOffset;
 import sig.modules.RabiRibi.MemoryType;
 import sig.modules.RabiRibi.Overlay;
+import sig.modules.RabiRibi.RabiUtils;
+import sig.modules.RabiRibi.SmoothObject;
 import sig.modules.utils.PsapiTools;
 import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
@@ -36,8 +46,26 @@ public class RabiRibiModule extends Module{
 	HashMap<Integer,Entity> entities = new HashMap<Integer,Entity>();
 	final static int MAX_ENTITIES_TO_UPDATE = 500;
 	final static int ENTITY_ARRAY_ELEMENT_SIZE = 0x704;
+	public HashMap<String,EntityLookupData> lookup_table = new HashMap<String,EntityLookupData>();
+	int mapx = 0, mapy = 0;
+	public String statustext = "";
+	public int statustime = 0;
+	public int moneyearned = 0;
+	public int moneytime = 0;
+	public int lastmoney = -1;
 	
 	public Overlay overlay;
+	
+	public SmoothObject en_counter = new SmoothObject(0,0,0,0,this){
+		public void draw(Graphics g) {
+			int playtime = readIntFromMemory(MemoryOffset.PLAYTIME);
+			if (moneyearned>0 && moneytime>playtime) {
+				setTarget(overlay.getScreenPosition(readFloatFromErinaData(MemoryOffset.ERINA_XPOS), readFloatFromErinaData(MemoryOffset.ERINA_YPOS)));
+				//System.out.println(x+","+y);
+				DrawUtils.drawCenteredOutlineText(g, sigIRC.panel.rabiRibiMoneyDisplayFont, (int)x, (int)y-96, 2, Color.ORANGE, Color.BLACK, "+"+moneyearned+"EN");
+			}
+		}
+	};
 	
 	public RabiRibiModule(Rectangle2D bounds, String moduleName) {
 		super(bounds, moduleName);
@@ -48,6 +76,9 @@ public class RabiRibiModule extends Module{
 	}
 
 	private void Initialize() {
+		
+		RabiUtils.module = this;
+		
 		List<Integer> pids;
 		try {
 			pids = PsapiTools.getInstance().enumProcesses();		
@@ -82,6 +113,15 @@ public class RabiRibiModule extends Module{
 		}
 		
 		this.overlay = new Overlay(this);
+
+		EntityLookupData.parent=this;
+		EntityLookupData.loadEntityLookupData(lookup_table);
+		
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		scheduler.scheduleWithFixedDelay(()->{
+			UpdateEntities();
+			//System.out.println("Called Entity creation "+callcount+" times.");
+		}, 1000, 1000, TimeUnit.MILLISECONDS);
 	}
 	
 	public void ApplyConfigWindowProperties() {
@@ -95,6 +135,25 @@ public class RabiRibiModule extends Module{
 		super.run();
 		updateEntities();
 		overlay.run();
+		
+		if (lastmoney==-1) {
+			lastmoney = readIntFromMemory(MemoryOffset.MONEY);
+		} else 
+		{
+			int currentmoney = readIntFromMemory(MemoryOffset.MONEY);
+			if (currentmoney>lastmoney) {
+				if (moneyearned==0) {
+					en_counter.setPosition(overlay.getScreenPosition(readFloatFromErinaData(MemoryOffset.ERINA_XPOS), readFloatFromErinaData(MemoryOffset.ERINA_YPOS)));
+				}
+				moneyearned+=currentmoney-lastmoney;
+				moneytime = readIntFromMemory(MemoryOffset.PLAYTIME)+60;
+			}
+			lastmoney = currentmoney;
+		}
+		if (moneyearned>0 && moneytime<readIntFromMemory(MemoryOffset.PLAYTIME)) {
+			moneyearned=0;
+		}
+		en_counter.run();
 	}
 	
 	public HashMap<Integer,Entity> getEntities() {
@@ -105,24 +164,47 @@ public class RabiRibiModule extends Module{
 		
 		//System.out.println("Size is "+size);
 		List<Integer> idsToRemove = new ArrayList<Integer>();
-		for (Integer i : entities.keySet()) {
-			Entity ent = entities.get(i);
-			if (!ent.run()) {
-				idsToRemove.add(i);
+		try {
+			for (Integer i : entities.keySet()) {
+				Entity ent = entities.get(i);
+				if (!ent.run()) {
+					idsToRemove.add(i);
+				}
 			}
-		}
-		for (Integer i : idsToRemove) {
-			if (!overlay.objects.remove(entities.get(i).marker)) {
-				System.out.println("WARNING! Could not remove overlay EntityMarker. Possible memory leak occurring!");
+			for (Integer i : idsToRemove) {
+				if (!overlay.objects.remove(entities.get(i).marker)) {
+					System.out.println("WARNING! Could not remove overlay EntityMarker. Possible memory leak occurring!");
+				}
+				entities.remove(i);
+				//System.out.println("Removed entity "+i+". Entities remaining: "+entities.size());
 			}
-			entities.remove(i);
+		} catch (ConcurrentModificationException e) {
+			
 		}
 		
 		//System.out.println("Starting address is 0x"+Long.toHexString(readIntFromMemory(MemoryOffset.ENTITY_ARRAY)));
-		long arrayPtr  = readIntFromMemory(MemoryOffset.ENTITY_ARRAY);
 		//System.out.println("Array Pointer starts at 0x"+Long.toHexString(arrayPtr));
+		int currentx = (int)(readFloatFromErinaData(MemoryOffset.ERINA_XPOS)/1280);
+		int currenty = (int)(readFloatFromErinaData(MemoryOffset.ERINA_YPOS)/720); 
+		if (mapx!=(int)(readFloatFromErinaData(MemoryOffset.ERINA_XPOS)/1280) ||
+				mapy!=(int)(readFloatFromErinaData(MemoryOffset.ERINA_YPOS)/720)) {
+			//System.out.println("Update Entities.");
+			mapx=currentx;
+			mapy=currenty;
+			ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+			scheduler.schedule(()->{
+				UpdateEntities();
+				//System.out.println("Called Entity creation "+callcount+" times.");
+			}, 200, TimeUnit.MILLISECONDS);
+		}
+	}
+
+	private void UpdateEntities() {
+		int callcount=0;
+		long arrayPtr  = readIntFromMemory(MemoryOffset.ENTITY_ARRAY);
 		for (int i=0;i<MAX_ENTITIES_TO_UPDATE;i++) {
 			if (!entities.containsKey(i)) {
+				callcount++;
 				Entity ent = new Entity(arrayPtr,i,this);
 				if (ent.isActive()) {
 					//System.out.println("Found entity at index "+i);
@@ -136,7 +218,7 @@ public class RabiRibiModule extends Module{
 
 	public void draw(Graphics g) {
 		super.draw(g);
-		if (readIntFromMemory(MemoryOffset.TRANSITION_COUNTER)<300) {
+		if (!RabiUtils.isGamePaused()) {
 			int i=32;
 			/*DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "Money: "+readIntFromMemory(MemoryOffset.MONEY));
 			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "H-Ups: "+readItemCountFromMemory(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END));
@@ -148,15 +230,10 @@ public class RabiRibiModule extends Module{
 			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "POS ("+(int)readFloatFromErinaData(MemoryOffset.ERINA_XPOS)/1280+","+(int)readFloatFromErinaData(MemoryOffset.ERINA_YPOS)/720+")");
 			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "MAP: "+readIntFromMemory(MemoryOffset.MAPID));*/
 			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "POS ("+(readFloatFromErinaData(MemoryOffset.ERINA_XPOS))+","+(readFloatFromErinaData(MemoryOffset.ERINA_YPOS))+")");
-			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "POS ("+(readFloatFromErinaData(MemoryOffset.ERINA_XPOS)/1280)+","+(readFloatFromErinaData(MemoryOffset.ERINA_YPOS)/720)+")");
+			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "MONEY: ("+(readIntFromMemory(MemoryOffset.MONEY))+")");
 			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "CAMERA ("+(readIntFromMemory(MemoryOffset.CAMERA_XPOS))+","+(readIntFromMemory(MemoryOffset.CAMERA_YPOS))+")");
 			//DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "SCREENPOS ("+overlay.getScreenPosition(readFloatFromErinaData(MemoryOffset.ERINA_XPOS), readFloatFromErinaData(MemoryOffset.ERINA_YPOS))+")");
 			overlay.draw(g);
-			if (Math.abs(readFloatFromErinaData(MemoryOffset.ERINA_XSPEED))>0.5f) {
-				g.setColor(Color.RED);
-			}
-			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, g.getColor(), Color.WHITE, "XSPD "+readFloatFromErinaData(MemoryOffset.ERINA_XSPEED));
-			g.setColor(Color.BLACK);
 			/*DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, 
 					"Sunny Beam: "+Arrays.toString(
 					new int[]{
@@ -169,21 +246,40 @@ public class RabiRibiModule extends Module{
 				DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX()+20, position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, 
 					s);
 			}*/
-			for (Integer numb : entities.keySet()) {
-				Entity ent = entities.get(numb);
-				if (ent.getLastHitTime()>readIntFromMemory(MemoryOffset.PLAYTIME)-180) {
-					for (String s : TextUtils.WrapText("Entity "+ent.getID()+": "+ent.getHealth()+"/"+ent.getMaxHealth()+" HP   "+((ent.getHealth()/(float)ent.getMaxHealth())*100)+"%".replaceAll(",", ", "), sigIRC.panel.programFont, position.getWidth()-20)) { 
-						DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX()+20, position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, 
-								s);
+			try {
+				for (Integer numb : entities.keySet()) {
+					Entity ent = entities.get(numb);
+					if (ent.getLastHitTime()>readIntFromMemory(MemoryOffset.PLAYTIME)-180) {
+						for (String s : TextUtils.WrapText("Entity "+ent.getID()+": "+ent.getHealth()+"/"+ent.getMaxHealth()+" HP   "+((ent.getHealth()/(float)ent.getMaxHealth())*100)+"%".replaceAll(",", ", "), sigIRC.panel.programFont, position.getWidth()-20)) { 
+							DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX()+20, position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, 
+									s);
+						}
 					}
 				}
+			} catch (ConcurrentModificationException e) {
+				
 			}
+			
+			i+=24;
+			
+			int playtime = readIntFromMemory(MemoryOffset.PLAYTIME);
+			
+			if (statustext.length()>0 && statustime>playtime-300) {
+				DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=48), 3, Color.GREEN, Color.LIGHT_GRAY, statustext);
+			}
+			
+			en_counter.draw(g);
 		}
+	}
+	
+	public void setStatusMessage(String msg) {
+		statustime = readIntFromMemory(MemoryOffset.PLAYTIME);
+		statustext = msg;
 	}
 
 	public void keypressed(KeyEvent ev) {
 		super.keypressed(ev);
-		/*if (ev.getKeyCode()==KeyEvent.VK_HOME) {
+		if (ev.getKeyCode()==KeyEvent.VK_HOME) {
 			String memFile = sigIRC.BASEDIR+"memoryDump.txt";
 			FileUtils.logToFile("Memory Dump of All Loaded Entities:", memFile);
 			for (Integer numb : entities.keySet()) {
@@ -194,8 +290,8 @@ public class RabiRibiModule extends Module{
 					FileUtils.logToFile("  +"+Integer.toHexString(i*4)+": "+readDirectIntFromMemoryLocation(ptrArray)+" / "+readDirectFloatFromMemoryLocation(ptrArray)+"f", memFile);
 				}
 			}
-		} else
-		if (ev.getKeyCode()==KeyEvent.VK_END) {
+		} /*else
+			if (ev.getKeyCode()==KeyEvent.VK_END) {
 			String memFile = sigIRC.BASEDIR+"memoryDump.txt";
 			FileUtils.logToFile("Memory Dump of All Erina Values:", memFile);
 			for (int i=0;i<ENTITY_ARRAY_ELEMENT_SIZE/4;i++) {

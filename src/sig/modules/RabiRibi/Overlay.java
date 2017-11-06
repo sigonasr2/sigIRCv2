@@ -4,6 +4,7 @@ import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.geom.Point2D;
 import java.util.ArrayList;
+import java.util.ConcurrentModificationException;
 import java.util.List;
 
 import javax.swing.SwingUtilities;
@@ -41,8 +42,12 @@ public class Overlay {
 		
 		xspd = camera_xpos-prev_camera_xpos;
 		yspd = camera_ypos-prev_camera_ypos;
-		for (SmoothObject so : objects) {
-			so.run();
+		try {
+			for (SmoothObject so : objects) {
+				so.run();
+			}
+		} catch (ConcurrentModificationException e) {
+			
 		}
 		/*int new_xcoord,new_ycoord;
 		
@@ -107,6 +112,7 @@ public class Overlay {
 			starting_camera_x = camera_xpos;
 			starting_camera_y = camera_ypos;
 		}*/
+		//System.out.println("Objects: "+objects.size());
 	}
 	
 	public Point.Double getScreenPosition(float xpos, float ypos) {
@@ -133,8 +139,12 @@ public class Overlay {
 
 	public void draw(Graphics g) {
 		if (parent.readIntFromMemory(MemoryOffset.TRANSITION_COUNTER)<300) {
-			for (SmoothObject so : objects) {
-				so.draw(g);
+			try {
+				for (SmoothObject so : objects) {
+					so.draw(g);
+				}
+			} catch (ConcurrentModificationException e) {
+				
 			}
 		}
 	}

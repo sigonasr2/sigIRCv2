@@ -32,7 +32,7 @@ public class SmoothObject {
 		return new Point(targetx,targety);
 	}
 	
-	public void setPosition(Point position) {
+	public void setPosition(Point.Double position) {
 		x = (int)position.getX();
 		y = (int)position.getY();
 	}
