@@ -71,6 +71,10 @@ public class Module {
 	
 	public void ApplyConfigWindowProperties() {
 	}
+	
+	public void SaveConfig() {
+		
+	}
 
 	public void mouseReleased(MouseEvent ev) {
 		if (dragging) {

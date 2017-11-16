@@ -24,6 +24,7 @@ import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 
 import sig.modules.ChatLogModule;
 import sig.modules.ControllerModule;
+import sig.modules.RabiRaceModule;
 import sig.modules.RabiRibiModule;
 import sig.modules.TouhouMotherModule;
 import sig.modules.TwitchModule;
@@ -133,7 +134,12 @@ public class sigIRC{
 	public static int rabiribimodule_height=312;
 	public static int rabiribimodule_X=0;
 	public static int rabiribimodule_Y=312;
-	public static boolean rabiribimodule_enabled=true;
+	public static boolean rabiribimodule_enabled=false;
+	public static int rabiracemodule_width=320;
+	public static int rabiracemodule_height=312;
+	public static int rabiracemodule_X=0;
+	public static int rabiracemodule_Y=312;
+	public static boolean rabiracemodule_enabled=false;
 	public static int chatlogMessageHistory=50;
 	public static boolean controllermodule_enabled=true;
 	public static int controllermodule_width=320;
@@ -209,6 +215,11 @@ public class sigIRC{
 		rabiribimodule_width = config.getInteger("RABIRIBI_module_width",320);
 		rabiribimodule_height = config.getInteger("RABIRIBI_module_height",312);
 		rabiribimodule_enabled = config.getBoolean("Module_rabiribi_Enabled", false);
+		rabiracemodule_X = config.getInteger("RABIRACE_module_X",0);
+		rabiracemodule_Y = config.getInteger("RABIRACE_module_Y",312);
+		rabiracemodule_width = config.getInteger("RABIRACE_module_width",320);
+		rabiracemodule_height = config.getInteger("RABIRACE_module_height",312);
+		rabiracemodule_enabled = config.getBoolean("Module_rabirace_Enabled", false);
 		chatlogmodule_X = config.getInteger("CHATLOG_module_X",0);
 		chatlogmodule_Y = config.getInteger("CHATLOG_module_Y",312);
 		chatlogmodule_width = config.getInteger("CHATLOG_module_width",320);
@@ -355,11 +366,16 @@ public class sigIRC{
 					"Controller"
 					));
 		}
-		
 		if (rabiribimodule_enabled)  {
 			modules.add(new RabiRibiModule(
 					new Rectangle(rabiribimodule_X,rabiribimodule_Y,rabiribimodule_width,rabiribimodule_height),
 					"Rabi-Ribi"
+					));
+		}
+		if (rabiracemodule_enabled)  {
+			modules.add(new RabiRaceModule(
+					new Rectangle(rabiracemodule_X,rabiracemodule_Y,rabiracemodule_width,rabiracemodule_height),
+					"Rabi-Race"
 					));
 		}
 	}

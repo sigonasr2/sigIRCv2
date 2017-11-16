@@ -1,9 +1,11 @@
 package sig.utils;
+import java.awt.AlphaComposite;
 import java.awt.BasicStroke;
 import java.awt.Color;
 import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.Graphics2D;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.RenderingHints;
 import java.awt.Shape;
@@ -11,6 +13,8 @@ import java.awt.font.FontRenderContext;
 import java.awt.font.GlyphVector;
 import java.awt.font.TextAttribute;
 import java.awt.geom.Rectangle2D;
+import java.awt.image.BufferedImage;
+import java.awt.image.ImageObserver;
 import java.text.AttributedString;
 
 import sig.MyPanel;
@@ -100,6 +104,17 @@ public class DrawUtils {
 			System.out.println("WARNING! Invalid Color string specified ("+s+").");
 			return null;
 		}
+	}
+	
+	public static void drawImage(Graphics g, Image img, double x, double y, Color blend_col, ImageObserver source) {
+		BufferedImage tmp = new BufferedImage(img.getWidth(source),img.getHeight(source),BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = tmp.createGraphics();
+		g2.drawImage(img, 0, 0, null);
+		g2.setComposite(AlphaComposite.SrcAtop);
+		g2.setColor(blend_col);
+		g2.fillRect(0, 0, img.getWidth(source), img.getHeight(source));
+		g2.dispose();
+		g.drawImage(tmp,(int)x,(int)y,source);
 	}
 	
 	public static Color invertColor(Color c) {

@@ -74,6 +74,11 @@ public class RabiRibiModule extends Module{
 		
 		//System.out.println("Money value is: "+readIntFromMemory(MemoryOffset.MONEY));
 	}
+	
+	public void SaveConfig() {
+		super.SaveConfig();
+		EntityLookupData.saveEntityLookupData(lookup_table);
+	}
 
 	private void Initialize() {
 		

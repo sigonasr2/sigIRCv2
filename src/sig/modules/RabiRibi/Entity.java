@@ -206,7 +206,6 @@ public class Entity {
 					parent.lookup_table.put(hashcode,lookup_data);
 					parent.setStatusMessage("Adding "+(current_money-starting_money_val)+" to hash ID "+id+","+color);
 				}
-				EntityLookupData.saveEntityLookupData(parent.lookup_table);
 				Entity.taskDone=1;
 				scheduler.shutdownNow();
 			} else {
