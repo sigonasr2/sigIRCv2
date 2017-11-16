@@ -82,6 +82,7 @@ public enum MemoryData {
 	
 	public MemoryOffset mem;
 	public String name;
+	public String img_path;
 	public Image img;
 	public boolean key_item; //Set to true if it's a key item. False if it's a badge.
 	
@@ -89,6 +90,7 @@ public enum MemoryData {
 		this.mem = mem;
 		this.name = name;
 		this.img = RabiRaceModule.image_map.get(icon_name);
+		this.img_path = icon_name;
 		this.key_item = isKeyItem;
 	}
 	

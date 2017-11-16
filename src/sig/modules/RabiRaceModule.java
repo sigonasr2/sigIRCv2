@@ -23,6 +23,7 @@ import com.sun.jna.platform.win32.Kernel32;
 import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 
+import sig.FileManager;
 import sig.Module;
 import sig.sigIRC;
 import sig.modules.RabiRace.ColorCycler;
@@ -65,6 +66,13 @@ public class RabiRaceModule extends Module{
 		}, 5000, 5000, TimeUnit.MILLISECONDS);
 		
 		File dir = new File(ITEMS_DIRECTORY);
+		
+		for (MemoryData data : MemoryData.values()) {
+			//Attempt to fetch from server.
+			new FileManager("sigIRC/rabi-ribi/items/"+data.img_path).verifyAndFetchFileFromServer();
+		}
+		new FileManager("sigIRC/rabi-ribi/items/easter_egg.png").verifyAndFetchFileFromServer();
+		
 		String[] images = dir.list();
 		List<String> filtered_images = new ArrayList<String>();
 		for (String file : images) {
