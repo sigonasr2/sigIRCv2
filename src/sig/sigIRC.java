@@ -279,6 +279,7 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/subscribers.txt"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/logs/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sounds/",true); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/rabi-ribi/",true); manager.verifyAndFetchFileFromServer();
 		//manager = new FileManager("sigIRC/sounds/Glaceon_cry.wav"); manager.verifyAndFetchFileFromServer();
 		File follower_sounds_folder = new File(BASEDIR+"sigIRC/follower_sounds");
 		if (!follower_sounds_folder.exists()) {
