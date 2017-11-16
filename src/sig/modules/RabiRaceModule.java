@@ -72,6 +72,11 @@ public class RabiRaceModule extends Module{
 			new FileManager("sigIRC/rabi-ribi/items/"+data.img_path).verifyAndFetchFileFromServer();
 		}
 		new FileManager("sigIRC/rabi-ribi/items/easter_egg.png").verifyAndFetchFileFromServer();
+		new FileManager("sigIRC/rabi-ribi/items/health_up.png").verifyAndFetchFileFromServer();
+		new FileManager("sigIRC/rabi-ribi/items/mana_up.png").verifyAndFetchFileFromServer();
+		new FileManager("sigIRC/rabi-ribi/items/regen_up.png").verifyAndFetchFileFromServer();
+		new FileManager("sigIRC/rabi-ribi/items/pack_up.png").verifyAndFetchFileFromServer();
+		new FileManager("sigIRC/rabi-ribi/items/attack_up.png").verifyAndFetchFileFromServer();
 		
 		String[] images = dir.list();
 		List<String> filtered_images = new ArrayList<String>();
@@ -84,6 +89,7 @@ public class RabiRaceModule extends Module{
 		images = filtered_images.toArray(new String[filtered_images.size()]);
 		for (String image : images) {
 			try {
+				//System.out.println("Loaded "+image);
 				image_map.put(image, ImageIO.read(new File(ITEMS_DIRECTORY+image)));
 			} catch (IOException e) {
 				e.printStackTrace();
@@ -260,7 +266,7 @@ public class RabiRaceModule extends Module{
 		if (!foundRabiRibi) {
 			DrawUtils.drawTextFont(g, sigIRC.panel.userFont, position.getX(), position.getY()+26, Color.BLACK, "Rabi-Ribi not found! Please start it.");
 		} else {
-			DrawUtils.drawTextFont(g, sigIRC.panel.userFont, position.getX(), position.getY()+26, Color.BLACK, "Values: "+readIntFromMemory(MemoryOffset.DLC_ITEM1)+","+readIntFromMemory(MemoryOffset.DLC_ITEM2)+","+readIntFromMemory(MemoryOffset.DLC_ITEM3)+","+readIntFromMemory(MemoryOffset.DLC_ITEM4));
+			//DrawUtils.drawTextFont(g, sigIRC.panel.userFont, position.getX(), position.getY()+26, Color.BLACK, "Values: "+readIntFromMemory(MemoryOffset.DLC_ITEM1)+","+readIntFromMemory(MemoryOffset.DLC_ITEM2)+","+readIntFromMemory(MemoryOffset.DLC_ITEM3)+","+readIntFromMemory(MemoryOffset.DLC_ITEM4));
 			final int border=20;
 			final int width=(int)(position.getWidth()-border*2);
 			final int spacing=width/5;
@@ -275,23 +281,48 @@ public class RabiRaceModule extends Module{
 			try {
 				for (String key : myProfile.key_items.keySet()) {
 					MemoryData data = myProfile.key_items.get(key);
-					
-					if (size*icon_size<width) {
-						g.drawImage(data.img, (int)(position.getX()+border+((count++)*icon_size)), (int)(position.getY()+96+8), (int)icon_size, (int)icon_size, sigIRC.panel);
+					if (readIntFromMemory(data.mem)<0) {
+						Image img = data.getImage().getScaledInstance(icon_size, icon_size, Image.SCALE_DEFAULT);
+						if (size*icon_size<width) {
+							DrawUtils.drawImage(g, img, (int)(position.getX()+border+((count++)*icon_size)), (int)(position.getY()+96+8), new Color(0,0,0,128), sigIRC.panel);
+						} else {
+							DrawUtils.drawImage(g, img, (int)(position.getX()+border+((width/size)*(count++))), (int)(position.getY()+96+8), new Color(0,0,0,128), sigIRC.panel);
+						}
 					} else {
-						g.drawImage(data.img, (int)(position.getX()+border+((width/size)*(count++))), (int)(position.getY()+96+8), (int)icon_size, (int)icon_size, sigIRC.panel);
+						if (size*icon_size<width) {
+							g.drawImage(data.getImage(), (int)(position.getX()+border+((count++)*icon_size)), (int)(position.getY()+96+8), (int)icon_size, (int)icon_size, sigIRC.panel);
+						} else {
+							g.drawImage(data.getImage(), (int)(position.getX()+border+((width/size)*(count++))), (int)(position.getY()+96+8), (int)icon_size, (int)icon_size, sigIRC.panel);
+						}
 					}
 				}
 				count=0;
 				size = myProfile.badges.size();
 				for (String key : myProfile.badges.keySet()) {
 					MemoryData data = myProfile.badges.get(key);
-					
 					if (size*icon_size<width) {
-						g.drawImage(data.img, (int)(position.getX()+border+((count++)*icon_size)), (int)(position.getY()+96+32), (int)icon_size, (int)icon_size, sigIRC.panel);
+						g.drawImage(data.getImage(), (int)(position.getX()+border+((count++)*icon_size)), (int)(position.getY()+96+32), (int)icon_size, (int)icon_size, sigIRC.panel);
 					} else {
-						g.drawImage(data.img, (int)(position.getX()+border+((width/size)*(count++))), (int)(position.getY()+96+32), (int)icon_size, (int)icon_size, sigIRC.panel);
+						g.drawImage(data.getImage(), (int)(position.getX()+border+((width/size)*(count++))), (int)(position.getY()+96+32), (int)icon_size, (int)icon_size, sigIRC.panel);
 					}
+				}
+				int i=0;
+				Image[] imgs = new Image[]{image_map.get("health_up.png"),
+						image_map.get("mana_up.png"),
+						image_map.get("regen_up.png"),
+						image_map.get("pack_up.png"),
+						image_map.get("attack_up.png")};
+				int[] amts = new int[]{
+						myProfile.healthUps,
+						myProfile.manaUps,
+						myProfile.regenUps,
+						myProfile.packUps,
+						myProfile.attackUps,
+				};
+				//g.drawImage(image_map.get("bunny_strike.png"),(int)(position.getX()+border+(i++)*(spacing)-img.getWidth(sigIRC.panel)/4),(int)(position.getY()+96+56), (int)icon_size, (int)icon_size, sigIRC.panel);
+				for (Image img : imgs) {
+					g.drawImage(img,(int)(position.getX()+border+((i)*(spacing))-icon_size/2),(int)(position.getY()+96+56), (int)icon_size, (int)icon_size, sigIRC.panel);
+					DrawUtils.drawCenteredOutlineText(g, sigIRC.panel.userFont, (int)((position.getX()+border+((i)*(spacing))-icon_size/2)+(spacing/2)), (int)(position.getY()+96+56+icon_size+6), 1, Color.WHITE, Color.BLUE, "x"+amts[i++]);
 				}
 			} catch (ConcurrentModificationException e) {
 				

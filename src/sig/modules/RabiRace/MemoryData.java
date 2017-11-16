@@ -44,8 +44,9 @@ public enum MemoryData {
 	SUPER_CARROT(MemoryOffset.SUPER_CARROT,"Super Carrot","super_carrot.png",true),
 	/*DLC_ITEM1(MemoryOffset.DLC_ITEM1,"","",true),
 	DLC_ITEM2(MemoryOffset.DLC_ITEM2,"","",true),
-	DLC_ITEM3(MemoryOffset.DLC_ITEM3,"","",true),
 	DLC_ITEM4(MemoryOffset.DLC_ITEM4,"","",true),*/
+	BUNNY_CLOVER(MemoryOffset.BUNNY_CLOVER,"Bunny Clover","bunny_clover.png",true),
+	FAIRYS_FLUTE(MemoryOffset.FAIRYS_FLUTE,"Fairy's Flute","fairy_s_flute.png",true),
 	BADGE_HEALTH_PLUS(MemoryOffset.BADGE_HEALTH_PLUS,"Health Plus","health_plus.png",false),
 	BADGE_HEALTH_SURGE(MemoryOffset.BADGE_HEALTH_SURGE,"Health Surge","health_surge.png",false),
 	BADGE_MANA_PLUS(MemoryOffset.BADGE_MANA_PLUS,"Mana Plus","mana_plus.png",false),
@@ -83,15 +84,17 @@ public enum MemoryData {
 	public MemoryOffset mem;
 	public String name;
 	public String img_path;
-	public Image img;
 	public boolean key_item; //Set to true if it's a key item. False if it's a badge.
 	
 	MemoryData(MemoryOffset mem, String name, String icon_name, boolean isKeyItem) {
 		this.mem = mem;
 		this.name = name;
-		this.img = RabiRaceModule.image_map.get(icon_name);
 		this.img_path = icon_name;
 		this.key_item = isKeyItem;
+	}
+	
+	public Image getImage() {
+		return RabiRaceModule.image_map.get(img_path);
 	}
 	
 	public String getDisplayName() {

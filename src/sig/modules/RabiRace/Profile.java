@@ -40,7 +40,7 @@ public class Profile {
 				badges.put(md.name, md);
 				//System.out.println("Obtained "+md.getDisplayName());
 			} else {
-				key_items.remove(md.name);
+				badges.remove(md.name);
 			}
 		}
 	}
