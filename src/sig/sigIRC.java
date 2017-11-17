@@ -302,7 +302,7 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/controller/4-way_axis.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/controller/controller_overlay.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/controller/controller_template.png"); manager.verifyAndFetchFileFromServer();
-		manager = new FileManager("sigIRC/CP Font.ttf"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/CP_Font.ttf"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("kill.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("memory"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();
