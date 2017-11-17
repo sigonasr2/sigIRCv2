@@ -217,20 +217,20 @@ public class RabiRaceModule extends Module{
 	private void UpdateMyProfile() {
 		if (foundRabiRibi) {
 			//System.out.println("Called.");
-			int warp_counter = readIntFromMemory(MemoryOffset.WARP_TRANSITION_COUNTER);
-			if (warp_counter==203 || warp_counter==141) {
+			//int warp_counter = readIntFromMemory(MemoryOffset.WARP_TRANSITION_COUNTER);
+			//if (warp_counter==203 || warp_counter==141) {
 				myProfile.rainbowEggCount = readIntFromMemory(MemoryOffset.RAINBOW_EGG_COUNT);
 				myProfile.attackUps = readItemCountFromMemory(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END);
 				myProfile.healthUps = readItemCountFromMemory(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END);
 				myProfile.manaUps = readItemCountFromMemory(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END);
 				myProfile.regenUps = readItemCountFromMemory(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END);
 				myProfile.packUps = readItemCountFromMemory(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END);
-				myProfile.isPaused = readIntFromMemory(MemoryOffset.WARP_TRANSITION_COUNTER)==141;
+				//myProfile.isPaused = readIntFromMemory(MemoryOffset.WARP_TRANSITION_COUNTER)==141;
 				myProfile.itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
 				myProfile.mappct = readFloatFromMemory(MemoryOffset.MAP_PERCENT);
 				myProfile.playtime = readIntFromMemory(MemoryOffset.PLAYTIME);
 				myProfile.updateClientValues();
-			}
+			//}
 		}
 	}
 	
