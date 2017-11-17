@@ -83,6 +83,7 @@ public class RabiRaceModule extends Module{
 			if (foundRabiRibi) {
 				myProfile.uploadProfile();
 				getSessionList();
+				//trimeadProfile.downloadProfile();
 			}
 		}, 5000, 5000, TimeUnit.MILLISECONDS);
 		
@@ -124,6 +125,8 @@ public class RabiRaceModule extends Module{
 				badges_list.add(md);
 			}
 		}
+		
+		//trimeadProfile.username = "trimead";
 		
 		join_button = new JoinButton(new Rectangle(2,(int)(position.getHeight()-18),120,18),"Join Session (0)",this);
 		create_button = new CreateButton(new Rectangle(122,(int)(position.getHeight()-18),120,18),"Create Session",this);
