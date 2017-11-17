@@ -47,6 +47,8 @@ public enum MemoryData {
 	DLC_ITEM4(MemoryOffset.DLC_ITEM4,"","",true),*/
 	BUNNY_CLOVER(MemoryOffset.BUNNY_CLOVER,"Bunny Clover","bunny_clover.png",true),
 	FAIRYS_FLUTE(MemoryOffset.FAIRYS_FLUTE,"Fairy's Flute","fairy_s_flute.png",true),
+	BUNNY_MEMORIES(MemoryOffset.BUNNY_MEMORIES,"Bunny Memories","bunny_memories.png",true),
+	WIND_BLESSING(MemoryOffset.WIND_BLESSING,"Wind Blessing","wind_blessing.png",true),
 	BADGE_HEALTH_PLUS(MemoryOffset.BADGE_HEALTH_PLUS,"Health Plus","health_plus.png",false),
 	BADGE_HEALTH_SURGE(MemoryOffset.BADGE_HEALTH_SURGE,"Health Surge","health_surge.png",false),
 	BADGE_MANA_PLUS(MemoryOffset.BADGE_MANA_PLUS,"Mana Plus","mana_plus.png",false),

@@ -3,11 +3,15 @@ package sig.modules;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
+import java.awt.Rectangle;
+import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.URL;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.List;
@@ -26,13 +30,19 @@ import com.sun.jna.platform.win32.WinNT.HANDLE;
 import sig.FileManager;
 import sig.Module;
 import sig.sigIRC;
+import sig.modules.Controller.ClickableButton;
 import sig.modules.RabiRace.ColorCycler;
+import sig.modules.RabiRace.CreateButton;
+import sig.modules.RabiRace.JoinButton;
 import sig.modules.RabiRace.MemoryData;
 import sig.modules.RabiRace.Profile;
+import sig.modules.RabiRace.SessionListData;
+import sig.modules.RabiRace.SessionListWindow;
 import sig.modules.RabiRibi.MemoryOffset;
 import sig.modules.RabiRibi.MemoryType;
 import sig.modules.utils.PsapiTools;
 import sig.utils.DrawUtils;
+import sig.utils.FileUtils;
 
 public class RabiRaceModule extends Module{
 	final static String ITEMS_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/items/";
@@ -42,8 +52,14 @@ public class RabiRaceModule extends Module{
 	long rabiRibiMemOffset = 0;
 	public HANDLE rabiribiProcess = null;
 	public static HashMap<String,Image> image_map = new HashMap<String,Image>();
-	ColorCycler rainbowcycler = new ColorCycler(new Color(255,0,0,96),8);
+	public static ColorCycler rainbowcycler = new ColorCycler(new Color(255,0,0,96),8);
 	Profile myProfile = new Profile(this);
+	public static RabiRaceModule module;
+	public static SessionListWindow window;
+	
+	public SessionListData session_listing = new SessionListData();
+	
+	ClickableButton join_button,create_button;
 	
 	public static List<MemoryData> key_items_list = new ArrayList<MemoryData>();  
 	public static List<MemoryData> badges_list = new ArrayList<MemoryData>(); 
@@ -52,7 +68,9 @@ public class RabiRaceModule extends Module{
 		super(bounds, moduleName);
 		//Initialize();
 		Initialize();
-		
+		module = this;
+		window = new SessionListWindow();
+		window.setVisible(false);
 		//System.out.println("Money value is: "+readIntFromMemory(MemoryOffset.MONEY));
 	}
 
@@ -62,7 +80,10 @@ public class RabiRaceModule extends Module{
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleWithFixedDelay(()->{
 			CheckRabiRibiClient();
-			UpdateMyProfile();
+			if (foundRabiRibi) {
+				myProfile.uploadProfile();
+				getSessionList();
+			}
 		}, 5000, 5000, TimeUnit.MILLISECONDS);
 		
 		File dir = new File(ITEMS_DIRECTORY);
@@ -102,6 +123,32 @@ public class RabiRaceModule extends Module{
 			} else {
 				badges_list.add(md);
 			}
+		}
+		
+		join_button = new JoinButton(new Rectangle(2,(int)(position.getHeight()-18),120,18),"Join Session (0)",this);
+		create_button = new CreateButton(new Rectangle(122,(int)(position.getHeight()-18),120,18),"Create Session",this);
+	}
+	
+	private void getSessionList() {
+		File file = new File(sigIRC.BASEDIR+"sessions");
+		try {
+			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=getsessions"),file);
+			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"sessions");
+			//System.out.println("Data is "+Arrays.toString(data));
+			session_listing.UpdateData(data);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		join_button.setButtonLabel("Join Session ("+session_listing.getSessions().size()+")");
+		window.UpdateSessionList();
+	}
+
+	public void mousePressed(MouseEvent ev) {
+		if (join_button.mouseInsideBounds(ev)) {
+			join_button.onClickEvent(ev);
+		}
+		if (create_button.mouseInsideBounds(ev)) {
+			create_button.onClickEvent(ev);
 		}
 	}
 
@@ -152,24 +199,38 @@ public class RabiRaceModule extends Module{
 	public void run() {
 		if (foundRabiRibi) {
 			rainbowcycler.run();
+			UpdateMyProfile();
+			if (window!=null) {
+				window.run();
+			}
 		}
 	}
 	
 	private void UpdateMyProfile() {
 		if (foundRabiRibi) {
 			//System.out.println("Called.");
-			myProfile.rainbowEggCount = readIntFromMemory(MemoryOffset.RAINBOW_EGG_COUNT);
-			myProfile.attackUps = readItemCountFromMemory(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END);
-			myProfile.healthUps = readItemCountFromMemory(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END);
-			myProfile.manaUps = readItemCountFromMemory(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END);
-			myProfile.regenUps = readItemCountFromMemory(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END);
-			myProfile.packUps = readItemCountFromMemory(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END);
-			myProfile.isPaused = readIntFromMemory(MemoryOffset.WARP_TRANSITION_COUNTER)==141;
-			myProfile.itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
-			myProfile.mappct = readFloatFromMemory(MemoryOffset.MAP_PERCENT);
-			myProfile.playtime = readIntFromMemory(MemoryOffset.PLAYTIME);
-			myProfile.updateClientValues();
+			int warp_counter = readIntFromMemory(MemoryOffset.WARP_TRANSITION_COUNTER);
+			if (warp_counter==203 || warp_counter==141) {
+				myProfile.rainbowEggCount = readIntFromMemory(MemoryOffset.RAINBOW_EGG_COUNT);
+				myProfile.attackUps = readItemCountFromMemory(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END);
+				myProfile.healthUps = readItemCountFromMemory(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END);
+				myProfile.manaUps = readItemCountFromMemory(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END);
+				myProfile.regenUps = readItemCountFromMemory(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END);
+				myProfile.packUps = readItemCountFromMemory(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END);
+				myProfile.isPaused = readIntFromMemory(MemoryOffset.WARP_TRANSITION_COUNTER)==141;
+				myProfile.itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
+				myProfile.mappct = readFloatFromMemory(MemoryOffset.MAP_PERCENT);
+				myProfile.playtime = readIntFromMemory(MemoryOffset.PLAYTIME);
+				myProfile.updateClientValues();
+			}
 		}
+	}
+	
+	public void ApplyConfigWindowProperties() {
+		sigIRC.rabiracemodule_X=(int)position.getX();
+		sigIRC.rabiracemodule_Y=(int)position.getY();
+		sigIRC.config.setInteger("RABIRACE_module_X", sigIRC.rabiracemodule_X);
+		sigIRC.config.setInteger("RABIRACE_module_Y", sigIRC.rabiracemodule_Y);
 	}
 
 	/*public int readIntFromErinaData(MemoryOffset val) {
@@ -266,67 +327,15 @@ public class RabiRaceModule extends Module{
 		if (!foundRabiRibi) {
 			DrawUtils.drawTextFont(g, sigIRC.panel.userFont, position.getX(), position.getY()+26, Color.BLACK, "Rabi-Ribi not found! Please start it.");
 		} else {
-			//DrawUtils.drawTextFont(g, sigIRC.panel.userFont, position.getX(), position.getY()+26, Color.BLACK, "Values: "+readIntFromMemory(MemoryOffset.DLC_ITEM1)+","+readIntFromMemory(MemoryOffset.DLC_ITEM2)+","+readIntFromMemory(MemoryOffset.DLC_ITEM3)+","+readIntFromMemory(MemoryOffset.DLC_ITEM4));
-			final int border=20;
-			final int width=(int)(position.getWidth()-border*2);
-			final int spacing=width/5;
-			for (int i=0;i<5;i++) {
-				Image img = image_map.get("easter_egg.png");
-				Color col = (myProfile.rainbowEggCount>i)?rainbowcycler.getCycleColor():new Color(0,0,0,192);
-				DrawUtils.drawImage(g, img, (int)(position.getX()+border+i*spacing-img.getWidth(sigIRC.panel)/4),(int)(position.getY()+36),col,sigIRC.panel);
-			}
-			int size = myProfile.key_items.size();
-			final int icon_size = 24;
-			int count = 0;
-			try {
-				for (String key : myProfile.key_items.keySet()) {
-					MemoryData data = myProfile.key_items.get(key);
-					if (readIntFromMemory(data.mem)<0) {
-						Image img = data.getImage().getScaledInstance(icon_size, icon_size, Image.SCALE_DEFAULT);
-						if (size*icon_size<width) {
-							DrawUtils.drawImage(g, img, (int)(position.getX()+border+((count++)*icon_size)), (int)(position.getY()+96+8), new Color(0,0,0,128), sigIRC.panel);
-						} else {
-							DrawUtils.drawImage(g, img, (int)(position.getX()+border+((width/size)*(count++))), (int)(position.getY()+96+8), new Color(0,0,0,128), sigIRC.panel);
-						}
-					} else {
-						if (size*icon_size<width) {
-							g.drawImage(data.getImage(), (int)(position.getX()+border+((count++)*icon_size)), (int)(position.getY()+96+8), (int)icon_size, (int)icon_size, sigIRC.panel);
-						} else {
-							g.drawImage(data.getImage(), (int)(position.getX()+border+((width/size)*(count++))), (int)(position.getY()+96+8), (int)icon_size, (int)icon_size, sigIRC.panel);
-						}
-					}
-				}
-				count=0;
-				size = myProfile.badges.size();
-				for (String key : myProfile.badges.keySet()) {
-					MemoryData data = myProfile.badges.get(key);
-					if (size*icon_size<width) {
-						g.drawImage(data.getImage(), (int)(position.getX()+border+((count++)*icon_size)), (int)(position.getY()+96+32), (int)icon_size, (int)icon_size, sigIRC.panel);
-					} else {
-						g.drawImage(data.getImage(), (int)(position.getX()+border+((width/size)*(count++))), (int)(position.getY()+96+32), (int)icon_size, (int)icon_size, sigIRC.panel);
-					}
-				}
-				int i=0;
-				Image[] imgs = new Image[]{image_map.get("health_up.png"),
-						image_map.get("mana_up.png"),
-						image_map.get("regen_up.png"),
-						image_map.get("pack_up.png"),
-						image_map.get("attack_up.png")};
-				int[] amts = new int[]{
-						myProfile.healthUps,
-						myProfile.manaUps,
-						myProfile.regenUps,
-						myProfile.packUps,
-						myProfile.attackUps,
-				};
-				//g.drawImage(image_map.get("bunny_strike.png"),(int)(position.getX()+border+(i++)*(spacing)-img.getWidth(sigIRC.panel)/4),(int)(position.getY()+96+56), (int)icon_size, (int)icon_size, sigIRC.panel);
-				for (Image img : imgs) {
-					g.drawImage(img,(int)(position.getX()+border+((i)*(spacing))-icon_size/2),(int)(position.getY()+96+56), (int)icon_size, (int)icon_size, sigIRC.panel);
-					DrawUtils.drawCenteredOutlineText(g, sigIRC.panel.userFont, (int)((position.getX()+border+((i)*(spacing))-icon_size/2)+(spacing/2)), (int)(position.getY()+96+56+icon_size+6), 1, Color.WHITE, Color.BLUE, "x"+amts[i++]);
-				}
-			} catch (ConcurrentModificationException e) {
-				
-			}
+			//myProfile.draw(g);
+			Image panel = myProfile.getStatPanel((int)position.getWidth());
+			g.drawImage(panel, (int)position.getX(), (int)position.getY(), sigIRC.panel);
+			g.drawImage(myProfile.getStatText((int)position.getWidth()), (int)position.getX(), (int)position.getY(), sigIRC.panel);
+			
+			//Profile.DrawMultiPanel(g, (int)(position.getX()), (int)(position.getY())+panel.getHeight(sigIRC.panel), (int)position.getWidth(), testing);
+			
+			join_button.draw(g);
+			create_button.draw(g);
 		}
 	}
 }

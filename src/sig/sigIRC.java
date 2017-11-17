@@ -86,7 +86,7 @@ public class sigIRC{
 	public final static String PROGRAM_EXECUTABLE_URL = "https://github.com/sigonasr2/sigIRCv2/raw/master/sigIRCv2.jar";
 	public static ConfigFile config;
 	static String server;
-	static String nickname;
+	public static String nickname;
 	public static String channel;
 	public static boolean authenticated=false;
 	public static int lastPlayedDing=0;
@@ -187,7 +187,7 @@ public class sigIRC{
 		dingThreshold = Integer.parseInt(config.getProperty("dingThreshold"));
 		backgroundcol = new Color(Integer.parseInt(config.getProperty("backgroundColor")));
 		messageFont = config.getProperty("messageFont","Gill Sans Ultra Bold Condensed");
-		usernameFont = config.getProperty("usernameFont","Gill Sans");
+		usernameFont = config.getProperty("usernameFont","Segoe UI Semibold");
 		touhoumotherConsoleFont = config.getProperty("touhoumotherConsoleFont","Agency FB Bold");
 		touhoumothermodule_enabled = config.getBoolean("Module_touhoumother_Enabled",false);
 		controllermodule_enabled = config.getBoolean("Module_controller_Enabled",false);
@@ -302,6 +302,7 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/controller/4-way_axis.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/controller/controller_overlay.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/controller/controller_template.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/CP Font.ttf"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("kill.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("memory"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();

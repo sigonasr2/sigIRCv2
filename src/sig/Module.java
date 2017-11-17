@@ -18,7 +18,7 @@ import sig.utils.DrawUtils;
 import sig.utils.TextUtils;
 
 public class Module {
-	protected Rectangle2D position;
+	public Rectangle2D position;
 	protected boolean enabled;
 	protected String name;
 	public static BufferedImage IMG_DRAGBAR;

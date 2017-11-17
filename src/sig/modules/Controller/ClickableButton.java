@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
+import sig.Module;
 import sig.sigIRC;
 import sig.modules.ControllerModule;
 import sig.utils.DrawUtils;
@@ -13,9 +14,9 @@ import sig.utils.TextUtils;
 public class ClickableButton {
 	protected int x,y,width,height;
 	protected String label;
-	protected ControllerModule module;
+	protected Module module;
 	
-	public ClickableButton(Rectangle position, String button_label, ControllerModule parent_module) {
+	public ClickableButton(Rectangle position, String button_label, Module parent_module) {
 		this.x = (int)position.getX();
 		this.y = (int)position.getY();
 		this.width = (int)position.getWidth();
@@ -29,8 +30,12 @@ public class ClickableButton {
 			//System.out.println("Click performed!");
 		}*/
 	}
+	
+	public void setButtonLabel(String text) {
+		this.label = text;
+	}
 
-	protected boolean mouseInsideBounds(MouseEvent ev) {
+	public boolean mouseInsideBounds(MouseEvent ev) {
 		return ev.getX()>=module.getPosition().getX()+x && ev.getX()<=module.getPosition().getX()+x+width &&
 				ev.getY()>=module.getPosition().getY()+y && ev.getY()<=module.getPosition().getY()+y+height;
 	}
