@@ -98,7 +98,7 @@ public class Profile {
 				e.printStackTrace();
 			}
 			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp");
-			System.out.println(Arrays.toString(data));
+			//System.out.println(Arrays.toString(data));
 			if (data.length>=18) {
 				int i=0;
 				displayName = data[i++];
@@ -121,7 +121,7 @@ public class Profile {
 					do {
 						String[] parse = nextval.split(";");
 						key_items.put(MemoryData.valueOf(parse[0]), Integer.parseInt(parse[1]));
-						System.out.println("Added "+Arrays.toString(parse));
+						//System.out.println("Added "+Arrays.toString(parse));
 						nextval = data[i++];
 					}
 					while (!nextval.equalsIgnoreCase("BADGES:"));
@@ -131,7 +131,7 @@ public class Profile {
 					do {
 						String[] parse = nextval.split(";");
 						badges.put(MemoryData.valueOf(parse[0]), Integer.parseInt(parse[1]));
-						System.out.println("Added "+Arrays.toString(parse));
+						//System.out.println("Added "+Arrays.toString(parse));
 						nextval = data[i++];
 					}
 					while (!nextval.equalsIgnoreCase("UPDATES:"));

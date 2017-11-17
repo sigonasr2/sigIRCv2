@@ -37,17 +37,17 @@ public class Session {
 				for (String s : playerlist) {
 					Profile p = new Profile(RabiRaceModule.module);
 					p.username=s;
-					System.out.println("Player "+p.username);
+					//System.out.println("Player "+p.username);
 					p.downloadProfile();
-					System.out.println("Adding Player "+p);
+					//System.out.println("Adding Player "+p);
 					players.add(p);
 				}
 			} else {
 				Profile p = new Profile(RabiRaceModule.module);
 				p.username=val;
-				System.out.println("Player "+p.username);
+				//System.out.println("Player "+p.username);
 				p.downloadProfile();
-				System.out.println("Adding Player "+p);
+				//System.out.println("Adding Player "+p);
 				players.add(p);
 			}
 		}

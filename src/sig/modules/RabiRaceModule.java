@@ -86,6 +86,11 @@ public class RabiRaceModule extends Module{
 				//trimeadProfile.downloadProfile();
 			}
 		}, 5000, 5000, TimeUnit.MILLISECONDS);
+		scheduler.scheduleWithFixedDelay(()->{
+			if (foundRabiRibi) {
+				UpdateMyProfile();
+			}
+		}, 250, 250, TimeUnit.MILLISECONDS);
 		
 		File dir = new File(ITEMS_DIRECTORY);
 		
@@ -202,7 +207,6 @@ public class RabiRaceModule extends Module{
 	public void run() {
 		if (foundRabiRibi) {
 			rainbowcycler.run();
-			UpdateMyProfile();
 			if (window!=null) {
 				window.run();
 			}
@@ -327,6 +331,7 @@ public class RabiRaceModule extends Module{
 	
 	public void draw(Graphics g) {
 		super.draw(g);
+		
 		if (!foundRabiRibi) {
 			DrawUtils.drawTextFont(g, sigIRC.panel.userFont, position.getX(), position.getY()+26, Color.BLACK, "Rabi-Ribi not found! Please start it.");
 		} else {
