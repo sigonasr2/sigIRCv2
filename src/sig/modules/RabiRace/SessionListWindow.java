@@ -10,8 +10,6 @@ import javax.swing.JPanel;
 import javax.swing.ListSelectionModel;
 
 import sig.modules.RabiRaceModule;
-import sig.modules.Controller.Axis;
-import sig.modules.Controller.ControlConfigurationWindow;
 
 public class SessionListWindow extends JFrame{
 	JPanel container = new JPanel();
@@ -26,6 +24,7 @@ public class SessionListWindow extends JFrame{
 		
 		sessionlist.setSelectionMode(ListSelectionModel.SINGLE_SELECTION);
 		sessionlist.setLayoutOrientation(JList.VERTICAL);
+		sessionlist.setPreferredSize(new Dimension(120,150));
 		
 		UpdateSessionList();
 		
@@ -66,7 +65,8 @@ public class SessionListWindow extends JFrame{
 	        super.paintComponent(g);
 	        //Axis.GetAxisDisplay(g,window.ConstructTemporaryAxis(),0,0,window.axis_width,window.axis_height);
 	        //Axis.GetAxisIndicatorDisplay(g,window.ConstructTemporaryAxis(),0,0,window.axis_width,window.axis_height);
-	        if (sessionlist.getSelectedIndex()!=-1) {
+	        if (sessionlist.getSelectedIndex()!=-1 &&
+	        		RabiRaceModule.module.session_listing.data.size()>sessionlist.getSelectedIndex()) {
 	        	//Get the players from that session.
 	        	Session s = RabiRaceModule.module.session_listing.data.get(sessionlist.getSelectedIndex());
 	        	
