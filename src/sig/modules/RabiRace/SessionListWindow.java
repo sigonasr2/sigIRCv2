@@ -65,10 +65,10 @@ public class SessionListWindow extends JFrame{
 	        super.paintComponent(g);
 	        //Axis.GetAxisDisplay(g,window.ConstructTemporaryAxis(),0,0,window.axis_width,window.axis_height);
 	        //Axis.GetAxisIndicatorDisplay(g,window.ConstructTemporaryAxis(),0,0,window.axis_width,window.axis_height);
-	        if (sessionlist.getSelectedIndex()!=-1 &&
-	        		RabiRaceModule.module.session_listing.data.size()>sessionlist.getSelectedIndex()) {
+	        if (selected!=-1 &&
+	        		RabiRaceModule.module.session_listing.data.size()>selected) {
 	        	//Get the players from that session.
-	        	Session s = RabiRaceModule.module.session_listing.data.get(sessionlist.getSelectedIndex());
+	        	Session s = RabiRaceModule.module.session_listing.data.get(selected);
 	        	
 	        	Profile.DrawMultiPanel(g,0,0,400,s.players);
 	        }

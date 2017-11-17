@@ -86,7 +86,8 @@ public class RabiRaceModule extends Module{
 				//trimeadProfile.downloadProfile();
 			}
 		}, 5000, 5000, TimeUnit.MILLISECONDS);
-		scheduler.scheduleWithFixedDelay(()->{
+		ScheduledExecutorService scheduler2 = Executors.newScheduledThreadPool(1);
+		scheduler2.scheduleWithFixedDelay(()->{
 			if (foundRabiRibi) {
 				UpdateMyProfile();
 			}

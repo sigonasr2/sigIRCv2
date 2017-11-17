@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 
+import sig.utils.DebugUtils;
+
 public class FileManager {
 	String fileloc;
 	final String serverURL = "http://45.33.13.215/sigIRCv2/";
@@ -12,6 +14,13 @@ public class FileManager {
 	
 	public FileManager(String location) {
 		this.fileloc=location;
+		if (fileloc.contains(" ")) {
+			System.out.println("!!!!!!!!!!!!!!!!!!");
+			System.out.println("!!!!!WARNING!!!!!!");
+			System.out.println("There is a space in the global file location "+fileloc+". This is going to cause huge errors!");
+			System.out.println("!!!!!!!!!!!!!!!!!!");
+			DebugUtils.showStackTrace();
+		}
 		this.folder=false;
 	}
 	
