@@ -5,12 +5,11 @@ import java.awt.event.MouseEvent;
 
 import sig.Module;
 import sig.modules.RabiRaceModule;
-import sig.modules.Controller.ClickableButton;
 
 public class CreateButton extends ClickableButton{
 
-	public CreateButton(Rectangle position, String button_label, Module parent_module) {
-		super(position, button_label, parent_module);
+	public CreateButton(Rectangle position, String button_label, RabiRaceModule module) {
+		super(position, button_label, module);
 	}
 
 	public void onClickEvent(MouseEvent ev) {

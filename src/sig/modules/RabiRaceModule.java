@@ -31,7 +31,7 @@ import com.sun.jna.platform.win32.WinNT.HANDLE;
 import sig.FileManager;
 import sig.Module;
 import sig.sigIRC;
-import sig.modules.Controller.ClickableButton;
+import sig.modules.RabiRace.ClickableButton;
 import sig.modules.RabiRace.ColorCycler;
 import sig.modules.RabiRace.CreateButton;
 import sig.modules.RabiRace.JoinButton;

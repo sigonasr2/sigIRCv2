@@ -10,12 +10,11 @@ import java.net.URL;
 import sig.Module;
 import sig.sigIRC;
 import sig.modules.RabiRaceModule;
-import sig.modules.Controller.ClickableButton;
 
 public class JoinButton extends ClickableButton{
 
-	public JoinButton(Rectangle position, String button_label, Module parent_module) {
-		super(position, button_label, parent_module);
+	public JoinButton(Rectangle position, String button_label, RabiRaceModule module) {
+		super(position,button_label,module);
 	}
 
 	public void onClickEvent(MouseEvent ev) {

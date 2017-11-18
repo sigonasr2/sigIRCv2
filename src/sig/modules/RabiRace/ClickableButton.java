@@ -1,4 +1,4 @@
-package sig.modules.Controller;
+package sig.modules.RabiRace;
 
 import java.awt.Color;
 import java.awt.Graphics;
@@ -8,19 +8,16 @@ import java.awt.event.MouseEvent;
 import sig.Module;
 import sig.sigIRC;
 import sig.modules.ControllerModule;
+import sig.modules.RabiRaceModule;
 import sig.utils.DrawUtils;
 import sig.utils.TextUtils;
 
 public class ClickableButton {
 	protected int x,y,width,height;
 	protected String label;
-	protected ControllerModule module;
+	protected RabiRaceModule module;
 	
-	public ClickableButton(Rectangle position, String button_label) {
-		this(position,button_label,null);
-	}
-	
-	public ClickableButton(Rectangle position, String button_label, ControllerModule parent_module) {
+	public ClickableButton(Rectangle position, String button_label, RabiRaceModule parent_module) {
 		this.x = (int)position.getX();
 		this.y = (int)position.getY();
 		this.width = (int)position.getWidth();

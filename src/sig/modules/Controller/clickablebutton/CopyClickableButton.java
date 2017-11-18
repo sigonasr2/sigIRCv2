@@ -17,7 +17,7 @@ public class CopyClickableButton extends ClickableButton{
 	
 	public void onClickEvent(MouseEvent ev) {
 		super.onClickEvent(ev);
-		if (mouseInsideBounds(ev)) {;
+		if (mouseInsideBounds(ev)) {
 			module.resetDragPoints();
 		}
 	}
