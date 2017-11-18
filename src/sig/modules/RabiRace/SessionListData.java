@@ -1,27 +1,28 @@
 package sig.modules.RabiRace;
 
-import java.util.ArrayList;
-import java.util.List;
+import java.util.HashMap;
 
 public class SessionListData {
-	List<Session> data = new ArrayList<Session>();
+	HashMap<Integer,Session> data = new HashMap<Integer,Session>();
 	
 	public SessionListData() {
 		
 	}
 	
 	public void UpdateData(String[] data) {
-		this.data.clear();
+		//this.data.clear();
 		for (String session : data) {
 			if (session.length()>0) {
 				//System.out.println("Adding session "+session);
-				this.data.add(new Session(session));
+				//this.data.add(new Session(session));
+				int sessionID = Integer.parseInt(session.split(",")[0]);
+				this.data.put(sessionID, new Session(session));
 			}
 		}
 		//System.out.println(this.data);
 	}
 	
-	public List<Session> getSessions() {
+	public HashMap<Integer,Session> getSessions() {
 		return data;
 	}
 }

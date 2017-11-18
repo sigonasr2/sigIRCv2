@@ -35,22 +35,36 @@ public class Session {
 			//System.out.println(Arrays.toString(playerlist));
 			if (playerlist.length>0) {
 				for (String s : playerlist) {
-					Profile p = new Profile(RabiRaceModule.module);
+					Profile p = new Profile(RabiRaceModule.module,true);
 					p.username=s;
 					//System.out.println("Player "+p.username);
 					p.downloadProfile();
+					if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
+						RabiRaceModule.mySession = this;
+					}
 					//System.out.println("Adding Player "+p);
 					players.add(p);
 				}
 			} else {
-				Profile p = new Profile(RabiRaceModule.module);
+				Profile p = new Profile(RabiRaceModule.module,true);
 				p.username=val;
 				//System.out.println("Player "+p.username);
 				p.downloadProfile();
+				if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
+					RabiRaceModule.mySession = this;
+				}
 				//System.out.println("Adding Player "+p);
 				players.add(p);
 			}
 		}
+	}
+	
+	public int getID() {
+		return id;
+	}
+	
+	public List<Profile> getPlayers() {
+		return players;
 	}
 	
 	public String toString() {

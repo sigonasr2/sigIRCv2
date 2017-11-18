@@ -43,6 +43,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -157,6 +158,7 @@ public class sigIRC{
 	public static long channel_id = -1;
 	public static int lastSubEmoteUpdate = -1;
 	public static boolean autoUpdateProgram = true;
+	public static Image programIcon;
 	
 	public static int subchannelCount = 0;
 	public static HashMap<Long,String> subchannelIds = new HashMap<Long,String>();
@@ -242,6 +244,8 @@ public class sigIRC{
 		
 		final String oauth = filedata[0];
 		
+		Initialize();
+		
 		WriteBreakToLogFile();
 		programClock.start();
 		
@@ -259,6 +263,14 @@ public class sigIRC{
             }
         });
 		InitializeIRCConnection(server, nickname, channel, oauth);
+	}
+
+	private static void Initialize() {
+		try {
+			programIcon = ImageIO.read(new File(sigIRC.BASEDIR+"/sigIRC/sigIRCicon.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static ConfigFile InitializeConfigurationFile() {
@@ -607,11 +619,7 @@ public class sigIRC{
         f.setLocation(windowX, windowY);
         f.setSize(windowWidth, windowHeight);
         
-        try {
-			f.setIconImage(ImageIO.read(new File(sigIRC.BASEDIR+"/sigIRC/sigIRCicon.png")));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+       f.setIconImage(programIcon);
 
         button = new BackgroundColorButton(new File(sigIRC.BASEDIR+"backcolor.png"),panel.getX()+panel.getWidth()-96,64+rowobj.size()*rowSpacing);
         if (sigIRC.overlayMode) {

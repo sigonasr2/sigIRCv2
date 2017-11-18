@@ -4,6 +4,7 @@ import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
 
 import sig.Module;
+import sig.modules.RabiRaceModule;
 import sig.modules.Controller.ClickableButton;
 
 public class CreateButton extends ClickableButton{
@@ -13,6 +14,6 @@ public class CreateButton extends ClickableButton{
 	}
 
 	public void onClickEvent(MouseEvent ev) {
-		
+		RabiRaceModule.createwindow.setVisible(true);
 	}
 }

@@ -27,6 +27,10 @@ public class TextUtils {
 		return sourcestring;
 	}
 	
+	public static boolean isAlphanumeric(String str) {
+		return str.matches("^[a-zA-Z0-9!\\-.? ]+$");
+	}
+	
 	public static boolean isNumeric(String str)
 	{
 	  return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
@@ -48,7 +52,7 @@ public class TextUtils {
 		StringBuilder sb = new StringBuilder();
 		int sec = seconds%60;
 		int min = (seconds/60)%60;
-		int hrs = (min/60)%60;
+		int hrs = (seconds/3600)%24;
 		if (hrs>0) {
 			if (hrs>=10) {
 				sb.append(hrs);

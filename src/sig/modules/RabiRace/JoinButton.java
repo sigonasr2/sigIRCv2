@@ -2,8 +2,13 @@ package sig.modules.RabiRace;
 
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.io.File;
+import java.io.IOException;
+import java.net.MalformedURLException;
+import java.net.URL;
 
 import sig.Module;
+import sig.sigIRC;
 import sig.modules.RabiRaceModule;
 import sig.modules.Controller.ClickableButton;
 
@@ -14,6 +19,18 @@ public class JoinButton extends ClickableButton{
 	}
 
 	public void onClickEvent(MouseEvent ev) {
-		RabiRaceModule.module.window.setVisible(true);
+		if (RabiRaceModule.mySession==null) {
+			RabiRaceModule.module.window.setVisible(true);
+		} else {
+			File file = new File(sigIRC.BASEDIR+"sigIRC/tmp.data");
+			try {
+				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=leavesession&name="+RabiRaceModule.module.myProfile.username+"&session="+RabiRaceModule.mySession.id),file);
+				RabiRaceModule.mySession=null;
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 }

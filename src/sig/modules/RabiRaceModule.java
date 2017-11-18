@@ -9,6 +9,7 @@ import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.ArrayList;
 import java.util.Arrays;
@@ -36,6 +37,8 @@ import sig.modules.RabiRace.CreateButton;
 import sig.modules.RabiRace.JoinButton;
 import sig.modules.RabiRace.MemoryData;
 import sig.modules.RabiRace.Profile;
+import sig.modules.RabiRace.Session;
+import sig.modules.RabiRace.SessionCreateWindow;
 import sig.modules.RabiRace.SessionListData;
 import sig.modules.RabiRace.SessionListWindow;
 import sig.modules.RabiRibi.MemoryOffset;
@@ -43,6 +46,7 @@ import sig.modules.RabiRibi.MemoryType;
 import sig.modules.utils.PsapiTools;
 import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
+import sig.utils.TextUtils;
 
 public class RabiRaceModule extends Module{
 	final static String ITEMS_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/items/";
@@ -53,9 +57,15 @@ public class RabiRaceModule extends Module{
 	public HANDLE rabiribiProcess = null;
 	public static HashMap<String,Image> image_map = new HashMap<String,Image>();
 	public static ColorCycler rainbowcycler = new ColorCycler(new Color(255,0,0,96),8);
-	Profile myProfile = new Profile(this);
+	public Profile myProfile = new Profile(this,false);
 	public static RabiRaceModule module;
 	public static SessionListWindow window;
+	public static SessionCreateWindow createwindow;
+	public static Session mySession;
+	boolean firstCheck=false;
+	public List<ScrollingText> messages = new ArrayList<ScrollingText>();
+	public static int lastScrollX = 0;
+	boolean firstUpdate=true;
 	
 	public SessionListData session_listing = new SessionListData();
 	
@@ -71,6 +81,8 @@ public class RabiRaceModule extends Module{
 		module = this;
 		window = new SessionListWindow();
 		window.setVisible(false);
+		createwindow = new SessionCreateWindow();
+		createwindow.setVisible(false);
 		//System.out.println("Money value is: "+readIntFromMemory(MemoryOffset.MONEY));
 	}
 
@@ -83,7 +95,19 @@ public class RabiRaceModule extends Module{
 			if (foundRabiRibi) {
 				myProfile.uploadProfile();
 				getSessionList();
+				getMessageUpdates();
 				//trimeadProfile.downloadProfile();
+				firstCheck=true;
+				if (mySession!=null) {
+					File file = new File(sigIRC.BASEDIR+"sigIRC/tmp.data");
+					try {
+						org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=keepalivesession&session="+mySession.getID()),file);
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+					} catch (IOException e) {
+						e.printStackTrace();
+					}
+				}
 			}
 		}, 5000, 5000, TimeUnit.MILLISECONDS);
 		ScheduledExecutorService scheduler2 = Executors.newScheduledThreadPool(1);
@@ -138,7 +162,24 @@ public class RabiRaceModule extends Module{
 		create_button = new CreateButton(new Rectangle(122,(int)(position.getHeight()-18),120,18),"Create Session",this);
 	}
 	
-	private void getSessionList() {
+	private void getMessageUpdates() {
+		File file = new File(sigIRC.BASEDIR+"sigIRC/messages");
+		try {
+			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=getupdates&name="+myProfile.username),file);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/messages");
+		for (String s : data) {
+			if (s.length()>0) {
+				messages.add(new ScrollingText(s,(int)(lastScrollX+position.getWidth()+24),(int)(position.getHeight()-28)));
+			}
+		}
+	}
+
+	public void getSessionList() {
 		File file = new File(sigIRC.BASEDIR+"sessions");
 		try {
 			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=getsessions"),file);
@@ -148,15 +189,19 @@ public class RabiRaceModule extends Module{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		join_button.setButtonLabel("Join Session ("+session_listing.getSessions().size()+")");
+		if (mySession==null) {
+			join_button.setButtonLabel("Join Session ("+session_listing.getSessions().size()+")");
+		} else {
+			join_button.setButtonLabel("Leave Session");
+		}
 		window.UpdateSessionList();
 	}
 
 	public void mousePressed(MouseEvent ev) {
-		if (join_button.mouseInsideBounds(ev)) {
+		if (firstCheck && join_button.mouseInsideBounds(ev)) {
 			join_button.onClickEvent(ev);
 		}
-		if (create_button.mouseInsideBounds(ev)) {
+		if (firstCheck && mySession==null && create_button.mouseInsideBounds(ev)) {
 			create_button.onClickEvent(ev);
 		}
 	}
@@ -210,6 +255,14 @@ public class RabiRaceModule extends Module{
 			rainbowcycler.run();
 			if (window!=null) {
 				window.run();
+			} 
+			for (int i=0;i<messages.size();i++) {
+				if (!messages.get(i).run()) {
+					messages.remove(i--);
+				}
+			}
+			if (lastScrollX>0) {
+				lastScrollX-=ScrollingText.SCROLLSPD;
 			}
 		}
 	}
@@ -217,20 +270,31 @@ public class RabiRaceModule extends Module{
 	private void UpdateMyProfile() {
 		if (foundRabiRibi) {
 			//System.out.println("Called.");
-			//int warp_counter = readIntFromMemory(MemoryOffset.WARP_TRANSITION_COUNTER);
-			//if (warp_counter==203 || warp_counter==141) {
+			int paused = readIntFromMemory(MemoryOffset.PAUSED);
+			float itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
+			myProfile.isPaused = paused==1;
+			//System.out.println(itempct+","+paused);
+			if (paused==0 && itempct>=0) {
+				if (mySession!=null) {
+					myProfile.archiveAllValues();
+				}
 				myProfile.rainbowEggCount = readIntFromMemory(MemoryOffset.RAINBOW_EGG_COUNT);
 				myProfile.attackUps = readItemCountFromMemory(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END);
 				myProfile.healthUps = readItemCountFromMemory(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END);
 				myProfile.manaUps = readItemCountFromMemory(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END);
 				myProfile.regenUps = readItemCountFromMemory(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END);
 				myProfile.packUps = readItemCountFromMemory(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END);
-				//myProfile.isPaused = readIntFromMemory(MemoryOffset.WARP_TRANSITION_COUNTER)==141;
-				myProfile.itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
+				myProfile.itempct = itempct;
 				myProfile.mappct = readFloatFromMemory(MemoryOffset.MAP_PERCENT);
 				myProfile.playtime = readIntFromMemory(MemoryOffset.PLAYTIME);
+				myProfile.difficulty = readIntFromMemory(MemoryOffset.GAME_DIFFICULTY);
+				myProfile.loop = readIntFromMemory(MemoryOffset.GAME_LOOP);
 				myProfile.updateClientValues();
-			//}
+				if (mySession!=null && !firstUpdate) {
+					myProfile.compareAndAnnounceAllChangedValues();
+				}
+				firstUpdate=false;
+			}
 		}
 	}
 	
@@ -342,9 +406,57 @@ public class RabiRaceModule extends Module{
 			g.drawImage(myProfile.getStatText((int)position.getWidth()), (int)position.getX(), (int)position.getY(), sigIRC.panel);
 			
 			//Profile.DrawMultiPanel(g, (int)(position.getX()), (int)(position.getY())+panel.getHeight(sigIRC.panel), (int)position.getWidth(), testing);
+			if (mySession!=null) {
+				List<Profile> sessionPlayers = new ArrayList<Profile>();
+				for (Profile p : mySession.getPlayers()) {
+					if (!p.username.equalsIgnoreCase(myProfile.username)) {
+						sessionPlayers.add(p);
+					}
+				}
+				Profile.DrawMultiPanel(g, (int)(position.getX()), (int)(position.getY())+panel.getHeight(sigIRC.panel), (int)position.getWidth(), sessionPlayers);
+			}
 			
-			join_button.draw(g);
-			create_button.draw(g);
+			if (firstCheck) {
+				join_button.draw(g);
+				if (mySession==null) {
+					create_button.draw(g);
+				}
+			}
+			g.setColor(Color.BLACK);
+			g.fillRect((int)(position.getX()), (int)(position.getY()+position.getHeight()-28-20), (int)(position.getWidth()), 20);
+			for (int i=0;i<messages.size();i++) {
+				messages.get(i).draw(g);
+			}
+		}
+	}
+	
+	class ScrollingText{
+		String msg;
+		int x;
+		int y;
+		Rectangle2D bounds;
+		final static int SCROLLSPD = 4;
+		
+		public ScrollingText(String message, int x, int y) {
+			this.msg = message;
+			this.x = x;
+			this.y = y;
+			this.bounds = TextUtils.calculateStringBoundsFont(message, sigIRC.panel.rabiRibiTinyDisplayFont);
+			RabiRaceModule.lastScrollX += bounds.getWidth() + 96;
+		}
+		
+		public boolean run() {
+			x-=SCROLLSPD;
+			if (x+bounds.getWidth()<0) {
+				return false;
+			}
+			return true;
+		}
+		
+		public void draw(Graphics g) {
+			if (x<position.getWidth()) {
+				DrawUtils.drawOutlineText(g, sigIRC.panel.rabiRibiTinyDisplayFont, position.getX()+x, position.getY()+y-6, 2, Color.WHITE, Color.GRAY, msg);
+			}
 		}
 	}
 }
