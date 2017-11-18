@@ -105,7 +105,7 @@ public class Module {
 
 	private void dragWindow() {
 		if (dragging) {
-			sigIRC.panel.repaint(getDrawBounds().getBounds());
+			//sigIRC.panel.repaint(getDrawBounds().getBounds());
 			int mouseX = sigIRC.panel.lastMouseX+(int)dragOffset.getX();
 			int mouseY = sigIRC.panel.lastMouseY+(int)dragOffset.getY();
 			int oldX = (int)position.getX();
@@ -133,11 +133,11 @@ public class Module {
 	
 	public void draw(Graphics g) {
 		drawModuleHeader(g);
-		SwingUtilities.invokeLater(new Runnable() {
+		/*SwingUtilities.invokeLater(new Runnable() {
             public void run() {
             	sigIRC.panel.repaint(getDrawBounds().getBounds());
             }  
-        });
+        });*/
 	}
 
 	private void drawModuleHeader(Graphics g) {

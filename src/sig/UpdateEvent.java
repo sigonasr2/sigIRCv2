@@ -184,6 +184,7 @@ public class UpdateEvent implements ActionListener{
 	    		sigIRC.chatlogtwitchemoticons.remove(i--);
 	    	}
 	    }
+		sigIRC.panel.repaint();
 	}
 
 	private void ProcessTextRows() {

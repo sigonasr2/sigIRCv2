@@ -68,7 +68,7 @@ public class SessionCreateWindow extends JFrame{
 		playerpanel.add(playerLabel);
 		playerpanel.add(maxplayers);
 
-		JLabel passwordLabel = new JLabel("🔑 Password (Optional):  ");
+		JLabel passwordLabel = new JLabel("🔑  Password (Optional):  ");
 		
 		playerpanel.add(passwordLabel);
 		playerpanel.add(pass);

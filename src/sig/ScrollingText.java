@@ -146,7 +146,7 @@ public class ScrollingText {
 	public boolean run() {
 		x-=myRow.getScrollSpd();
 		//System.out.println("X: "+x);
-		SwingUtilities.invokeLater(new Runnable() {
+		/*SwingUtilities.invokeLater(new Runnable() {
             public void run() {
             	sigIRC.panel.repaint(
 					FindLeftMostCornerInDisplay(),
@@ -154,7 +154,7 @@ public class ScrollingText {
 					(int)Math.max(FindRightMostCornerInDisplay(),(int)TextUtils.calculateStringBoundsFont(username, MyPanel.userFont).getWidth())+4,
 					FindBottomMostCornerInDisplay()+(stringHeight*2)+4);
 			    }  
-			});
+			});*/
 		//sigIRC.panel.repaint();
 		if (x+stringWidth<0) {
 			isAlive=false;

@@ -200,8 +200,8 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 		sigIRC.config.setInteger("windowHeight", sigIRC.windowHeight);
 		sigIRC.button.x = sigIRC.panel.getX()+sigIRC.panel.getWidth()-96;
 		sigIRC.button.y = 64+sigIRC.rowobj.size()*sigIRC.rowSpacing;
-		com.repaint();
-		sigIRC.panel.repaint();
+		//com.repaint();
+		//sigIRC.panel.repaint();
 		sigIRC.config.saveProperties();
 	}
 

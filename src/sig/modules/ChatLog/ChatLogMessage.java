@@ -195,7 +195,7 @@ public class ChatLogMessage {
 	}
 
 	public boolean run() {
-		SwingUtilities.invokeLater(new Runnable() {
+		/*SwingUtilities.invokeLater(new Runnable() {
             public void run() {
             	sigIRC.panel.repaint(
 					(int)Math.max(refModule.getPosition().getX()+position.getX(),0), 
@@ -203,7 +203,7 @@ public class ChatLogMessage {
 					(int)Math.min(sigIRC.panel.getWidth()-(refModule.getPosition().getX()+position.getX()+messageDisplaySize.getX()),messageDisplaySize.getX()), 
 					(int)Math.min(sigIRC.panel.getHeight()-(refModule.getPosition().getY()+position.getY()+messageDisplaySize.getY()),messageDisplaySize.getY()));
 		    }  
-		});
+		});*/
 		//System.out.println(refModule.getPosition()+","+position);
 		return true;
 	}
