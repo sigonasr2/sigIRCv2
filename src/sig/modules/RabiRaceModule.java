@@ -411,6 +411,7 @@ public class RabiRaceModule extends Module{
 				for (Profile p : mySession.getPlayers()) {
 					if (!p.username.equalsIgnoreCase(myProfile.username)) {
 						sessionPlayers.add(p);
+						//System.out.println("Found unique player "+p);
 					}
 				}
 				Profile.DrawMultiPanel(g, (int)(position.getX()), (int)(position.getY())+panel.getHeight(sigIRC.panel), (int)position.getWidth(), sessionPlayers);
