@@ -165,6 +165,7 @@ public class sigIRC{
 	
 	public static boolean downloadedSubEmotes=false;
 	public static boolean subEmotesCompleted=false;
+	public static boolean disableChatMessages=false;
 	
 	static int lastWindowX = 0;
 	static int lastWindowY = 0;
@@ -234,6 +235,7 @@ public class sigIRC{
 		chatlogMessageHistory = config.getInteger("CHATLOG_module_MessageHistory",50);
 		hardwareAcceleration = config.getBoolean("hardware_acceleration",true);
 		autoUpdateProgram = config.getBoolean("Automatically_Update_Program", true);
+		disableChatMessages = config.getBoolean("Disable_Chat_Messages", false);
 		lastSubEmoteUpdate = config.getInteger("lastSubEmote_APIUpdate",Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
 		manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
 		//System.out.println(manager.auth().hasAccessToken());
@@ -587,7 +589,7 @@ public class sigIRC{
 	}
 
 	private static boolean MessageIsAllowed(String line) {
-		if (line.contains("PRIVMSG") && downloadsComplete) {
+		if (line.contains("PRIVMSG") && downloadsComplete && !disableChatMessages) {
 			return true;
 		} else {
 			return false;
