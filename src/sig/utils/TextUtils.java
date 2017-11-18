@@ -1,8 +1,11 @@
 package sig.utils;
 import java.awt.Color;
 import java.awt.Font;
+import java.awt.Point;
 import java.awt.font.FontRenderContext;
 import java.awt.geom.Rectangle2D;
+import java.util.ArrayList;
+import java.util.List;
 
 import sig.sigIRC;
 
@@ -22,6 +25,10 @@ public class TextUtils {
 			sourcestring = piece1+replacestring+piece2;
 		}
 		return sourcestring;
+	}
+	
+	public static boolean isAlphanumeric(String str) {
+		return str.matches("^[a-zA-Z0-9!\\-.? ]+$");
 	}
 	
 	public static boolean isNumeric(String str)
@@ -45,7 +52,7 @@ public class TextUtils {
 		StringBuilder sb = new StringBuilder();
 		int sec = seconds%60;
 		int min = (seconds/60)%60;
-		int hrs = (min/60)%60;
+		int hrs = (seconds/3600)%24;
 		if (hrs>0) {
 			if (hrs>=10) {
 				sb.append(hrs);
@@ -81,5 +88,46 @@ public class TextUtils {
 	public static Color convertStringToColor(String col) {
 		String[] split = col.split(",");
 		return new Color(Integer.parseInt(split[0]),Integer.parseInt(split[1]),Integer.parseInt(split[2]));
+	}
+	
+	public static List<String> WrapText(String msg, Font font, double width) {
+		List<String> displayMessage = new ArrayList<String>();
+		String rawmessage = msg;
+		int textWidth = (int)TextUtils.calculateStringBoundsFont(rawmessage, font).getWidth();
+		int maxWidth = (int)width;
+		do {
+			rawmessage = BreakTextAtNextSection(rawmessage+" ",font,displayMessage,maxWidth);
+			textWidth = (int)TextUtils.calculateStringBoundsFont(rawmessage, font).getWidth();
+		} while (textWidth>maxWidth);
+		if (rawmessage.length()>0) {
+			displayMessage.add(rawmessage);
+		}
+		return displayMessage;
+		//System.out.println(displayMessage+": "+messageDisplaySize);
+	}
+	
+	private static String BreakTextAtNextSection(String msg, Font font, List<String> list, int maxWidth) {
+		int marker = 1;
+		int textWidth = (int)TextUtils.calculateStringBoundsFont(msg.substring(0, marker), font).getWidth();
+		while (textWidth<maxWidth) {
+			if (marker<msg.length()) {
+				int tempmarker = msg.indexOf(' ', marker);
+				if (tempmarker!=-1) {
+					textWidth = (int)TextUtils.calculateStringBoundsFont(msg.substring(0, tempmarker), font).getWidth();
+					if (textWidth<maxWidth) {
+						marker = tempmarker+1;
+					}
+					//System.out.println(msg.substring(0, marker)+" | "+textWidth);
+				} else {
+					marker=msg.length();
+					break;
+				}
+			} else {
+				break;
+			}
+		}
+		String currentText = msg.substring(0, marker);
+		list.add(currentText);
+		return msg.substring(marker, msg.length());
 	}
 }

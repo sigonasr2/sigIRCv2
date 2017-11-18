@@ -252,11 +252,7 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 		this.twowayAxis_range1 = new LinkedTextField(twowayAxis_range1);
 		this.twowayAxis_range2 = new LinkedTextField(twowayAxis_range2);
 		this.setTitle("Axis Configuration Window");
-		try {
-			this.setIconImage(ImageIO.read(new File(sigIRC.BASEDIR+"/sigIRC/sigIRCicon.png")));
-		} catch (IOException e1) {
-			e1.printStackTrace();
-		}
+		this.setIconImage(sigIRC.programIcon);
 		
 		switch (dialog) {
 			case AXIS_OPTIONS:

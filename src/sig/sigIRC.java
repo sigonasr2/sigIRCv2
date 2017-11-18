@@ -12,15 +12,29 @@ import com.mb3364.twitch.api.handlers.ChannelResponseHandler;
 import com.mb3364.twitch.api.handlers.StreamResponseHandler;
 import com.mb3364.twitch.api.models.Channel;
 import com.mb3364.twitch.api.models.Stream;
+import com.sun.jna.Memory;
+import com.sun.jna.Native;
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.Advapi32;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinDef.DWORD;
+import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
+import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 
 import sig.modules.ChatLogModule;
 import sig.modules.ControllerModule;
+import sig.modules.RabiRaceModule;
+import sig.modules.RabiRibiModule;
 import sig.modules.TouhouMotherModule;
 import sig.modules.TwitchModule;
 import sig.modules.ChatLog.ChatLogMessage;
 import sig.modules.ChatLog.ChatLogTwitchEmote;
+import sig.modules.utils.MyKernel32;
+import sig.modules.utils.PsapiTools;
 import sig.utils.FileUtils;
 import sig.utils.GithubUtils;
+import sig.utils.MemoryUtils;
 import sig.utils.TextUtils;
 
 import java.awt.Color;
@@ -29,6 +43,7 @@ import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
@@ -72,7 +87,7 @@ public class sigIRC{
 	public final static String PROGRAM_EXECUTABLE_URL = "https://github.com/sigonasr2/sigIRCv2/raw/master/sigIRCv2.jar";
 	public static ConfigFile config;
 	static String server;
-	static String nickname;
+	public static String nickname;
 	public static String channel;
 	public static boolean authenticated=false;
 	public static int lastPlayedDing=0;
@@ -116,6 +131,16 @@ public class sigIRC{
 	public static int chatlogmodule_height=312;
 	public static int chatlogmodule_X=0;
 	public static int chatlogmodule_Y=312;
+	public static int rabiribimodule_width=320;
+	public static int rabiribimodule_height=312;
+	public static int rabiribimodule_X=0;
+	public static int rabiribimodule_Y=312;
+	public static boolean rabiribimodule_enabled=false;
+	public static int rabiracemodule_width=320;
+	public static int rabiracemodule_height=312;
+	public static int rabiracemodule_X=0;
+	public static int rabiracemodule_Y=312;
+	public static boolean rabiracemodule_enabled=false;
 	public static int chatlogMessageHistory=50;
 	public static boolean controllermodule_enabled=true;
 	public static int controllermodule_width=320;
@@ -133,6 +158,7 @@ public class sigIRC{
 	public static long channel_id = -1;
 	public static int lastSubEmoteUpdate = -1;
 	public static boolean autoUpdateProgram = true;
+	public static Image programIcon;
 	
 	public static int subchannelCount = 0;
 	public static HashMap<Long,String> subchannelIds = new HashMap<Long,String>();
@@ -163,7 +189,7 @@ public class sigIRC{
 		dingThreshold = Integer.parseInt(config.getProperty("dingThreshold"));
 		backgroundcol = new Color(Integer.parseInt(config.getProperty("backgroundColor")));
 		messageFont = config.getProperty("messageFont","Gill Sans Ultra Bold Condensed");
-		usernameFont = config.getProperty("usernameFont","Gill Sans");
+		usernameFont = config.getProperty("usernameFont","Segoe UI Semibold");
 		touhoumotherConsoleFont = config.getProperty("touhoumotherConsoleFont","Agency FB Bold");
 		touhoumothermodule_enabled = config.getBoolean("Module_touhoumother_Enabled",false);
 		controllermodule_enabled = config.getBoolean("Module_controller_Enabled",false);
@@ -186,6 +212,16 @@ public class sigIRC{
 		touhoumothermodule_Y = config.getInteger("TOUHOUMOTHER_module_Y",312);
 		touhoumothermodule_width = config.getInteger("TOUHOUMOTHER_module_width",320);
 		touhoumothermodule_height = config.getInteger("TOUHOUMOTHER_module_height",312);
+		/*rabiribimodule_X = config.getInteger("RABIRIBI_module_X",0);
+		rabiribimodule_Y = config.getInteger("RABIRIBI_module_Y",312);
+		rabiribimodule_width = config.getInteger("RABIRIBI_module_width",320);
+		rabiribimodule_height = config.getInteger("RABIRIBI_module_height",312);
+		rabiribimodule_enabled = config.getBoolean("Module_rabiribi_Enabled", false);*/
+		rabiracemodule_X = config.getInteger("RABIRACE_module_X",0);
+		rabiracemodule_Y = config.getInteger("RABIRACE_module_Y",312);
+		rabiracemodule_width = config.getInteger("RABIRACE_module_width",320);
+		rabiracemodule_height = config.getInteger("RABIRACE_module_height",312);
+		rabiracemodule_enabled = config.getBoolean("Module_rabirace_Enabled", false);
 		chatlogmodule_X = config.getInteger("CHATLOG_module_X",0);
 		chatlogmodule_Y = config.getInteger("CHATLOG_module_Y",312);
 		chatlogmodule_width = config.getInteger("CHATLOG_module_width",320);
@@ -208,6 +244,8 @@ public class sigIRC{
 		
 		final String oauth = filedata[0];
 		
+		Initialize();
+		
 		WriteBreakToLogFile();
 		programClock.start();
 		
@@ -225,6 +263,14 @@ public class sigIRC{
             }
         });
 		InitializeIRCConnection(server, nickname, channel, oauth);
+	}
+
+	private static void Initialize() {
+		try {
+			programIcon = ImageIO.read(new File(sigIRC.BASEDIR+"/sigIRC/sigIRCicon.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
 	}
 
 	private static ConfigFile InitializeConfigurationFile() {
@@ -245,6 +291,9 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/subscribers.txt"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/logs/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sounds/",true); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/rabi-ribi/",true); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/rabi-ribi/characters",true); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/rabi-ribi/items",true); manager.verifyAndFetchFileFromServer();
 		//manager = new FileManager("sigIRC/sounds/Glaceon_cry.wav"); manager.verifyAndFetchFileFromServer();
 		File follower_sounds_folder = new File(BASEDIR+"sigIRC/follower_sounds");
 		if (!follower_sounds_folder.exists()) {
@@ -265,6 +314,7 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/controller/4-way_axis.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/controller/controller_overlay.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/controller/controller_template.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/CP_Font.ttf"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("kill.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("memory"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();
@@ -330,6 +380,18 @@ public class sigIRC{
 			modules.add(new ControllerModule(
 					new Rectangle(controllermodule_X,controllermodule_Y,controllermodule_width,controllermodule_height),
 					"Controller"
+					));
+		}
+		if (rabiribimodule_enabled)  {
+			modules.add(new RabiRibiModule(
+					new Rectangle(rabiribimodule_X,rabiribimodule_Y,rabiribimodule_width,rabiribimodule_height),
+					"Rabi-Ribi"
+					));
+		}
+		if (rabiracemodule_enabled)  {
+			modules.add(new RabiRaceModule(
+					new Rectangle(rabiracemodule_X,rabiracemodule_Y,rabiracemodule_width,rabiracemodule_height),
+					"Rabi-Race"
 					));
 		}
 	}
@@ -557,11 +619,7 @@ public class sigIRC{
         f.setLocation(windowX, windowY);
         f.setSize(windowWidth, windowHeight);
         
-        try {
-			f.setIconImage(ImageIO.read(new File(sigIRC.BASEDIR+"/sigIRC/sigIRCicon.png")));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+       f.setIconImage(programIcon);
 
         button = new BackgroundColorButton(new File(sigIRC.BASEDIR+"backcolor.png"),panel.getX()+panel.getWidth()-96,64+rowobj.size()*rowSpacing);
         if (sigIRC.overlayMode) {

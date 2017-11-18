@@ -121,9 +121,9 @@ public class ScrollingText {
 		FileUtils.logToFile(message, sigIRC.BASEDIR+"sigIRC/logs/log_"+(cal.get(Calendar.MONTH)+1)+"_"+cal.get(Calendar.DAY_OF_MONTH)+"_"+cal.get(Calendar.YEAR)+".txt",true);
 	}
 
-	private Color GetUserNameColor(String username) {
+	public static Color GetUserNameColor(String username) {
 		Random r = new Random();
-		r.setSeed(username.hashCode());
+		r.setSeed(username.toLowerCase().hashCode());
 		int randomnumb = r.nextInt(3);
 		Color col;
 		switch (randomnumb) {

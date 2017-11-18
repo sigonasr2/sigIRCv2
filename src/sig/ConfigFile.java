@@ -10,6 +10,7 @@ import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Properties;
 
+import sig.modules.RabiRibi.EntityLookupData;
 import sig.utils.FileUtils;
 
 public class ConfigFile {
@@ -94,6 +95,9 @@ public class ConfigFile {
 		try {
 			properties.store(GetFileWriter(basepath), "Properties file for sigIRCv2\n");
 			SortConfigProperties();
+			for (Module m : sigIRC.modules) {
+				m.SaveConfig();
+			}
 			System.out.println("Properties successfully saved.");
 		} catch (IOException e) {
 			e.printStackTrace();

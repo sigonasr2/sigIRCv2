@@ -23,6 +23,8 @@
             <zipfileset excludes="META-INF/*.SF" src="lib/lwjgl-natives-linux.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/lwjgl-natives-windows.jar"/>
             <zipfileset excludes="META-INF/*.SF" src="lib/lwjgl-natives-macos.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jna-4.5.0.jar"/>
+            <zipfileset excludes="META-INF/*.SF" src="lib/jna-platform-4.5.0.jar"/>
         </jar>
     </target>
 </project>
