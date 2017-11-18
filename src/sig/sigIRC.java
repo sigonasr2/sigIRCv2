@@ -212,11 +212,11 @@ public class sigIRC{
 		touhoumothermodule_Y = config.getInteger("TOUHOUMOTHER_module_Y",312);
 		touhoumothermodule_width = config.getInteger("TOUHOUMOTHER_module_width",320);
 		touhoumothermodule_height = config.getInteger("TOUHOUMOTHER_module_height",312);
-		rabiribimodule_X = config.getInteger("RABIRIBI_module_X",0);
+		/*rabiribimodule_X = config.getInteger("RABIRIBI_module_X",0);
 		rabiribimodule_Y = config.getInteger("RABIRIBI_module_Y",312);
 		rabiribimodule_width = config.getInteger("RABIRIBI_module_width",320);
 		rabiribimodule_height = config.getInteger("RABIRIBI_module_height",312);
-		rabiribimodule_enabled = config.getBoolean("Module_rabiribi_Enabled", false);
+		rabiribimodule_enabled = config.getBoolean("Module_rabiribi_Enabled", false);*/
 		rabiracemodule_X = config.getInteger("RABIRACE_module_X",0);
 		rabiracemodule_Y = config.getInteger("RABIRACE_module_Y",312);
 		rabiracemodule_width = config.getInteger("RABIRACE_module_width",320);
