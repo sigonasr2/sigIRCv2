@@ -175,7 +175,7 @@ public class Profile {
 	
 	public void downloadProfile() {
 		if (sigIRC.authenticated) {
-			File file = new File(sigIRC.BASEDIR+"tmp");
+			File file = new File(sigIRC.BASEDIR+"tmp_profile");
 			try {
 				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=retrievedata&name="+username.toLowerCase()),file);
 			} catch (MalformedURLException e) {
@@ -183,7 +183,7 @@ public class Profile {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp");
+			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp_profile");
 			//System.out.println(Arrays.toString(data));
 			if (data.length>=18) {
 				int i=0;

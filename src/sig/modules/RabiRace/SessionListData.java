@@ -9,7 +9,7 @@ public class SessionListData {
 	
 	public SessionListData() {
 		
-	}
+	} 
 	
 	public void UpdateData(String[] data) {
 		//this.data.clear();

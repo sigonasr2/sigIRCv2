@@ -145,9 +145,9 @@ public class SessionListWindow extends JFrame{
 			if (hashedPass.length()==0) {
 				hashedPass="none";
 			}
-			File file = new File(sigIRC.BASEDIR+"sigIRC/tmp.data");
+			File file = new File(sigIRC.BASEDIR+"sigIRC/tmp_session.data");
 			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=joinsession&name="+RabiRaceModule.module.myProfile.username+"&session="+session.id+"&password="+hashedPass),file);
-			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/tmp.data");
+			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/tmp_session.data");
 			
 			if (data.length==1) {
 				int errorCode = Integer.parseInt(data[0]);
