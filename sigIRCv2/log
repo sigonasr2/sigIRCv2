@@ -1,0 +1,65 @@
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\oauthToken.txt, retrieving file online from http://45.33.13.215/sigIRCv2/oauthToken.txt.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\subscribers.txt, retrieving file online from http://45.33.13.215/sigIRCv2/subscribers.txt.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\follower_sounds\Glaceon_cry.wav, retrieving file online from http://45.33.13.215/sigIRCv2/Glaceon_cry.wav.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\follower_sounds\README.txt, retrieving file online from http://45.33.13.215/sigIRCv2/README.txt.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\record, retrieving file online from http://45.33.13.215/sigIRCv2/record.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\glaceon_follower.png, retrieving file online from http://45.33.13.215/sigIRCv2/glaceon_follower.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\sigIRCicon.png, retrieving file online from http://45.33.13.215/sigIRCv2/sigIRCicon.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\icon_down_arrow.png, retrieving file online from http://45.33.13.215/sigIRCv2/icon_down_arrow.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\icon_follower_count.png, retrieving file online from http://45.33.13.215/sigIRCv2/icon_follower_count.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\icon_up_arrow.png, retrieving file online from http://45.33.13.215/sigIRCv2/icon_up_arrow.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\icon_uptime.png, retrieving file online from http://45.33.13.215/sigIRCv2/icon_uptime.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\icon_viewers_count.png, retrieving file online from http://45.33.13.215/sigIRCv2/icon_viewers_count.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\icon_views_count.png, retrieving file online from http://45.33.13.215/sigIRCv2/icon_views_count.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\message_separator.png, retrieving file online from http://45.33.13.215/sigIRCv2/message_separator.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\controller\2-way_axis.png, retrieving file online from http://45.33.13.215/sigIRCv2/2-way_axis.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\controller\4-way_axis.png, retrieving file online from http://45.33.13.215/sigIRCv2/4-way_axis.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\controller\controller_overlay.png, retrieving file online from http://45.33.13.215/sigIRCv2/controller_overlay.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\controller\controller_template.png, retrieving file online from http://45.33.13.215/sigIRCv2/controller_template.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\sigIRC\CP_Font.ttf, retrieving file online from http://45.33.13.215/sigIRCv2/CP_Font.ttf.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\kill.png, retrieving file online from http://45.33.13.215/sigIRCv2/kill.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\memory, retrieving file online from http://45.33.13.215/sigIRCv2/memory.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\swap.png, retrieving file online from http://45.33.13.215/sigIRCv2/swap.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\update.png, retrieving file online from http://45.33.13.215/sigIRCv2/update.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\backcolor.png, retrieving file online from http://45.33.13.215/sigIRCv2/backcolor.png.
+Could not find C:\Users\sigon\Downloads\sigIRCv2-master\sigIRCv2\.\drag_bar.png, retrieving file online from http://45.33.13.215/sigIRCv2/drag_bar.png.
+File size is 10277104
+File size on Github is -1
+File size on Github varies from currently running program... Downloading new program.
+Downloaded Dependencies. 
+!!!!!!!!!!!!!!!!!!
+!!!!!WARNING!!!!!!
+There is a space in the global file location sigIRC/sounds/Howler Monkeys Howling (Very Funny)-Pia8ku7jUNg.wav. This is going to cause huge errors!
+!!!!!!!!!!!!!!!!!!
+Trace:Mini stack tracer:
+sig.utils.DebugUtils: **DebugUtils.java** getStackTrace():10
+sig.utils.DebugUtils: **DebugUtils.java** showStackTrace():6
+sig.FileManager: **FileManager.java** <init>():22
+sig.CustomSound: **CustomSound.java** <init>():24
+sig.sigIRC: **sigIRC.java** InitializeCustomSounds():406
+sig.sigIRC: **sigIRC.java** main():259
+!!!!!!!!!!!!!!!!!!
+!!!!!WARNING!!!!!!
+There is a space in the global file location sigIRC/sounds/Kuroyukihime Burst Link !-tv6wMw7KU9o.wav. This is going to cause huge errors!
+!!!!!!!!!!!!!!!!!!
+Trace:Mini stack tracer:
+sig.utils.DebugUtils: **DebugUtils.java** getStackTrace():10
+sig.utils.DebugUtils: **DebugUtils.java** showStackTrace():6
+sig.FileManager: **FileManager.java** <init>():22
+sig.CustomSound: **CustomSound.java** <init>():24
+sig.sigIRC: **sigIRC.java** InitializeCustomSounds():407
+sig.sigIRC: **sigIRC.java** main():259
+!!!!!!!!!!!!!!!!!!
+!!!!!WARNING!!!!!!
+There is a space in the global file location sigIRC/sounds/Samus Appears - Metroid Prime [OST]-G8frLXCHtqM.wav. This is going to cause huge errors!
+!!!!!!!!!!!!!!!!!!
+Trace:Mini stack tracer:
+sig.utils.DebugUtils: **DebugUtils.java** getStackTrace():10
+sig.utils.DebugUtils: **DebugUtils.java** showStackTrace():6
+sig.FileManager: **FileManager.java** <init>():22
+sig.CustomSound: **CustomSound.java** <init>():24
+sig.sigIRC: **sigIRC.java** InitializeCustomSounds():408
+sig.sigIRC: **sigIRC.java** main():259
+Local copy of Sub emotes not found. Downloading in background...
+Properties successfully saved.
+Properties successfully saved.
