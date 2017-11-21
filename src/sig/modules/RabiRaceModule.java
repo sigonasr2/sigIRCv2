@@ -295,10 +295,12 @@ public class RabiRaceModule extends Module{
 				}
 				firstUpdate=false;
 			}
-			for (Profile p : mySession.getPlayers()) {
-				if (!p.username.equalsIgnoreCase(myProfile.username)) {
-					if (!p.isPaused) {
-						p.playtime += myProfile.playtime-myProfile.getArchive().playtime;
+			if (mySession!=null) {
+				for (Profile p : mySession.getPlayers()) {
+					if (!p.username.equalsIgnoreCase(myProfile.username)) {
+						if (!p.isPaused) {
+							p.playtime += myProfile.playtime-myProfile.getArchive().playtime;
+						}
 					}
 				}
 			}
