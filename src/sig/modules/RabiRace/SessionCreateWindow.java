@@ -30,6 +30,7 @@ public class SessionCreateWindow extends JFrame{
 	JPanel container = new JPanel();
 	LengthValidationField session_name = new LengthValidationField(16);
 	NumberValidationField maxplayers = new NumberValidationField();
+	FloatValidationField difficulty = new FloatValidationField();
 	JPasswordField pass = new JPasswordField();
 	JButton create = new JButton("Create");
 	
@@ -40,9 +41,10 @@ public class SessionCreateWindow extends JFrame{
 		JPanel namepanel = new JPanel();
 		JPanel playerpanel = new JPanel();
 		JPanel passwordpanel = new JPanel();
+		JPanel difficultypanel = new JPanel();
 		
 		JPanel[] panel_list = new JPanel[]{
-			namepanel,playerpanel,passwordpanel
+			namepanel,playerpanel,passwordpanel,difficultypanel
 		};
 		
 		for (JPanel panel : panel_list) {
@@ -73,6 +75,13 @@ public class SessionCreateWindow extends JFrame{
 		playerpanel.add(passwordLabel);
 		playerpanel.add(pass);
 		
+		JLabel difficultyLabel = new JLabel("Race Difficulty (0.00~10.00):  ");
+		difficulty.setPreferredSize(new Dimension(60,24));
+		difficulty.setText("5.00");
+
+		difficultypanel.add(difficultyLabel);
+		difficultypanel.add(difficulty);
+		
 		for (JPanel panel : panel_list) {
 			panel.add(Box.createRigidArea(new Dimension(24,24)));
 		}
@@ -102,6 +111,10 @@ public class SessionCreateWindow extends JFrame{
 					JOptionPane.showMessageDialog(RabiRaceModule.createwindow, "Your max player count needs to be between 2-48!", "Error!", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
+				if (!TextUtils.isNumeric(difficulty.getText()) && difficulty.getText().length()>0) {
+					JOptionPane.showMessageDialog(RabiRaceModule.createwindow, "Your difficulty value is invalid! (A number between 0.00 and 10.00)", "Error!", JOptionPane.WARNING_MESSAGE);
+					return;
+				}
 				String hashpass = "";
 				if (String.copyValueOf(pass.getPassword()).length()>0) {
 					hashpass = SessionListWindow.GetHashedPassword(String.copyValueOf(pass.getPassword()));
@@ -109,7 +122,8 @@ public class SessionCreateWindow extends JFrame{
 				session_name.setText(session_name.getText().replaceAll(" ", "%20"));
 				File file = new File(sigIRC.BASEDIR+"sigIRC/tmp.data");
 				try {
-					org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=sessioncreate&name="+session_name.getText()+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")),file);
+					org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=sessioncreate&name="+session_name.getText()+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")+"&difficulty="+((difficulty.getText().length()>0)?difficulty.getText():"-1")),file);
+					//org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=sessioncreate&name="+session_name.getText()+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")),file);
 					String[] contents = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/tmp.data");
 					int sessionID=-1;
 					if (contents.length>=2) {
@@ -139,6 +153,7 @@ public class SessionCreateWindow extends JFrame{
 		container.add(namepanel);
 		container.add(playerpanel);
 		container.add(passwordpanel);
+		container.add(difficultypanel);
 		container.add(create);
 		container.add(Box.createRigidArea(new Dimension(24,24)));
 		
@@ -219,6 +234,48 @@ public class SessionCreateWindow extends JFrame{
 			int val = Integer.parseInt(getText());
 			if (val>48 || val<2) {
 				return true;
+			}
+			return false;
+		}
+	}
+	
+	class FloatValidationField extends JTextField implements DocumentListener{
+		
+		public FloatValidationField() {
+			getDocument().addDocumentListener(this);
+		}
+
+		@Override
+		public void changedUpdate(DocumentEvent arg0) {
+		}
+
+		@Override
+		public void insertUpdate(DocumentEvent arg0) {
+			ValidateForm();
+		}
+
+		protected void ValidateForm() {
+			if (fieldIsInvalid()) {
+				setBackground(Color.RED);
+			} else {
+				setBackground(Color.WHITE);
+			}
+		}
+
+		@Override
+		public void removeUpdate(DocumentEvent arg0) {
+			ValidateForm();
+		}
+
+		protected boolean fieldIsInvalid() {
+			if (!TextUtils.isNumeric(getText()) && getText().length()>0) {
+				return true;
+			}
+			if (TextUtils.isNumeric(getText()) && getText().length()>0) {
+				float val = Float.parseFloat(getText());
+				if (val>10f || val<0f) {
+					return true;
+				}
 			}
 			return false;
 		}

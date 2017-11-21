@@ -9,6 +9,7 @@ import java.io.IOException;
 import java.net.URL;
 import java.security.MessageDigest;
 import java.security.NoSuchAlgorithmException;
+import java.text.DecimalFormat;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -43,6 +44,7 @@ public class SessionListWindow extends JFrame{
 	public JScrollPane scrolllist = new JScrollPane();
 	public PasswordBox box = new PasswordBox();
 	public String enteredPassword = "";
+	DecimalFormat df = new DecimalFormat("0.00");
 	
 	
 	public SessionListWindow(){
@@ -52,8 +54,8 @@ public class SessionListWindow extends JFrame{
 		previewPanel.setWindow(this);
 		
 		scrolllist.setViewportView(sessionlist);
-		scrolllist.setPreferredSize(new Dimension(160,150));
-		scrolllist.setMinimumSize(new Dimension(160,150));
+		scrolllist.setPreferredSize(new Dimension(272,150));
+		scrolllist.setMinimumSize(new Dimension(272,150));
 		scrolllist.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		JPanel sessionPanel = new JPanel();
 		
@@ -137,7 +139,7 @@ public class SessionListWindow extends JFrame{
 		
 		
 		this.add(container);
-		this.setMinimumSize(new Dimension(640,480));
+		this.setMinimumSize(new Dimension(720,480));
 	}
 
 	public static void ConnectToSession(Session session, String hashedPass) {
@@ -200,7 +202,7 @@ public class SessionListWindow extends JFrame{
 		int count=0;
 		for (Integer id : RabiRaceModule.module.session_listing.data.keySet()) {
 			Session session = RabiRaceModule.module.session_listing.data.get(id);
-			sessionlist_model.addElement((session.password.equalsIgnoreCase("none")?"":"🔑 ")+session.id+" - "+session.name+"  ("+session.players.size()+"/"+session.maxPlayers+")");
+			sessionlist_model.addElement((session.password.equalsIgnoreCase("none")?"":"🔑 ")+session.id+" - "+session.name+"  ("+session.players.size()+"/"+session.maxPlayers+")"+((session.difficulty!=-1)?" - Rating: "+df.format(session.difficulty):""));
 			if (id == selectedID && sessionlist_model.getSize()>count) {
 				sessionlist.setSelectedIndex(count);
 			}

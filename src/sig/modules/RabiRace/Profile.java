@@ -61,6 +61,10 @@ public class Profile {
 		this.parent = module;
 	}
 	
+	public Profile getArchive() {
+		return oldProfile;
+	}
+	
 	public void archiveAllValues() {
 		oldProfile.healthUps = healthUps;
 		oldProfile.attackUps = attackUps;
@@ -70,6 +74,7 @@ public class Profile {
 		oldProfile.rainbowEggCount = rainbowEggCount;
 		oldProfile.key_items = (HashMap<MemoryData, Integer>)key_items.clone();
 		oldProfile.badges = (HashMap<MemoryData, Integer>)badges.clone();
+		oldProfile.playtime = playtime;
 	}
 	
 	public void compareAndAnnounceAllChangedValues() {
@@ -173,7 +178,7 @@ public class Profile {
 		}
 	}
 	
-	public void downloadProfile() {
+	public boolean downloadProfile() {
 		if (sigIRC.authenticated) {
 			File file = new File(sigIRC.BASEDIR+"tmp_profile");
 			try {
@@ -223,8 +228,10 @@ public class Profile {
 					while (!nextval.equalsIgnoreCase("UPDATES:"));
 				}
 				lastWebUpdate = System.currentTimeMillis();
+				return true;
 			}
 		}
+		return false;
 	}
 
 	private String getDataString() {
@@ -319,9 +326,9 @@ public class Profile {
 		};
 		String diffstring = "";
 		if (difficulty<difficulty_list.length) {
-			diffstring = difficulty_list[difficulty]+((loop>0)?" Loop "+loop:"");
+			diffstring = difficulty_list[difficulty]+((loop>1)?" Loop "+loop:"");
 		} else {
-			diffstring = difficulty_list[difficulty_list.length-1]+((loop>0)?" Loop "+loop:"");
+			diffstring = difficulty_list[difficulty_list.length-1]+((loop>1)?" Loop "+loop:"");
 		}
 		return diffstring;
 	}

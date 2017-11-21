@@ -14,6 +14,7 @@ public class Session {
 	String name = "";
 	int maxPlayers = 0;
 	String password = "";
+	float difficulty = -1;
 	int id = 0;
 	List<Profile> players = new ArrayList<Profile>();
 	
@@ -32,30 +33,35 @@ public class Session {
 		if (split.length>=7) {
 			String val = split[i++];
 			String[] playerlist = val.split(";");
-			//System.out.println(Arrays.toString(playerlist));
-			if (playerlist.length>0) {
+			System.out.println(Arrays.toString(playerlist));
+			if (playerlist.length>1) {
 				for (String s : playerlist) {
 					Profile p = new Profile(RabiRaceModule.module,true);
 					p.username=s;
 					//System.out.println("Player "+p.username);
-					p.downloadProfile();
+					if (p.downloadProfile()) {
+						if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
+							RabiRaceModule.mySession = this;
+						}
+						//System.out.println("Adding Player "+p);
+						players.add(p);
+					}
+				}
+			} else {
+				Profile p = new Profile(RabiRaceModule.module,true);
+				p.username=val;
+				//System.out.println("Player "+p.username);
+				if (p.downloadProfile()) {
 					if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
 						RabiRaceModule.mySession = this;
 					}
 					//System.out.println("Adding Player "+p);
 					players.add(p);
 				}
-			} else {
-				Profile p = new Profile(RabiRaceModule.module,true);
-				p.username=val;
-				//System.out.println("Player "+p.username);
-				p.downloadProfile();
-				if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
-					RabiRaceModule.mySession = this;
-				}
-				//System.out.println("Adding Player "+p);
-				players.add(p);
 			}
+		}
+		if (split.length>=8) {	
+			difficulty = Float.parseFloat(split[i++]);
 		}
 	}
 	
