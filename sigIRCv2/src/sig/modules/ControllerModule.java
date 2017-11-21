@@ -92,13 +92,8 @@ public class ControllerModule extends Module{
 			}
 		}
 		controllers.addAll(ca);
-		try {
-			controller_img = ImageIO.read(new File(CONTROLLERPATH+"controller_template.png")).getScaledInstance((int)position.getWidth(), -1, 0);
-			controller_overlay_img = ImageIO.read(new File(CONTROLLERPATH+"controller_overlay.png")).getScaledInstance((int)position.getWidth(), -1, 0);
-			//System.out.println("Size of controller: "+controller_img.getWidth(sigIRC.panel)+","+controller_img.getHeight(sigIRC.panel));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		controller_img = sigIRC.readImage(CONTROLLERPATH+"controller_template.png").getScaledInstance((int)position.getWidth(), -1, 0);
+		controller_overlay_img = sigIRC.readImage(CONTROLLERPATH+"controller_overlay.png").getScaledInstance((int)position.getWidth(), -1, 0);
 		//buttons.add(new Button(0.1,0.05,0.1,0.05,controllers.get(0),Identifier.Button._3,Color.RED,this));
 		LoadButtonAndAxisData();
 		click_buttons.add(new AddClickableButton(new Rectangle(

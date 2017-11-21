@@ -268,21 +268,13 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 				JPanel selectionPanel1 = new JPanel(){
 				    public void paintComponent(Graphics g) {
 				        super.paintComponent(g);
-						try {
-							g.drawImage(ImageIO.read(new File(ControllerModule.CONTROLLERPATH+"4-way_axis.png")), 0, 0, this);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						g.drawImage(sigIRC.readImage(ControllerModule.CONTROLLERPATH+"4-way_axis.png"), 0, 0, this);
 				    }
 				};
 				JPanel selectionPanel2 = new JPanel(){
 				    public void paintComponent(Graphics g) {
 				        super.paintComponent(g);
-						try {
-							g.drawImage(ImageIO.read(new File(ControllerModule.CONTROLLERPATH+"2-way_axis.png")), 0, 0, this);
-						} catch (IOException e) {
-							e.printStackTrace();
-						}
+						g.drawImage(sigIRC.readImage(ControllerModule.CONTROLLERPATH+"2-way_axis.png"), 0, 0, this);
 				    }
 				};
 				//selectionPanel.setLayout(new BoxLayout(selectionPanel,BoxLayout.LINE_AXIS));

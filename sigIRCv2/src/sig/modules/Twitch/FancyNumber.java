@@ -2,6 +2,7 @@ package sig.modules.Twitch;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -15,7 +16,7 @@ import sig.utils.DrawUtils;
 import sig.utils.TextUtils;
 
 public class FancyNumber {
-	BufferedImage icon;
+	Image icon;
 	int displayedValue=0;
 	int lastValue=0;
 	int lastValueChange=0;
@@ -25,11 +26,7 @@ public class FancyNumber {
 	final static String ICONDIR = sigIRC.BASEDIR+"sigIRC/";
 	
 	public FancyNumber(String icon_name, int startingValue) {
-		try {
-			icon = ImageIO.read(new File(ICONDIR+icon_name));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		icon = sigIRC.readImage(ICONDIR+icon_name);
 		lastValue = startingValue;
 	}
 	
@@ -53,7 +50,7 @@ public class FancyNumber {
 		int xoffset = 0;
 		int yoffset = 0;
 		g.drawImage(icon, x, y, sigIRC.panel);
-		xoffset+=icon.getWidth()+4;
+		xoffset+=icon.getWidth(sigIRC.panel)+4;
 		if (displayedValue!=lastValue) {
 			if (delayCount==0) {
 				int diff = Math.abs(displayedValue-lastValue);
@@ -83,7 +80,7 @@ public class FancyNumber {
 			lastValueChange--;
 			g.drawImage((upArrow)?TwitchModule.UPARROWIMAGE:TwitchModule.DOWNARROWIMAGE, x+xoffset, y+yoffset, sigIRC.panel);
 		}
-		xoffset+=((upArrow)?TwitchModule.UPARROWIMAGE.getWidth():TwitchModule.DOWNARROWIMAGE.getWidth())+4;
+		xoffset+=((upArrow)?TwitchModule.UPARROWIMAGE.getWidth(sigIRC.panel):TwitchModule.DOWNARROWIMAGE.getWidth(sigIRC.panel))+4;
 		return new Rectangle(x,y,xoffset,yoffset+16);
 	}
 }

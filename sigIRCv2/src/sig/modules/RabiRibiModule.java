@@ -83,10 +83,30 @@ public class RabiRibiModule extends Module{
 	private void Initialize() {
 		
 		RabiUtils.module = this;
+		CheckRabiRibiClient();
+
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		scheduler.scheduleWithFixedDelay(()->{
+			CheckRabiRibiClient();
+		}, 5000, 5000, TimeUnit.MILLISECONDS);
 		
+		this.overlay = new Overlay(this);
+
+		EntityLookupData.parent=this;
+		EntityLookupData.loadEntityLookupData(lookup_table);
+		
+		ScheduledExecutorService scheduler2 = Executors.newScheduledThreadPool(1);
+		scheduler2.scheduleWithFixedDelay(()->{
+			UpdateEntities();
+			//System.out.println("Called Entity creation "+callcount+" times.");
+		}, 1000, 1000, TimeUnit.MILLISECONDS);
+	}
+	
+	private void CheckRabiRibiClient() {
 		List<Integer> pids;
 		try {
-			pids = PsapiTools.getInstance().enumProcesses();		
+			pids = PsapiTools.getInstance().enumProcesses();	
+			boolean found=false;	
 			for (Integer pid : pids) {
 				HANDLE process = Kernel32.INSTANCE.OpenProcess(PROCESS_PERMISSIONS, true, pid);
 		        List<sig.modules.utils.Module> hModules;
@@ -95,38 +115,35 @@ public class RabiRibiModule extends Module{
 					for(sig.modules.utils.Module m: hModules){
 						//System.out.println(m.getFileName()+":"+m.getEntryPoint());
 						if (m.getFileName().contains("rabiribi")) {
-							rabiRibiMemOffset = Pointer.nativeValue(m.getLpBaseOfDll().getPointer());
-							System.out.println("Found an instance of Rabi-Ribi at 0x"+Long.toHexString(rabiRibiMemOffset));
-							rabiRibiPID=pid;
-							foundRabiRibi=true;
-							rabiribiProcess=process;
+							found=true;
+							if (!foundRabiRibi) {
+								rabiRibiMemOffset = Pointer.nativeValue(m.getLpBaseOfDll().getPointer());
+								System.out.println("Found an instance of Rabi-Ribi at 0x"+Long.toHexString(rabiRibiMemOffset)+" | File:"+m.getFileName()+","+m.getBaseName());
+								rabiRibiPID=pid;
+								foundRabiRibi=true;
+								rabiribiProcess=process;
+								break;
+							}
 							break;
 						}
 			        }
+					if (found) {
+						break;
+					}
 				} catch (Exception e) {
 					e.printStackTrace();
-				}
-				if (foundRabiRibi) {
-					break;
 				}
 				if (process!=null) {
 					Kernel32.INSTANCE.CloseHandle(process);
 				}
 			}
+			if (!found && foundRabiRibi) {
+				foundRabiRibi=false;
+				System.out.println("Rabi-Ribi process lost.");
+			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
-		
-		this.overlay = new Overlay(this);
-
-		EntityLookupData.parent=this;
-		EntityLookupData.loadEntityLookupData(lookup_table);
-		
-		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
-		scheduler.scheduleWithFixedDelay(()->{
-			UpdateEntities();
-			//System.out.println("Called Entity creation "+callcount+" times.");
-		}, 1000, 1000, TimeUnit.MILLISECONDS);
 	}
 	
 	public void ApplyConfigWindowProperties() {
@@ -205,19 +222,21 @@ public class RabiRibiModule extends Module{
 	}
 
 	private void UpdateEntities() {
-		int callcount=0;
-		long arrayPtr  = readIntFromMemory(MemoryOffset.ENTITY_ARRAY);
-		for (int i=0;i<MAX_ENTITIES_TO_UPDATE;i++) {
-			if (!entities.containsKey(i)) {
-				callcount++;
-				Entity ent = new Entity(arrayPtr,i,this);
-				if (ent.isActive()) {
-					//System.out.println("Found entity at index "+i);
-					//entities.add(ent);
-					entities.put(i, ent);
+		if (foundRabiRibi) {
+			int callcount=0;
+			long arrayPtr  = readIntFromMemory(MemoryOffset.ENTITY_ARRAY);
+			for (int i=0;i<MAX_ENTITIES_TO_UPDATE;i++) {
+				if (!entities.containsKey(i)) {
+					callcount++;
+					Entity ent = new Entity(arrayPtr,i,this);
+					if (ent.isActive()) {
+						//System.out.println("Found entity at index "+i);
+						//entities.add(ent);
+						entities.put(i, ent);
+					}
 				}
+				arrayPtr += ENTITY_ARRAY_ELEMENT_SIZE;
 			}
-			arrayPtr += ENTITY_ARRAY_ELEMENT_SIZE;
 		}
 	}
 

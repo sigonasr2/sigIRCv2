@@ -140,12 +140,8 @@ public class RabiRaceModule extends Module{
 		}
 		images = filtered_images.toArray(new String[filtered_images.size()]);
 		for (String image : images) {
-			try {
-				//System.out.println("Loaded "+image);
-				image_map.put(image, ImageIO.read(new File(ITEMS_DIRECTORY+image)));
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 
+			//System.out.println("Loaded "+image);
+			image_map.put(image, sigIRC.readImage(ITEMS_DIRECTORY+image));
 		}
 		
 		for (MemoryData md : MemoryData.values()) {

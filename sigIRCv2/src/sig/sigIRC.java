@@ -41,12 +41,14 @@ import java.awt.Color;
 import java.awt.Dimension;
 import java.awt.Font;
 import java.awt.Graphics;
+import java.awt.Graphics2D;
 import java.awt.GraphicsDevice;
 import java.awt.GraphicsEnvironment;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
+import java.awt.image.BufferedImage;
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.File;
@@ -159,6 +161,7 @@ public class sigIRC{
 	public static int lastSubEmoteUpdate = -1;
 	public static boolean autoUpdateProgram = true;
 	public static Image programIcon;
+	public static Image missingImage;
 	
 	public static int subchannelCount = 0;
 	public static HashMap<Long,String> subchannelIds = new HashMap<Long,String>();
@@ -213,11 +216,11 @@ public class sigIRC{
 		touhoumothermodule_Y = config.getInteger("TOUHOUMOTHER_module_Y",312);
 		touhoumothermodule_width = config.getInteger("TOUHOUMOTHER_module_width",320);
 		touhoumothermodule_height = config.getInteger("TOUHOUMOTHER_module_height",312);
-		/*rabiribimodule_X = config.getInteger("RABIRIBI_module_X",0);
+		rabiribimodule_X = config.getInteger("RABIRIBI_module_X",0);
 		rabiribimodule_Y = config.getInteger("RABIRIBI_module_Y",312);
 		rabiribimodule_width = config.getInteger("RABIRIBI_module_width",320);
 		rabiribimodule_height = config.getInteger("RABIRIBI_module_height",312);
-		rabiribimodule_enabled = config.getBoolean("Module_rabiribi_Enabled", false);*/
+		rabiribimodule_enabled = config.getBoolean("Module_rabiribi_Enabled", false);
 		rabiracemodule_X = config.getInteger("RABIRACE_module_X",0);
 		rabiracemodule_Y = config.getInteger("RABIRACE_module_Y",312);
 		rabiracemodule_width = config.getInteger("RABIRACE_module_width",320);
@@ -276,10 +279,28 @@ public class sigIRC{
 	}
 
 	private static void Initialize() {
+		programIcon = sigIRC.readImage(sigIRC.BASEDIR+"/sigIRC/sigIRCicon.png");
+		
+		BufferedImage img = new BufferedImage(16,16,BufferedImage.TYPE_INT_ARGB);
+
+		Graphics2D g =  img.createGraphics();
+		g.drawRect(0, 0, 15, 15);
+		g.drawLine(0, 0, 15, 15);
+		g.drawLine(0, 15, 15, 0);
+		missingImage = img;
+	}
+	
+	public static Image readImage(String file) {
+		Image img;
 		try {
-			programIcon = ImageIO.read(new File(sigIRC.BASEDIR+"/sigIRC/sigIRCicon.png"));
+			img = ImageIO.read(new File(file));
 		} catch (IOException e) {
-			e.printStackTrace();
+			return missingImage;
+		}
+		if (img!=null) {
+			return img;
+		} else {
+			return missingImage;
 		}
 	}
 
@@ -362,12 +383,8 @@ public class sigIRC{
 	}
 
 	private static void InitializeModules() {
-		try {
-			Module.IMG_DRAGBAR = ImageIO.read(new File(sigIRC.BASEDIR+"drag_bar.png"));
-			Module.MSG_SEPARATOR = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/message_separator.png"));
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
+		Module.IMG_DRAGBAR = sigIRC.readImage(sigIRC.BASEDIR+"drag_bar.png");
+		Module.MSG_SEPARATOR = sigIRC.readImage(sigIRC.BASEDIR+"sigIRC/message_separator.png");
 		if (touhoumothermodule_enabled) {
 			modules.add(new TouhouMotherModule(
 					new Rectangle(touhoumothermodule_X,touhoumothermodule_Y,touhoumothermodule_width,touhoumothermodule_height),

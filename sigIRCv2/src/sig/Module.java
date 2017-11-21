@@ -2,6 +2,7 @@ package sig;
 import java.awt.Color;
 import java.awt.Cursor;
 import java.awt.Graphics;
+import java.awt.Image;
 import java.awt.Point;
 import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
@@ -21,8 +22,8 @@ public class Module {
 	public Rectangle2D position;
 	protected boolean enabled;
 	protected String name;
-	public static BufferedImage IMG_DRAGBAR;
-	public static BufferedImage MSG_SEPARATOR;
+	public static Image IMG_DRAGBAR;
+	public static Image MSG_SEPARATOR;
 	public static boolean inDragZone=false;
 	
 	final protected int titleHeight;
@@ -62,7 +63,7 @@ public class Module {
 	
 	public boolean inDragBounds(int x, int y) {
 		return x>=position.getX() && x<=position.getX()+position.getWidth() &&
-				y>=(int)position.getY()-Module.IMG_DRAGBAR.getHeight() &&
+				y>=(int)position.getY()-Module.IMG_DRAGBAR.getHeight(sigIRC.panel) &&
 				y<=(int)position.getY();
 	}
 
@@ -144,9 +145,9 @@ public class Module {
 		if (!sigIRC.overlayMode) {
 			g.drawImage(Module.IMG_DRAGBAR, 
 				(int)position.getX()+2, 
-				(int)position.getY()-Module.IMG_DRAGBAR.getHeight(),
+				(int)position.getY()-Module.IMG_DRAGBAR.getHeight(sigIRC.panel),
 				(int)position.getWidth()-4,
-				Module.IMG_DRAGBAR.getHeight(),
+				Module.IMG_DRAGBAR.getHeight(sigIRC.panel),
 				sigIRC.panel);
 			DrawUtils.drawTextFont(g, sigIRC.panel.smallFont, (int)position.getX(), (int)position.getY()-titleHeight/2+4, Color.BLACK, this.name);
 			//g.fillRect((int)position.getX(), (int)position.getY(), (int)position.getWidth(), (int)position.getHeight());
