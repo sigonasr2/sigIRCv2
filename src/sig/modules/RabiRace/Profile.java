@@ -16,6 +16,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.ConcurrentModificationException;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import sig.ScrollingText;
@@ -41,14 +42,15 @@ public class Profile {
 	public int loop = 0;
 	public float itempct = 0;
 	public float mappct = 0;
-	public HashMap<MemoryData,Integer> key_items = new HashMap<MemoryData,Integer>();
-	public HashMap<MemoryData,Integer> badges = new HashMap<MemoryData,Integer>();
+	public LinkedHashMap<MemoryData,Integer> key_items = new LinkedHashMap<MemoryData,Integer>();
+	public LinkedHashMap<MemoryData,Integer> badges = new LinkedHashMap<MemoryData,Integer>();
 	public List<String> updates = new ArrayList<String>();
 	RabiRaceModule parent;
 	public long lastWebUpdate = System.currentTimeMillis(); 
 	DecimalFormat df = new DecimalFormat("0.0");
 	Profile oldProfile;
 	public boolean isArchive = false;
+	final static Color TEAL = new Color(0,128,128);
 	
 	public Profile(RabiRaceModule module) {
 		this(module,true);
@@ -72,8 +74,8 @@ public class Profile {
 		oldProfile.regenUps = regenUps;
 		oldProfile.packUps = packUps;
 		oldProfile.rainbowEggCount = rainbowEggCount;
-		oldProfile.key_items = (HashMap<MemoryData, Integer>)key_items.clone();
-		oldProfile.badges = (HashMap<MemoryData, Integer>)badges.clone();
+		oldProfile.key_items = (LinkedHashMap<MemoryData, Integer>)key_items.clone();
+		oldProfile.badges = (LinkedHashMap<MemoryData, Integer>)badges.clone();
 		oldProfile.playtime = playtime;
 	}
 	
@@ -339,12 +341,27 @@ public class Profile {
 		Graphics2D g2 = tmp.createGraphics();
 		final int border=20;
 		final int width=(int)(tmp.getWidth()-border*2);
-		final int spacing=width/5;
-		for (int i=0;i<5;i++) {
+		int spacing=width/5;
+		int shiftyval = 0;
+		double iconsize = 1;
+		if (rainbowEggCount<=5) {
 			Image img = RabiRaceModule.image_map.get("easter_egg.png");
-			Color col = (rainbowEggCount>i)?RabiRaceModule.rainbowcycler.getCycleColor():new Color(0,0,0,192);
-			DrawUtils.drawImage(g2, img, (int)(border+i*spacing-img.getWidth(sigIRC.panel)/4),(int)(36),col,sigIRC.panel);
+			for (int i=0;i<5;i++) {
+				Color col = (rainbowEggCount>i)?RabiRaceModule.rainbowcycler.getCycleColor():new Color(0,0,0,192);
+				DrawUtils.drawImage(g2, img, (int)(border+i*spacing-img.getWidth(sigIRC.panel)/4),(int)(36),col,sigIRC.panel);
+			}
+		} else {
+			shiftyval = -RabiRaceModule.image_map.get("easter_egg.png").getWidth(sigIRC.panel)/2;
+			iconsize = 1;
 		}
+		/*
+		 {
+			Image img = RabiRaceModule.image_map.get("easter_egg.png");
+			Color col = RabiRaceModule.rainbowcycler.getCycleColor();
+			DrawUtils.drawImage(g2, img, (int)(border+((1.5)*spacing)-img.getWidth(sigIRC.panel)/4),(int)(36),col,sigIRC.panel);
+			DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.programFont, (int)(border+((3)*spacing)-img.getWidth(sigIRC.panel)/4),(int)12+img.getHeight(sigIRC.panel), 1, Color.WHITE, Color.BLUE,"x"+rainbowEggCount);
+		}
+		 */
 		int size = key_items.size();
 		final int icon_size = 24;
 		int count = 0;
@@ -353,15 +370,15 @@ public class Profile {
 				if (key_items.get(data)<0) {
 					Image img = data.getImage().getScaledInstance(icon_size, icon_size, Image.SCALE_DEFAULT);
 					if (size*icon_size<width) {
-						DrawUtils.drawImage(g2, img, (int)(+border+((count++)*icon_size)), (int)(+96+8), new Color(0,0,0,128), sigIRC.panel);
+						DrawUtils.drawImageScaled(g2, img, (int)(+border+((count++)*icon_size)), (int)(+96+8)+shiftyval, (int)icon_size*iconsize, (int)icon_size*iconsize, new Color(0,0,0,128), sigIRC.panel);
 					} else {
-						DrawUtils.drawImage(g2, img, (int)(+border+((width/size)*(count++))), (int)(+96+8), new Color(0,0,0,128), sigIRC.panel);
+						DrawUtils.drawImageScaled(g2, img, (int)(+border+((width/size)*(count++))), (int)(+96+8)+shiftyval, (int)icon_size*iconsize, (int)icon_size*iconsize, new Color(0,0,0,128), sigIRC.panel);
 					}
 				} else {
 					if (size*icon_size<width) {
-						g2.drawImage(data.getImage(), (int)(+border+((count++)*icon_size)), (int)(+96+8), (int)icon_size, (int)icon_size, sigIRC.panel);
+						g2.drawImage(data.getImage(), (int)(+border+((count++)*icon_size)), (int)(+96+8)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), sigIRC.panel);
 					} else {
-						g2.drawImage(data.getImage(), (int)(+border+((width/size)*(count++))), (int)(+96+8), (int)icon_size, (int)icon_size, sigIRC.panel);
+						g2.drawImage(data.getImage(), (int)(+border+((width/size)*(count++))), (int)(+96+8)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), sigIRC.panel);
 					}
 				}
 			}
@@ -369,9 +386,15 @@ public class Profile {
 			size = badges.size();
 			for (MemoryData data : badges.keySet()) {
 				if (size*icon_size<width) {
-					g2.drawImage(data.getImage(), (int)(+border+((count++)*icon_size)), (int)(+96+32), (int)icon_size, (int)icon_size, sigIRC.panel);
+					g2.drawImage(data.getImage(), (int)(+border+((count++)*icon_size)), (int)(+96+32)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), sigIRC.panel);
+					if (badges.get(data)==2) {
+						DrawUtils.drawOutlineText(g2, sigIRC.panel.smallFont, (int)(+border+((count-1)*icon_size))+4, (int)(+96+32)+icon_size+shiftyval, 1, Color.WHITE, TEAL, "E");
+					}
 				} else {
-					g2.drawImage(data.getImage(), (int)(+border+((width/size)*(count++))), (int)(+96+32), (int)icon_size, (int)icon_size, sigIRC.panel);
+					g2.drawImage(data.getImage(), (int)(+border+((width/size)*(count++))), (int)(+96+32)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), sigIRC.panel);
+					if (badges.get(data)==2) {
+						DrawUtils.drawOutlineText(g2, sigIRC.panel.smallFont, (int)(+border+((width/size)*(count-1)))+4, (int)(+96+32)+icon_size+shiftyval, 1, Color.WHITE, TEAL, "E");
+					}
 				}
 			}
 			int i=0;
@@ -387,10 +410,22 @@ public class Profile {
 					packUps,
 					attackUps,
 			};
+			if (rainbowEggCount>5) {
+				imgs = Arrays.copyOf(imgs, imgs.length+1);
+				imgs[imgs.length-1] = RabiRaceModule.image_map.get("easter_egg.png");
+				amts = Arrays.copyOf(amts, amts.length+1);
+				amts[amts.length-1] = rainbowEggCount;
+				spacing = width/6;
+			}
 			//g2.drawImage(RabiRaceModule.image_map.get("bunny_strike.png"),(int)(+border+(i++)*(spacing)-img2.getWidth(sigIRC.panel)/4),(int)(+96+56), (int)icon_size, (int)icon_size, sigIRC.panel);
+			int counting=0;
 			for (Image img : imgs) {
-				g2.drawImage(img,(int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56), (int)icon_size, (int)icon_size, sigIRC.panel);
-				DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.programFont, (int)((+border+((i)*(spacing))-icon_size/2)+(spacing/2)+4), (int)(+96+56+icon_size+12), 1, Color.WHITE, Color.BLUE, Integer.toString(amts[i++]));
+				if (counting++==5) {
+					DrawUtils.drawImageScaled(g2, img,(int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56)+shiftyval, (int)icon_size, (int)icon_size, RabiRaceModule.rainbowcycler.getCycleColor(), sigIRC.panel);
+				} else {
+					g2.drawImage(img,(int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56)+shiftyval, (int)icon_size, (int)icon_size, sigIRC.panel);
+				}
+				DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.programFont, (int)((+border+((i)*(spacing))-icon_size/2)+(spacing/2)+4), (int)(+96+56+icon_size+12)+shiftyval, 1, Color.WHITE, Color.BLUE, Integer.toString(amts[i++]));
 			}
 		} catch (ConcurrentModificationException e) {
 			

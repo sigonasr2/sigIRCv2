@@ -117,6 +117,17 @@ public class DrawUtils {
 		g.drawImage(tmp,(int)x,(int)y,source);
 	}
 	
+	public static void drawImageScaled(Graphics g, Image img, double x, double y, double xsize, double ysize, Color blend_col, ImageObserver source) {
+		BufferedImage tmp = new BufferedImage(img.getWidth(source),img.getHeight(source),BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = tmp.createGraphics();
+		g2.drawImage(img, 0, 0, null);
+		g2.setComposite(AlphaComposite.SrcAtop);
+		g2.setColor(blend_col);
+		g2.fillRect(0, 0, img.getWidth(source), img.getHeight(source));
+		g2.dispose();
+		g.drawImage(tmp,(int)x,(int)y,(int)xsize,(int)ysize,source);
+	}
+	
 	public static Color invertColor(Color c) {
 		return new Color(255-c.getRed(),255-c.getGreen(),255-c.getBlue(),255);
 	}
