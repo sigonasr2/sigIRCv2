@@ -33,6 +33,7 @@ public class UpdateEvent implements ActionListener{
 
 	private void UpdateSubEmoticons() {
 		if (!sigIRC.downloadedSubEmotes &&
+				sigIRC.disableChatMessages &&
 				sigIRC.subchannelCount==sigIRC.subchannelIds.size()) {
 			Thread downloadThread = new Thread(){
 				public void run() {
