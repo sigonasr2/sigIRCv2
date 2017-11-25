@@ -20,7 +20,7 @@ public class FancyNumber {
 	int lastValue=0;
 	int lastValueChange=0;
 	boolean upArrow=false;
-	final static int DELAYEDFREQUENCY = 100; //How many ticks to wait before performing a calculation update.
+	final static int DELAYEDFREQUENCY = 40; //How many ticks to wait before performing a calculation update.
 	int delayCount=0;
 	final static String ICONDIR = sigIRC.BASEDIR+"sigIRC/";
 	

@@ -42,7 +42,7 @@ public class TextRow {
 	}
 	
 	private int DetermineScrollSpd() {
-		return maxX/Math.max(1000,sigIRC.windowWidth)+sigIRC.chatScrollSpd;
+		return maxX/Math.max(600,sigIRC.windowWidth)+(sigIRC.chatScrollSpd*2);
 	}
 
 	public static TextRow PickRandomTextRow(String username) {

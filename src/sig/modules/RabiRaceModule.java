@@ -56,7 +56,7 @@ public class RabiRaceModule extends Module{
 	long rabiRibiMemOffset = 0;
 	public HANDLE rabiribiProcess = null;
 	public static HashMap<String,Image> image_map = new HashMap<String,Image>();
-	public static ColorCycler rainbowcycler = new ColorCycler(new Color(255,0,0,96),8);
+	public static ColorCycler rainbowcycler = new ColorCycler(new Color(255,0,0,96),16);
 	public Profile myProfile = new Profile(this,false);
 	public static RabiRaceModule module;
 	public static SessionListWindow window;
