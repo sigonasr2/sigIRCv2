@@ -18,6 +18,7 @@ import java.util.ConcurrentModificationException;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Random;
 
 import sig.ScrollingText;
 import sig.sigIRC;
@@ -29,7 +30,7 @@ import sig.utils.TextUtils;
 public class Profile {
 	public String username = sigIRC.nickname.toLowerCase();
 	public String displayName = sigIRC.nickname;
-	public int avatar = 0;
+	public Avatar avatar;
 	public int playtime = 0;
 	public int healthUps = 0;
 	public int attackUps = 0;
@@ -61,6 +62,7 @@ public class Profile {
 			oldProfile = new Profile(module,true);
 		}
 		this.parent = module;
+		this.avatar = GetSeededAvatar(username);
 	}
 	
 	public Profile getArchive() {
@@ -195,7 +197,7 @@ public class Profile {
 			if (data.length>=18) {
 				int i=0;
 				displayName = data[i++];
-				avatar = Integer.parseInt(data[i++]);
+				avatar = Avatar.getAvatarFromID(Integer.parseInt(data[i++]));
 				playtime = Integer.parseInt(data[i++]);
 				healthUps = Integer.parseInt(data[i++]);
 				manaUps = Integer.parseInt(data[i++]);
@@ -239,7 +241,7 @@ public class Profile {
 	private String getDataString() {
 		StringBuilder sb = new StringBuilder();
 		appendData(sigIRC.nickname,sb);
-		appendData(avatar,sb);
+		appendData(avatar.value,sb);
 		appendData(playtime,sb);
 		appendData(healthUps,sb);
 		appendData(manaUps,sb);
@@ -273,15 +275,23 @@ public class Profile {
 		}
 		str.append(data);
 	}
+
+	public static Avatar GetSeededAvatar(String username) {
+		Random r = new Random();
+		r.setSeed(username.toLowerCase().hashCode());
+		int randomnumb = r.nextInt(28);
+		return Avatar.getAvatarFromID(randomnumb);
+	}
 	
 	public Image getStatText(int w) {
 		BufferedImage tmp = new BufferedImage(400,175,BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = tmp.createGraphics();
 		
 		g2.setColor(Color.BLACK);
-		g2.fillRect(1, 1, 32, 32);
+		//g2.fillRect(1, 1, 32, 32);
+		g2.drawImage(avatar.getAvatarImage(), 1, 1, sigIRC.panel);
 		g2.setColor(ScrollingText.GetUserNameColor(displayName));
-		DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, 36, 26, 1, g2.getColor(), Color.BLACK, displayName);
+		DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, 54, 26, 1, g2.getColor(), Color.BLACK, displayName);
 		DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.2), 50, 1, GetDifficultyColor(), Color.BLACK, GetDifficultyName());
 		String text = TextUtils.convertSecondsToTimeFormat(playtime/60);
 		if (isPaused) {

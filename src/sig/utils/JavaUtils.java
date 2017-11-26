@@ -23,24 +23,22 @@ public class JavaUtils {
 		sb.append(this.getClass().getName()+"(");
 		boolean first=false;
 		for (Field f : this.getClass().getDeclaredFields()) {
-			if (!ReflectUtils.isCloneable(f)) {
-				if (!first) {
-					try {
-						sb.append(f.getName()+"="+f.get(this));
-						first=true;
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					}
-				} else {
-					try {
-						sb.append(","+f.getName()+"="+f.get(this));
-					} catch (IllegalArgumentException e) {
-						e.printStackTrace();
-					} catch (IllegalAccessException e) {
-						e.printStackTrace();
-					}
+			if (!first) {
+				try {
+					sb.append(f.getName()+"="+f.get(this));
+					first=true;
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
+				}
+			} else {
+				try {
+					sb.append(","+f.getName()+"="+f.get(this));
+				} catch (IllegalArgumentException e) {
+					e.printStackTrace();
+				} catch (IllegalAccessException e) {
+					e.printStackTrace();
 				}
 			}
 		}

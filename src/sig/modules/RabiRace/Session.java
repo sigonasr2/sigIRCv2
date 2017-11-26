@@ -38,6 +38,7 @@ public class Session {
 				for (String s : playerlist) {
 					Profile p = new Profile(RabiRaceModule.module,true);
 					p.username=s;
+					p.avatar = Profile.GetSeededAvatar(p.username);
 					//System.out.println("Player "+p.username);
 					if (p.downloadProfile()) {
 						if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
@@ -50,6 +51,7 @@ public class Session {
 			} else {
 				Profile p = new Profile(RabiRaceModule.module,true);
 				p.username=val;
+				p.avatar = Profile.GetSeededAvatar(p.username);
 				//System.out.println("Player "+p.username);
 				if (p.downloadProfile()) {
 					if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {

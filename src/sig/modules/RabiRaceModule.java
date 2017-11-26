@@ -31,6 +31,8 @@ import com.sun.jna.platform.win32.WinNT.HANDLE;
 import sig.FileManager;
 import sig.Module;
 import sig.sigIRC;
+import sig.modules.RabiRace.Avatar;
+import sig.modules.RabiRace.AvatarSelectionWindow;
 import sig.modules.RabiRace.ClickableButton;
 import sig.modules.RabiRace.ColorCycler;
 import sig.modules.RabiRace.CreateButton;
@@ -50,6 +52,7 @@ import sig.utils.TextUtils;
 
 public class RabiRaceModule extends Module{
 	final static String ITEMS_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/items/";
+	final static String AVATAR_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/characters/";
 	final int PROCESS_PERMISSIONS = WinNT.PROCESS_QUERY_INFORMATION | WinNT.PROCESS_VM_READ;
 	boolean foundRabiRibi = false;
 	int rabiRibiPID = -1;
@@ -61,11 +64,13 @@ public class RabiRaceModule extends Module{
 	public static RabiRaceModule module;
 	public static SessionListWindow window;
 	public static SessionCreateWindow createwindow;
+	public static AvatarSelectionWindow avatarwindow;
 	public static Session mySession;
 	boolean firstCheck=false;
 	public List<ScrollingText> messages = new ArrayList<ScrollingText>();
 	public static int lastScrollX = 0;
 	boolean firstUpdate=true;
+	boolean mouseoverAvatar=false;
 	
 	public SessionListData session_listing = new SessionListData();
 	
@@ -83,6 +88,8 @@ public class RabiRaceModule extends Module{
 		window.setVisible(false);
 		createwindow = new SessionCreateWindow();
 		createwindow.setVisible(false);
+		avatarwindow = new AvatarSelectionWindow();
+		avatarwindow.setVisible(false);
 		//System.out.println("Money value is: "+readIntFromMemory(MemoryOffset.MONEY));
 	}
 
@@ -123,6 +130,9 @@ public class RabiRaceModule extends Module{
 			//Attempt to fetch from server.
 			new FileManager("sigIRC/rabi-ribi/items/"+data.img_path).verifyAndFetchFileFromServer();
 		}
+		for (Avatar avatar : Avatar.values()) {
+			new FileManager("sigIRC/rabi-ribi/characters/"+avatar.fileName).verifyAndFetchFileFromServer();
+		}
 		new FileManager("sigIRC/rabi-ribi/items/easter_egg.png").verifyAndFetchFileFromServer();
 		new FileManager("sigIRC/rabi-ribi/items/health_up.png").verifyAndFetchFileFromServer();
 		new FileManager("sigIRC/rabi-ribi/items/mana_up.png").verifyAndFetchFileFromServer();
@@ -130,23 +140,9 @@ public class RabiRaceModule extends Module{
 		new FileManager("sigIRC/rabi-ribi/items/pack_up.png").verifyAndFetchFileFromServer();
 		new FileManager("sigIRC/rabi-ribi/items/attack_up.png").verifyAndFetchFileFromServer();
 		
-		String[] images = dir.list();
-		List<String> filtered_images = new ArrayList<String>();
-		for (String file : images) {
-			File f = new File(ITEMS_DIRECTORY+file);
-			if (!f.isDirectory()) {
-				filtered_images.add(file);
-			}
-		}
-		images = filtered_images.toArray(new String[filtered_images.size()]);
-		for (String image : images) {
-			try {
-				//System.out.println("Loaded "+image);
-				image_map.put(image, ImageIO.read(new File(ITEMS_DIRECTORY+image)));
-			} catch (IOException e) {
-				e.printStackTrace();
-			} 
-		}
+		AddImagesToImageMap(dir,ITEMS_DIRECTORY);
+		dir = new File(AVATAR_DIRECTORY);
+		AddImagesToImageMap(dir,AVATAR_DIRECTORY);
 		
 		for (MemoryData md : MemoryData.values()) {
 			if (md.key_item) {
@@ -160,6 +156,26 @@ public class RabiRaceModule extends Module{
 		
 		join_button = new JoinButton(new Rectangle(2,(int)(position.getHeight()-18),120,18),"Join Session (0)",this);
 		create_button = new CreateButton(new Rectangle(122,(int)(position.getHeight()-18),120,18),"Create Session",this);
+	}
+
+	private void AddImagesToImageMap(File dir, String DIRECTORY) {
+		String[] images = dir.list();
+		List<String> filtered_images = new ArrayList<String>();
+		for (String file : images) {
+			File f = new File(DIRECTORY+file);
+			if (!f.isDirectory()) {
+				filtered_images.add(file);
+			}
+		}
+		images = filtered_images.toArray(new String[filtered_images.size()]);
+		for (String image : images) {
+			try {
+				//System.out.println("Loaded "+image);
+				image_map.put(image, ImageIO.read(new File(DIRECTORY+image)));
+			} catch (IOException e) {
+				e.printStackTrace();
+			} 
+		}
 	}
 	
 	private void getMessageUpdates() {
@@ -203,6 +219,9 @@ public class RabiRaceModule extends Module{
 		}
 		if (firstCheck && mySession==null && create_button.mouseInsideBounds(ev)) {
 			create_button.onClickEvent(ev);
+		}
+		if (mouseoverAvatar) {
+			avatarwindow.setVisible(true);
 		}
 	}
 
@@ -411,6 +430,18 @@ public class RabiRaceModule extends Module{
 		} else {
 			//myProfile.draw(g);
 			Image panel = myProfile.getStatPanel((int)position.getWidth());
+			
+			if (sigIRC.panel.lastMouseX>=position.getX() && 
+					sigIRC.panel.lastMouseX<=position.getX()+(int)(position.getWidth()/400)*50 &&
+					sigIRC.panel.lastMouseY>=position.getY() && 
+					sigIRC.panel.lastMouseY<=position.getY()+(int)((position.getWidth()/400)*50)) {
+				mouseoverAvatar=true;
+				Color ident = g.getColor();
+				g.setColor(new Color(196,196,196,128));
+				g.fillRect((int)(position.getX()+1), (int)(position.getY()+1), (int)((position.getWidth()/400)*50), (int)((position.getWidth()/400)*50));
+				g.setColor(ident);
+			}
+			
 			g.drawImage(panel, (int)position.getX(), (int)position.getY(), sigIRC.panel);
 			g.drawImage(myProfile.getStatText((int)position.getWidth()), (int)position.getX(), (int)position.getY(), sigIRC.panel);
 			
