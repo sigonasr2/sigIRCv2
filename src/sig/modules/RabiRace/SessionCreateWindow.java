@@ -8,6 +8,8 @@ import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
+import java.util.ArrayList;
+import java.util.List;
 
 import javax.swing.Box;
 import javax.swing.BoxLayout;
@@ -29,11 +31,13 @@ import sig.utils.TextUtils;
 
 public class SessionCreateWindow extends JFrame{
 	JPanel container = new JPanel();
-	LengthValidationField session_name = new LengthValidationField(16);
+	LengthValidationField session_name = new LengthValidationField(24);
 	NumberValidationField maxplayers = new NumberValidationField();
 	FloatValidationField difficulty = new FloatValidationField();
 	JPasswordField pass = new JPasswordField();
-	JComboBox gametype = new JComboBox();
+	JComboBox<String> gametype = new JComboBox<String>();
+	NumberValidationField eggcount = new NumberValidationField();
+	List<JComboBox<String>> itemHunt = new ArrayList<JComboBox<String>>();
 	JButton create = new JButton("Create");
 	
 	public SessionCreateWindow() {
@@ -44,9 +48,12 @@ public class SessionCreateWindow extends JFrame{
 		JPanel playerpanel = new JPanel();
 		JPanel passwordpanel = new JPanel();
 		JPanel difficultypanel = new JPanel();
+		JPanel modepanel = new JPanel();
+		JPanel eggpropertiespanel = new JPanel();
+		JPanel itempropertiespanel = new JPanel();
 		
 		JPanel[] panel_list = new JPanel[]{
-			namepanel,playerpanel,passwordpanel,difficultypanel
+			namepanel,playerpanel,passwordpanel,difficultypanel,modepanel,eggpropertiespanel,itempropertiespanel
 		};
 		
 		for (JPanel panel : panel_list) {
@@ -58,7 +65,7 @@ public class SessionCreateWindow extends JFrame{
 		
 		JLabel nameLabel = new JLabel("Session Name:  ");
 		String label = RabiRaceModule.module.myProfile.displayName+"'s Race";
-		if (label.length()>16) {
+		if (label.length()>session_name.length) {
 			label = "My Rabi-Race!";
 		}
 		session_name.setText(label);
@@ -81,8 +88,50 @@ public class SessionCreateWindow extends JFrame{
 		difficulty.setPreferredSize(new Dimension(60,24));
 		difficulty.setText("5.00");
 
+		difficultypanel.add(Box.createHorizontalStrut(60));
 		difficultypanel.add(difficultyLabel);
 		difficultypanel.add(difficulty);
+		difficultypanel.add(Box.createHorizontalStrut(60));
+		
+		JLabel modeLabel = new JLabel("Game Mode:  ");
+		gametype.setPreferredSize(new Dimension(120,24));
+		gametype.addItem("Egg Mode");
+		gametype.addItem("Item Mode");
+		
+		itempropertiespanel.setVisible(false);
+		eggpropertiespanel.setLayout(new BoxLayout(eggpropertiespanel,BoxLayout.LINE_AXIS));
+		eggpropertiespanel.setVisible(false);
+		JLabel eggLabel = new JLabel("Egg Count: ");
+		eggcount.setText("5");
+		eggcount.setPreferredSize(new Dimension(60,24));
+		eggpropertiespanel.add(Box.createHorizontalStrut(64));
+		eggpropertiespanel.add(eggLabel);
+		eggpropertiespanel.add(eggcount);
+		eggpropertiespanel.add(Box.createHorizontalStrut(192));
+		eggpropertiespanel.setSize(400, 24);
+		eggpropertiespanel.setMinimumSize(new Dimension(400, 24));
+		
+		gametype.addActionListener(new ActionListener() {
+			@Override
+			public void actionPerformed(ActionEvent ev) {
+				switch (((String)gametype.getSelectedItem())) {
+					case "Egg Mode":{
+						eggpropertiespanel.setVisible(true);
+						itempropertiespanel.setVisible(false);
+					}break;
+					case "Item Mode":{
+						eggpropertiespanel.setVisible(false);
+						itempropertiespanel.setVisible(true);
+					}break;
+				}
+			}
+		});
+		
+		
+		//itempropertiespanel.
+		
+		modepanel.add(modeLabel);
+		modepanel.add(gametype);
 		
 		for (JPanel panel : panel_list) {
 			panel.add(Box.createRigidArea(new Dimension(24,24)));
@@ -149,6 +198,9 @@ public class SessionCreateWindow extends JFrame{
 		});
 		
 		//create.add(Box.createRigidArea(new Dimension(24,24)));
+
+		playerpanel.setSize(200,24);
+		passwordpanel.setSize(200,24);
 		
 		container.setLayout(new BoxLayout(container,BoxLayout.PAGE_AXIS));
 
@@ -157,13 +209,15 @@ public class SessionCreateWindow extends JFrame{
 		container.add(playerpanel);
 		container.add(passwordpanel);
 		container.add(difficultypanel);
+		//container.add(modepanel);
+		//container.add(eggpropertiespanel);
 		container.add(create);
 		container.add(Box.createRigidArea(new Dimension(24,24)));
 		
 		this.add(container);
-		this.setSize(400, 192);
-		this.setMinimumSize(new Dimension(400, 192));
-		this.setMaximumSize(new Dimension(400, 192));
+		this.setSize(400, 240);
+		this.setMinimumSize(new Dimension(400, 240));
+		this.setMaximumSize(new Dimension(400, 240));
 		this.setResizable(false);
 	}
 	

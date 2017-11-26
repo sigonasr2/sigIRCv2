@@ -198,6 +198,7 @@ public class Profile {
 				int i=0;
 				displayName = data[i++];
 				avatar = Avatar.getAvatarFromID(Integer.parseInt(data[i++]));
+				System.out.println("Updated Avatar for Player "+displayName+" with Avatar "+avatar.displayName);
 				playtime = Integer.parseInt(data[i++]);
 				healthUps = Integer.parseInt(data[i++]);
 				manaUps = Integer.parseInt(data[i++]);

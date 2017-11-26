@@ -117,6 +117,9 @@ public class RabiRaceModule extends Module{
 				}
 			}
 		}, 5000, 5000, TimeUnit.MILLISECONDS);
+		
+		myProfile.downloadProfile(); //Synchronize our profile at the beginning.
+		
 		ScheduledExecutorService scheduler2 = Executors.newScheduledThreadPool(1);
 		scheduler2.scheduleWithFixedDelay(()->{
 			if (foundRabiRibi) {

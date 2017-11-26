@@ -33,7 +33,7 @@ public class Session {
 		if (split.length>=7) {
 			String val = split[i++];
 			String[] playerlist = val.split(";");
-			System.out.println(Arrays.toString(playerlist));
+			//System.out.println(Arrays.toString(playerlist));
 			if (playerlist.length>1) {
 				for (String s : playerlist) {
 					Profile p = new Profile(RabiRaceModule.module,true);
