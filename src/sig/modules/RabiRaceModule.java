@@ -440,6 +440,8 @@ public class RabiRaceModule extends Module{
 				g.setColor(new Color(196,196,196,128));
 				g.fillRect((int)(position.getX()+1), (int)(position.getY()+1), (int)((position.getWidth()/400)*50), (int)((position.getWidth()/400)*50));
 				g.setColor(ident);
+			} else {
+				mouseoverAvatar=false;
 			}
 			
 			g.drawImage(panel, (int)position.getX(), (int)position.getY(), sigIRC.panel);

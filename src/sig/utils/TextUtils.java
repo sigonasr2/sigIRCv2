@@ -28,7 +28,7 @@ public class TextUtils {
 	}
 	
 	public static boolean isAlphanumeric(String str) {
-		return str.matches("^[a-zA-Z0-9!\\-.?'\": ]+$");
+		return str.matches("^[a-zA-Z0-9!\\-.?'\":,\\+ ]+$");
 	}
 	
 	public static boolean isNumeric(String str)

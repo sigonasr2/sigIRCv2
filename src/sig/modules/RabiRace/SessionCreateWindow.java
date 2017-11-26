@@ -12,6 +12,7 @@ import java.net.URL;
 import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.JButton;
+import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
 import javax.swing.JOptionPane;
@@ -32,6 +33,7 @@ public class SessionCreateWindow extends JFrame{
 	NumberValidationField maxplayers = new NumberValidationField();
 	FloatValidationField difficulty = new FloatValidationField();
 	JPasswordField pass = new JPasswordField();
+	JComboBox gametype = new JComboBox();
 	JButton create = new JButton("Create");
 	
 	public SessionCreateWindow() {
@@ -119,10 +121,11 @@ public class SessionCreateWindow extends JFrame{
 				if (String.copyValueOf(pass.getPassword()).length()>0) {
 					hashpass = SessionListWindow.GetHashedPassword(String.copyValueOf(pass.getPassword()));
 				}
-				session_name.setText(session_name.getText().replaceAll(" ", "%20"));
+				String sessionText = session_name.getText();
+				sessionText = sessionText.replaceAll(" ", "%20");
 				File file = new File(sigIRC.BASEDIR+"sigIRC/tmp.data");
 				try {
-					org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=sessioncreate&name="+session_name.getText()+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")+"&difficulty="+((difficulty.getText().length()>0)?difficulty.getText():"-1")),file);
+					org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=sessioncreate&name="+sessionText+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")+"&difficulty="+((difficulty.getText().length()>0)?difficulty.getText():"-1")),file);
 					//org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=sessioncreate&name="+session_name.getText()+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")),file);
 					String[] contents = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/tmp.data");
 					int sessionID=-1;
@@ -165,7 +168,7 @@ public class SessionCreateWindow extends JFrame{
 	}
 	
 	class LengthValidationField extends JTextField implements DocumentListener{
-		int length = 10;
+		int length = 20;
 		
 		public LengthValidationField(int maxLength) {
 			this.length = maxLength;
