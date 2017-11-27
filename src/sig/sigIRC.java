@@ -400,9 +400,9 @@ public class sigIRC{
 	}
 
 	private static void InitializeCustomSounds() {
-		customsounds.add(new CustomSound("monkeyman5876", "Howler Monkeys Howling (Very Funny)-Pia8ku7jUNg.wav"));
-		customsounds.add(new CustomSound("kuroplz", "Kuroyukihime Burst Link !-tv6wMw7KU9o.wav"));
-		customsounds.add(new CustomSound("samusaran458", "Samus Appears - Metroid Prime [OST]-G8frLXCHtqM.wav"));
+		customsounds.add(new CustomSound("monkeyman5876", "Howler_Monkeys_Howling_Very_Funny.wav"));
+		customsounds.add(new CustomSound("kuroplz", "Kuroyukihime_Burst_Link.wav"));
+		customsounds.add(new CustomSound("samusaran458", "Samus_Appears_Metroid_Prime_OST.wav"));
 	}
 
 	public static void InitializeIRCConnection(final String server,final String nickname,final String channel,final String oauth) {
