@@ -356,6 +356,7 @@ public class Profile {
 		int shiftyval = 0;
 		double iconsize = 1;
 		final int icon_size = 24;
+		int rainbowEggLimit = 0;
 		
 		int gamemode = -1;
 		if (RabiRaceModule.mySession!=null) {
@@ -366,6 +367,7 @@ public class Profile {
 			switch (gamemode) {
 				case 0:{ //Egg Hunt.
 					spacing = width/session.eggCount;
+					rainbowEggLimit = session.eggCount;
 					Image img = RabiRaceModule.image_map.get("easter_egg.png");
 					for (int i=0;i<session.eggCount;i++) {
 						Color col = (rainbowEggCount>i)?RabiRaceModule.rainbowcycler.getCycleColor():new Color(0,0,0,192);
@@ -447,7 +449,7 @@ public class Profile {
 					packUps,
 					attackUps,
 			};
-			if (rainbowEggCount>5) {
+			if (rainbowEggCount>rainbowEggLimit) {
 				imgs = Arrays.copyOf(imgs, imgs.length+1);
 				imgs[imgs.length-1] = RabiRaceModule.image_map.get("easter_egg.png");
 				amts = Arrays.copyOf(amts, amts.length+1);
