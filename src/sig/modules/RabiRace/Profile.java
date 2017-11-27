@@ -284,7 +284,7 @@ public class Profile {
 		return Avatar.getAvatarFromID(randomnumb);
 	}
 	
-	public Image getStatText(int w) {
+	public Image getStatText(int w, Session session) {
 		BufferedImage tmp = new BufferedImage(400,175,BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = tmp.createGraphics();
 		
@@ -346,7 +346,7 @@ public class Profile {
 		return diffstring;
 	}
 
-	public Image getStatPanel(int w) {
+	public Image getStatPanel(int w, Session session) {
 		//DrawUtils.drawTextFont(g, sigIRC.panel.userFont, parent.position.getX(), parent.position.getY()+26, Color.BLACK, "Values: "+readIntFromMemory(MemoryOffset.DLC_ITEM1)+","+readIntFromMemory(MemoryOffset.DLC_ITEM2)+","+readIntFromMemory(MemoryOffset.DLC_ITEM3)+","+readIntFromMemory(MemoryOffset.DLC_ITEM4));
 		BufferedImage tmp = new BufferedImage(400,175,BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = tmp.createGraphics();
@@ -355,11 +355,38 @@ public class Profile {
 		int spacing=width/5;
 		int shiftyval = 0;
 		double iconsize = 1;
-		if (rainbowEggCount<=5) {
-			Image img = RabiRaceModule.image_map.get("easter_egg.png");
-			for (int i=0;i<5;i++) {
-				Color col = (rainbowEggCount>i)?RabiRaceModule.rainbowcycler.getCycleColor():new Color(0,0,0,192);
-				DrawUtils.drawImage(g2, img, (int)(border+i*spacing-img.getWidth(sigIRC.panel)/4),(int)(36),col,sigIRC.panel);
+		final int icon_size = 24;
+		
+		int gamemode = -1;
+		if (RabiRaceModule.mySession!=null) {
+			gamemode = RabiRaceModule.mySession.gamemode;
+		}
+		
+		if (gamemode!=-1) {
+			switch (gamemode) {
+				case 0:{ //Egg Hunt.
+					spacing = width/session.eggCount;
+					Image img = RabiRaceModule.image_map.get("easter_egg.png");
+					for (int i=0;i<session.eggCount;i++) {
+						Color col = (rainbowEggCount>i)?RabiRaceModule.rainbowcycler.getCycleColor():new Color(0,0,0,192);
+						DrawUtils.drawImage(g2, img, (int)(border+i*spacing-img.getWidth(sigIRC.panel)/4),(int)(36),col,sigIRC.panel);
+					}
+				}break;
+				case 1:{ //Item Hunt.
+					spacing = width/session.itemHuntData.length;
+					for (int i=0;i<session.itemHuntData.length;i++) {
+						MemoryData item = MemoryData.valueOf(session.itemHuntData[i]);
+						if ((key_items.containsKey(item) &&
+								key_items.get(item)>=1) ||
+								(badges.containsKey(item) &&
+								badges.get(item)>=1)) {
+							//DrawUtils.drawImage(g2, item.getImage(), (int)(border+i*spacing-item.getImage().getWidth(sigIRC.panel)/4),(int)(36),col,sigIRC.panel);
+							g2.drawImage(item.getImage(), (int)(border+i*spacing),(int)(36+16), icon_size*2, icon_size*2, sigIRC.panel);
+						} else {
+							DrawUtils.drawImageScaled(g2, item.getImage(), (int)(border+i*spacing),(int)(36+16),icon_size*2, icon_size*2,new Color(0,0,0,192),sigIRC.panel);
+						}
+					}
+				}
 			}
 		} else {
 			shiftyval = -RabiRaceModule.image_map.get("easter_egg.png").getWidth(sigIRC.panel)/2;
@@ -374,7 +401,6 @@ public class Profile {
 		}
 		 */
 		int size = key_items.size();
-		final int icon_size = 24;
 		int count = 0;
 		try {
 			for (MemoryData data : key_items.keySet()) {
@@ -487,7 +513,16 @@ public class Profile {
 		return new Point(x,y);
 	}
 
-	public static void DrawMultiPanel(Graphics g, int x, int y, int w, List<Profile> players) {
+	public static void DrawMultiPanel(Graphics g, int x, int y, int w, Session session) {
+		List<Profile> players = session.getPlayers();
+		if (RabiRaceModule.mySession!=null && session.id==RabiRaceModule.mySession.id) {
+			for (int i=0;i<players.size();i++) {
+				Profile p = players.get(i);
+				if (p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
+					players.remove(i--);
+				}
+			}
+		}
 		int cols = calculateMultiPanelView(players.size()).x;
 		int rows = calculateMultiPanelView(players.size()).y;
 		
@@ -495,8 +530,8 @@ public class Profile {
 		int yy = 0;
 		
 		for (Profile p : players) {
-			Image panel = p.getStatPanel(w);
-			Image panel2 = p.getStatText(w);
+			Image panel = p.getStatPanel(w,session);
+			Image panel2 = p.getStatText(w,session);
 			g.drawImage(panel,(int)(x+xx*panel.getWidth(sigIRC.panel)/((rows+cols)/2d)),(int)(y+yy*panel.getHeight(sigIRC.panel)/((rows+cols)/2d)),(int)(panel.getWidth(sigIRC.panel)/((rows+cols)/2d)),(int)(panel.getHeight(sigIRC.panel)/((rows+cols)/2d)),sigIRC.panel);
 			g.drawImage(panel2,(int)(x+xx*panel2.getWidth(sigIRC.panel)/((rows+cols)/2d)),(int)(y+yy*panel2.getHeight(sigIRC.panel)/((rows+cols)/2d)),(int)(panel2.getWidth(sigIRC.panel)/((rows+cols)/2d)),(int)(panel2.getHeight(sigIRC.panel)/((rows+cols)/2d)),sigIRC.panel);
 			if (xx+1<cols) {

@@ -54,8 +54,8 @@ public class SessionListWindow extends JFrame{
 		previewPanel.setWindow(this);
 		
 		scrolllist.setViewportView(sessionlist);
-		scrolllist.setPreferredSize(new Dimension(272,150));
-		scrolllist.setMinimumSize(new Dimension(272,150));
+		scrolllist.setPreferredSize(new Dimension(320,150));
+		scrolllist.setMinimumSize(new Dimension(320,150));
 		scrolllist.setHorizontalScrollBarPolicy(JScrollPane.HORIZONTAL_SCROLLBAR_NEVER);
 		JPanel sessionPanel = new JPanel();
 		
@@ -64,8 +64,8 @@ public class SessionListWindow extends JFrame{
 		sessionlist.setVisibleRowCount(6);
 		
 		sessionPanel.setLayout(new BoxLayout(sessionPanel,BoxLayout.PAGE_AXIS));
-		sessionPanel.setSize(130,200);
-		sessionPanel.setMinimumSize(new Dimension(130,200));
+		sessionPanel.setSize(160,200);
+		sessionPanel.setMinimumSize(new Dimension(160,200));
 		
 		sessionPanel.add(scrolllist);
 		sessionPanel.add(Box.createRigidArea(new Dimension(10,10)));
@@ -234,7 +234,7 @@ public class SessionListWindow extends JFrame{
 	        	//Get the players from that session.
 	        	Session s = RabiRaceModule.module.session_listing.data.get(selectedID);
 	        	
-	        	Profile.DrawMultiPanel(g,0,0,400,s.players);
+	        	Profile.DrawMultiPanel(g,0,0,400,s);
 	        }
 	    }
 	}

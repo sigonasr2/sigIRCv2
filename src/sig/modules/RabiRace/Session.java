@@ -15,6 +15,9 @@ public class Session {
 	int maxPlayers = 0;
 	String password = "";
 	float difficulty = -1;
+	int gamemode = 0; //0 = Egg Mode, 1 = Item Hunt Mode
+	String[] itemHuntData;
+	int eggCount = 0;
 	int id = 0;
 	List<Profile> players = new ArrayList<Profile>();
 	
@@ -64,6 +67,17 @@ public class Session {
 		}
 		if (split.length>=8) {	
 			difficulty = Float.parseFloat(split[i++]);
+		}
+		if (split.length>=9) {	
+			gamemode = Integer.parseInt(split[i++]);
+			switch (gamemode) {
+				case 0:{
+					eggCount = Integer.parseInt(split[i++]);
+				}break;
+				case 1:{
+					itemHuntData = split[i++].split(";");
+				}break;
+			}
 		}
 	}
 	

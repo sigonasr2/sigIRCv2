@@ -59,6 +59,7 @@ public class RabiRaceModule extends Module{
 	long rabiRibiMemOffset = 0;
 	public HANDLE rabiribiProcess = null;
 	public static HashMap<String,Image> image_map = new HashMap<String,Image>();
+	public static Image UNKNOWN_ITEM;
 	public static ColorCycler rainbowcycler = new ColorCycler(new Color(255,0,0,96),16);
 	public Profile myProfile = new Profile(this,false);
 	public static RabiRaceModule module;
@@ -153,6 +154,12 @@ public class RabiRaceModule extends Module{
 			} else {
 				badges_list.add(md);
 			}
+		}
+		
+		try {
+			UNKNOWN_ITEM = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/rabi-ribi/unknown.png"));
+		} catch (IOException e) {
+			e.printStackTrace();
 		}
 		
 		//trimeadProfile.username = "trimead";
@@ -432,7 +439,7 @@ public class RabiRaceModule extends Module{
 			DrawUtils.drawTextFont(g, sigIRC.panel.userFont, position.getX(), position.getY()+26, Color.BLACK, "Rabi-Ribi not found! Please start it.");
 		} else {
 			//myProfile.draw(g);
-			Image panel = myProfile.getStatPanel((int)position.getWidth());
+			Image panel = myProfile.getStatPanel((int)position.getWidth(),mySession);
 			
 			if (sigIRC.panel.lastMouseX>=position.getX() && 
 					sigIRC.panel.lastMouseX<=position.getX()+(int)(position.getWidth()/400)*50 &&
@@ -448,7 +455,7 @@ public class RabiRaceModule extends Module{
 			}
 			
 			g.drawImage(panel, (int)position.getX(), (int)position.getY(), sigIRC.panel);
-			g.drawImage(myProfile.getStatText((int)position.getWidth()), (int)position.getX(), (int)position.getY(), sigIRC.panel);
+			g.drawImage(myProfile.getStatText((int)position.getWidth(),mySession), (int)position.getX(), (int)position.getY(), sigIRC.panel);
 			
 			//Profile.DrawMultiPanel(g, (int)(position.getX()), (int)(position.getY())+panel.getHeight(sigIRC.panel), (int)position.getWidth(), testing);
 			if (mySession!=null) {
@@ -459,7 +466,7 @@ public class RabiRaceModule extends Module{
 						//System.out.println("Found unique player "+p);
 					}
 				}
-				Profile.DrawMultiPanel(g, (int)(position.getX()), (int)(position.getY())+panel.getHeight(sigIRC.panel), (int)position.getWidth(), sessionPlayers);
+				Profile.DrawMultiPanel(g, (int)(position.getX()), (int)(position.getY())+panel.getHeight(sigIRC.panel), (int)position.getWidth(), mySession);
 			}
 			
 			if (firstCheck) {

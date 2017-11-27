@@ -35,7 +35,7 @@ public enum MemoryData {
 	EXPLODE_SHOT(MemoryOffset.EXPLODE_SHOT,"Explode Shot","explode_shot.png",true),
 	AIR_DASH(MemoryOffset.AIR_DASH,"Air Dash","air_dash.png",true),
 	BUNNY_STRIKE(MemoryOffset.BUNNY_STRIKE,"Bunny Strike","bunny_strike.png",true),
-	STRANGE_BOX(MemoryOffset.STRANGE_BOX,"Strage Box","strange_box.png",true),
+	STRANGE_BOX(MemoryOffset.STRANGE_BOX,"Strange Box","strange_box.png",true),
 	WALL_JUMP(MemoryOffset.WALL_JUMP,"Wall Jump","wall_jump.png",true),
 	SPIKE_BARRIER(MemoryOffset.SPIKE_BARRIER,"Spike Barrier","spike_barrier.png",true),
 	BUNNY_AMULET(MemoryOffset.BUNNY_AMULET,"Bunny Amulet","bunny_amulet.png",true),
