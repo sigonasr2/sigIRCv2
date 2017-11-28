@@ -159,6 +159,8 @@ public class sigIRC{
 	public static int lastSubEmoteUpdate = -1;
 	public static boolean autoUpdateProgram = true;
 	public static Image programIcon;
+	final public static int MAX_CONNECTION_RETRIES = 100; 
+	public static int retryCounter = 0;
 	
 	public static int subchannelCount = 0;
 	public static HashMap<Long,String> subchannelIds = new HashMap<Long,String>();
@@ -407,6 +409,7 @@ public class sigIRC{
 
 	public static void InitializeIRCConnection(final String server,final String nickname,final String channel,final String oauth) {
 		Socket socket;
+		retryCounter++;
 		try {
 			socket = new Socket(server, 6667);
 	        BufferedWriter writer = new BufferedWriter(
@@ -429,7 +432,12 @@ public class sigIRC{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-        InitializeIRCConnection(server,nickname,channel,oauth);
+		if (retryCounter<MAX_CONNECTION_RETRIES) {
+			InitializeIRCConnection(server,nickname,channel,oauth);
+		} else {
+			sigIRC.panel.addMessage("Connection timed out. Please restart and try again.");
+			System.out.println("Connection timed out. Please restart and try again.");
+		}
 	}
 
 	public static void WriteBreakToLogFile() {

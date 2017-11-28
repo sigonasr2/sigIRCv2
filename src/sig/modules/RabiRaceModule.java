@@ -304,9 +304,7 @@ public class RabiRaceModule extends Module{
 			myProfile.isPaused = paused==1;
 			//System.out.println(itempct+","+paused);
 			if (paused==0 && itempct>=0) {
-				if (mySession!=null) {
-					myProfile.archiveAllValues();
-				}
+				myProfile.archiveAllValues();
 				myProfile.rainbowEggCount = readIntFromMemory(MemoryOffset.RAINBOW_EGG_COUNT);
 				myProfile.attackUps = readItemCountFromMemory(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END);
 				myProfile.healthUps = readItemCountFromMemory(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END);
@@ -322,6 +320,10 @@ public class RabiRaceModule extends Module{
 				if (mySession!=null && !firstUpdate) {
 					myProfile.compareAndAnnounceAllChangedValues();
 				}
+				if (myProfile.compareAllChangedValues()>0) {
+					myProfile.image_display_update_required=true;
+				}
+				myProfile.stat_update_required=true;
 				firstUpdate=false;
 			}
 			if (mySession!=null) {
@@ -450,6 +452,7 @@ public class RabiRaceModule extends Module{
 				g.setColor(new Color(196,196,196,128));
 				g.fillRect((int)(position.getX()+1), (int)(position.getY()+1), (int)((position.getWidth()/400)*50), (int)((position.getWidth()/400)*50));
 				g.setColor(ident);
+				System.out.println("Mouse over avatar.");
 			} else {
 				mouseoverAvatar=false;
 			}
