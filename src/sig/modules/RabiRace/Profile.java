@@ -151,11 +151,17 @@ public class Profile {
 			announcement = "has obtained a Pack Up! ("+packUps+" total)";
 		}
 		if (oldProfile.rainbowEggCount==rainbowEggCount-1) {
-			if (5-rainbowEggCount==0) {
-				announcement = "has obtained 5 Rainbow Eggs! (NAME) has completed the race!";
-			} else if (5-rainbowEggCount>0)
-			{
-				announcement = "has obtained a Rainbow Egg! ("+Math.max(5-rainbowEggCount, 0)+" to go!)";
+			if (RabiRaceModule.mySession!=null &&
+					RabiRaceModule.mySession.gamemode==0 &&
+					RabiRaceModule.mySession.eggCount>0) {
+				if (RabiRaceModule.mySession.eggCount-rainbowEggCount==0) {
+					announcement = "has obtained "+RabiRaceModule.mySession.eggCount+" Rainbow Eggs! (NAME) has completed the race!";
+				} else if (RabiRaceModule.mySession.eggCount-rainbowEggCount>0)
+				{
+					announcement = "has obtained a Rainbow Egg! ("+Math.max(RabiRaceModule.mySession.eggCount-rainbowEggCount, 0)+" to go!)";
+				}
+			} else {
+				announcement = "has obtained a Rainbow Egg! ("+rainbowEggCount+" total)";
 			}
 		}
 		for (MemoryData md : key_items.keySet()) {
@@ -170,7 +176,7 @@ public class Profile {
 				announcement = "has obtained the "+md.name+" badge!";
 			}
 		}
-		if (changedValueCount!=0) {
+		if (announcement.length()>0 && changedValueCount!=0) {
 			SendAnnouncement(announcement);
 		}
 	}
@@ -239,7 +245,7 @@ public class Profile {
 				int i=0;
 				displayName = data[i++];
 				avatar = Avatar.getAvatarFromID(Integer.parseInt(data[i++]));
-				System.out.println("Updated Avatar for Player "+displayName+" with Avatar "+avatar.displayName);
+				//System.out.println("Updated Avatar for Player "+displayName+" with Avatar "+avatar.displayName);
 				playtime = Integer.parseInt(data[i++]);
 				healthUps = Integer.parseInt(data[i++]);
 				manaUps = Integer.parseInt(data[i++]);
@@ -415,11 +421,12 @@ public class Profile {
 			if (gamemode!=-1) {
 				switch (gamemode) {
 					case 0:{ //Egg Hunt.
-						try {
+						if (session.eggCount>0) {
 							spacing = width/session.eggCount;
 							rainbowEggLimit = session.eggCount;
-						} catch (java.lang.ArithmeticException e) {
-							
+						} else {
+							spacing = width/5;
+							rainbowEggLimit = session.eggCount;
 						}
 						Image img = RabiRaceModule.image_map.get("easter_egg.png");
 						for (int i=0;i<session.eggCount;i++) {
@@ -441,7 +448,7 @@ public class Profile {
 								DrawUtils.drawImageScaled(g2, item.getImage(), (int)(border+i*spacing),(int)(36+16),icon_size*2, icon_size*2,new Color(0,0,0,192),sigIRC.panel);
 							}
 						}
-					}
+					}break;
 				}
 			} else {
 				shiftyval = -RabiRaceModule.image_map.get("easter_egg.png").getWidth(sigIRC.panel)/2;
