@@ -444,15 +444,15 @@ public class RabiRaceModule extends Module{
 			Image panel = myProfile.getStatPanel((int)position.getWidth(),mySession);
 			
 			if (sigIRC.panel.lastMouseX>=position.getX() && 
-					sigIRC.panel.lastMouseX<=position.getX()+(int)(position.getWidth()/400)*50 &&
+					sigIRC.panel.lastMouseX<=position.getX()+(int)((position.getWidth()/400)*50) &&
 					sigIRC.panel.lastMouseY>=position.getY() && 
-					sigIRC.panel.lastMouseY<=position.getY()+(int)((position.getWidth()/400)*50)) {
+					sigIRC.panel.lastMouseY<=position.getY()+(int)(((position.getWidth()/400)*50))) {
 				mouseoverAvatar=true;
 				Color ident = g.getColor();
 				g.setColor(new Color(196,196,196,128));
 				g.fillRect((int)(position.getX()+1), (int)(position.getY()+1), (int)((position.getWidth()/400)*50), (int)((position.getWidth()/400)*50));
 				g.setColor(ident);
-				System.out.println("Mouse over avatar.");
+				//System.out.println("Mouse over avatar.");
 			} else {
 				mouseoverAvatar=false;
 			}
