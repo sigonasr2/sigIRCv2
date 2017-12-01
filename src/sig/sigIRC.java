@@ -36,6 +36,7 @@ import sig.utils.FileUtils;
 import sig.utils.GithubUtils;
 import sig.utils.MemoryUtils;
 import sig.utils.TextUtils;
+import sig.windows.IntroDialog;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -67,6 +68,8 @@ import javax.imageio.ImageIO;
 import javax.swing.JFrame;
 
 public class sigIRC{
+	final public static String VERSION = "1.0"; 
+	
 	public static MyPanel panel = null;
 	public static ColorPanel colorpanel = null;
 	public static List<ScrollingText> textobj = new ArrayList<ScrollingText>();
@@ -241,7 +244,11 @@ public class sigIRC{
 		lastSubEmoteUpdate = config.getInteger("lastSubEmote_APIUpdate",Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
 		manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
 		//System.out.println(manager.auth().hasAccessToken());
+		
+		new IntroDialog();
 
+		/*
+		
 		DownloadAllRequiredDependencies();
 		
 		String[] filedata = FileUtils.readFromFile(BASEDIR+"sigIRC/oauthToken.txt");
@@ -266,7 +273,7 @@ public class sigIRC{
         		downloadsComplete=true;
             }
         });
-		InitializeIRCConnection(server, nickname, channel, oauth);
+		InitializeIRCConnection(server, nickname, channel, oauth);*/
 	}
 
 	private static void Initialize() {
