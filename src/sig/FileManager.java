@@ -33,14 +33,20 @@ public class FileManager {
 		return fileloc;
 	}
 	
-	public void verifyAndFetchFileFromServer() {
+	public boolean verifyAndFetchFileFromServer() {
+		if (fileloc.contains("_FAKE_")) {
+			return false;
+		}
 		File file = new File(sigIRC.BASEDIR+fileloc);
 		if (folder) {
 			if (!file.exists()) {
 				System.out.println("Could not find "+file.getAbsolutePath()+", creating Folder "+file.getName()+".");
 				if (file.mkdirs()) {
 					System.out.println(" >> Successfully created "+file.getAbsolutePath()+".");
+					return true;
 				}
+			} else {
+				return true;
 			}
 		} else {
 			if (!file.exists()) {
@@ -49,13 +55,17 @@ public class FileManager {
 					org.apache.commons.io.FileUtils.copyURLToFile(new URL(serverURL+fileloc),file);
 					if (file.exists()) {
 						System.out.println(" >> Successfully downloaded "+file.getAbsolutePath()+".");
+						return true;
 					}
 				} catch (MalformedURLException e) {
 					e.printStackTrace();
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+			} else {
+				return true;
 			}
 		}
+		return false;
 	}
 }

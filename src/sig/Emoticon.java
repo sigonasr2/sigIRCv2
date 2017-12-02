@@ -31,8 +31,8 @@ public class Emoticon {
 				System.out.println("Saved to "+file.getName()+".");
 				emotename = emoteName;
 			}
-			spacefiller = GetSpaceLength(sigIRC.panel.programFont);
-			spacefillersmall = GetSpaceLength(sigIRC.panel.userFont);
+			spacefiller = GetSpaceLength(sigIRC.programFont);
+			spacefillersmall = GetSpaceLength(sigIRC.userFont);
 			//System.out.println("Space size for "+emotename+" is "+spacefiller.length());
 		} catch (IOException e) {
 			e.printStackTrace();
@@ -49,8 +49,8 @@ public class Emoticon {
 				image = ImageIO.read(file);
 				emotename = emoteName;
 			}
-			spacefiller = GetSpaceLength(sigIRC.panel.programFont);
-			spacefillersmall = GetSpaceLength(sigIRC.panel.userFont);
+			spacefiller = GetSpaceLength(sigIRC.programFont);
+			spacefillersmall = GetSpaceLength(sigIRC.userFont);
 			//System.out.println("Space size for "+emotename+" is "+spacefiller.length());
 		} catch (IOException e) {
 			e.printStackTrace();

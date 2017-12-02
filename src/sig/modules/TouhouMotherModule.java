@@ -133,7 +133,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 			if (currentBoss!=null) {
 				DrawBossAndPlayerInfo(g);
 			} else {
-				DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, (int)position.getX()+4, (int)position.getY()+4+16, 1, Color.WHITE, new Color(30,0,86,255), 
+				DrawUtils.drawOutlineText(g, sigIRC.programFont, (int)position.getX()+4, (int)position.getY()+4+16, 1, Color.WHITE, new Color(30,0,86,255), 
 						DataProperty.getDataPropertyBasedOnID(data_display_id).getDisplayName());
 				DrawSortedHealthbarsBasedOnDataProperty(g, DataProperty.getDataPropertyBasedOnID(data_display_id), 0, -64);
 			}
@@ -145,22 +145,22 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	
 	public void DrawBossAndPlayerInfo(Graphics g) {
 		g.drawImage(bossImage, (int)position.getX()+4, (int)position.getY()+4, sigIRC.panel);
-		DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+4, (int)position.getY()+4+16, 1, Color.WHITE, new Color(30,0,86,255), 
+		DrawUtils.drawOutlineText(g, sigIRC.programFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+4, (int)position.getY()+4+16, 1, Color.WHITE, new Color(30,0,86,255), 
 				currentBoss.getName());
-		DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+4, (int)position.getY()+4+48, 1, Color.WHITE, new Color(30,0,86,255), 
+		DrawUtils.drawOutlineText(g, sigIRC.userFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+4, (int)position.getY()+4+48, 1, Color.WHITE, new Color(30,0,86,255), 
 				real_bossHP+" / "+bossMaxHP +" ("+Math.round(((real_bossHP/(double)bossMaxHP)*100))+"%)");
 		DrawUtils.drawHealthbar(g, new Rectangle(
 				Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+4,
 				(int)position.getY()+4+20,
-				(int)TextUtils.calculateStringBoundsFont(bossMaxHP+" / "+bossMaxHP +" ("+Math.round((1d*100))+"%", sigIRC.panel.userFont).getWidth(),
+				(int)TextUtils.calculateStringBoundsFont(bossMaxHP+" / "+bossMaxHP +" ("+Math.round((1d*100))+"%", sigIRC.userFont).getWidth(),
 				8
 				), real_bossHP/(double)bossMaxHP, ChooseHealthbarColor(real_bossHP/(double)bossMaxHP));
-		DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+16, (int)position.getY()+4+68, 1, Color.WHITE, new Color(30,0,86,255), 
+		DrawUtils.drawOutlineText(g, sigIRC.userFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+16, (int)position.getY()+4+68, 1, Color.WHITE, new Color(30,0,86,255), 
 				TextUtils.convertSecondsToTimeFormat(secondsCount));
 		int record = TimeRecord.getRecord(currentBoss.getID());
 		if (record!=TimeRecord.ERROR_VALUE) {
-			DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+
-					TextUtils.calculateStringBoundsFont(TextUtils.convertSecondsToTimeFormat(secondsCount), sigIRC.panel.userFont).getWidth()+20, 
+			DrawUtils.drawOutlineText(g, sigIRC.smallFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+
+					TextUtils.calculateStringBoundsFont(TextUtils.convertSecondsToTimeFormat(secondsCount), sigIRC.userFont).getWidth()+20, 
 					(int)position.getY()+4+72, 1, Color.WHITE, new Color(30,0,86,255), 
 					"RECORD "+TextUtils.convertSecondsToTimeFormat(record));
 		}
@@ -175,7 +175,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		int totaldmg = calculateDataPropertyTotalValue(property);
 		for (int i=0;i<sorteddmg.length;i++) {
 			if (sorteddmg[i]!=-1 && characterDatabase[sorteddmg[i]].getDataProperty(property)>0) {
-				DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, Math.min(((bossImage!=null)?bossImage.getWidth():0)+4,160)+(int)position.getX()+4-Math.min(50, (bossImage!=null)?bossImage.getWidth():0)+x, (int)position.getY()+4+96+pos+y, 1, Color.WHITE, new Color(30,0,86,255), 
+				DrawUtils.drawOutlineText(g, sigIRC.userFont, Math.min(((bossImage!=null)?bossImage.getWidth():0)+4,160)+(int)position.getX()+4-Math.min(50, (bossImage!=null)?bossImage.getWidth():0)+x, (int)position.getY()+4+96+pos+y, 1, Color.WHITE, new Color(30,0,86,255), 
 						characterDatabase[sorteddmg[i]].getName());
 				DrawUtils.drawHealthbar(g, 
 						new Rectangle(
@@ -186,7 +186,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 								)
 						, (double)characterDatabase[sorteddmg[i]].getDataProperty(property)/maxdmg, characterDatabase[sorteddmg[i]].getColor());
 				DecimalFormat df = new DecimalFormat("0.0");
-				DrawUtils.drawOutlineText(g, sigIRC.panel.smallFont, Math.min((bossImage!=null)?bossImage.getWidth():0+4,160)+(int)position.getX()+4+Math.max(0, 50-((bossImage!=null)?bossImage.getWidth():0))+108+x, (int)position.getY()+4+96+pos+y, 1, Color.WHITE, new Color(30,0,86,255), 
+				DrawUtils.drawOutlineText(g, sigIRC.smallFont, Math.min((bossImage!=null)?bossImage.getWidth():0+4,160)+(int)position.getX()+4+Math.max(0, 50-((bossImage!=null)?bossImage.getWidth():0))+108+x, (int)position.getY()+4+96+pos+y, 1, Color.WHITE, new Color(30,0,86,255), 
 						characterDatabase[sorteddmg[i]].getDataProperty(property)+" "+"("+df.format(((((double)characterDatabase[sorteddmg[i]].getDataProperty(property)/totaldmg))*100))+"%)");
 				pos+=16;
 			}

@@ -17,7 +17,7 @@ import java.awt.image.BufferedImage;
 import java.awt.image.ImageObserver;
 import java.text.AttributedString;
 
-import sig.MyPanel;
+import sig.sigIRC;
 
 public class DrawUtils {
 	public static void drawOutlineText(Graphics g, Font font, double x, double y, int outline_size, Color text_color, Color shadow_color, String message) {
@@ -56,7 +56,7 @@ public class DrawUtils {
 	public static void drawText(Graphics g, double x, double y, Color color, String message) {
 		if (message.length()>0) {
 			AttributedString as = new AttributedString(message);
-			as.addAttribute(TextAttribute.FONT, MyPanel.programFont);
+			as.addAttribute(TextAttribute.FONT, sigIRC.programFont);
 			g.setColor(color);
 			g.drawString(as.getIterator(),(int)x,(int)y);
 		}

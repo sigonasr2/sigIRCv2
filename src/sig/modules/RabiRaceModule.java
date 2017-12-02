@@ -130,6 +130,7 @@ public class RabiRaceModule extends Module{
 		
 		File dir = new File(ITEMS_DIRECTORY);
 		
+		/*
 		for (MemoryData data : MemoryData.values()) {
 			//Attempt to fetch from server.
 			new FileManager("sigIRC/rabi-ribi/items/"+data.img_path).verifyAndFetchFileFromServer();
@@ -143,7 +144,7 @@ public class RabiRaceModule extends Module{
 		new FileManager("sigIRC/rabi-ribi/items/regen_up.png").verifyAndFetchFileFromServer();
 		new FileManager("sigIRC/rabi-ribi/items/pack_up.png").verifyAndFetchFileFromServer();
 		new FileManager("sigIRC/rabi-ribi/items/attack_up.png").verifyAndFetchFileFromServer();
-		
+		*/
 		AddImagesToImageMap(dir,ITEMS_DIRECTORY);
 		dir = new File(AVATAR_DIRECTORY);
 		AddImagesToImageMap(dir,AVATAR_DIRECTORY);
@@ -438,7 +439,7 @@ public class RabiRaceModule extends Module{
 		super.draw(g);
 		
 		if (!foundRabiRibi) {
-			DrawUtils.drawTextFont(g, sigIRC.panel.userFont, position.getX(), position.getY()+26, Color.BLACK, "Rabi-Ribi not found! Please start it.");
+			DrawUtils.drawTextFont(g, sigIRC.userFont, position.getX(), position.getY()+26, Color.BLACK, "Rabi-Ribi not found! Please start it.");
 		} else {
 			//myProfile.draw(g);
 			Image panel = myProfile.getStatPanel((int)position.getWidth(),mySession);
@@ -497,7 +498,7 @@ public class RabiRaceModule extends Module{
 			this.msg = message;
 			this.x = x;
 			this.y = y;
-			this.bounds = TextUtils.calculateStringBoundsFont(message, sigIRC.panel.rabiRibiTinyDisplayFont);
+			this.bounds = TextUtils.calculateStringBoundsFont(message, sigIRC.rabiRibiTinyDisplayFont);
 			RabiRaceModule.lastScrollX += bounds.getWidth() + 96;
 		}
 		
@@ -511,7 +512,7 @@ public class RabiRaceModule extends Module{
 		
 		public void draw(Graphics g) {
 			if (x<position.getWidth()) {
-				DrawUtils.drawOutlineText(g, sigIRC.panel.rabiRibiTinyDisplayFont, position.getX()+x, position.getY()+y-6, 2, Color.WHITE, Color.GRAY, msg);
+				DrawUtils.drawOutlineText(g, sigIRC.rabiRibiTinyDisplayFont, position.getX()+x, position.getY()+y-6, 2, Color.WHITE, Color.GRAY, msg);
 			}
 		}
 	}

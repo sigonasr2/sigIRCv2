@@ -52,7 +52,7 @@ public class ClickableButton {
 		g.setColor(Color.BLACK);
 		g.fillRect((int)module.getPosition().getX()+x+1, 
 				(int)module.getPosition().getY()+y+1, width-1, height-1);
-		DrawUtils.drawTextFont(g, sigIRC.panel.userFont, module.getPosition().getX()+x-TextUtils.calculateStringBoundsFont(label, sigIRC.panel.userFont).getWidth()/2+width/2, module.getPosition().getY()+y+height-1, Color.WHITE, label);
+		DrawUtils.drawTextFont(g, sigIRC.userFont, module.getPosition().getX()+x-TextUtils.calculateStringBoundsFont(label, sigIRC.userFont).getWidth()/2+width/2, module.getPosition().getY()+y+height-1, Color.WHITE, label);
 		g.setColor(color_identity);
 	}
 }

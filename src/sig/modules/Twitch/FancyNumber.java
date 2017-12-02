@@ -77,8 +77,8 @@ public class FancyNumber {
 				delayCount--;
 			}
 		}
-		DrawUtils.drawTextFont(g, sigIRC.panel.userFont, x+xoffset, y+yoffset+TextUtils.calculateStringBoundsFont(Integer.toString(displayedValue), sigIRC.panel.userFont).getHeight()/2+3, new Color(184,181,192), Integer.toString(displayedValue));
-		xoffset+=TextUtils.calculateStringBoundsFont(Integer.toString(displayedValue), sigIRC.panel.userFont).getWidth()+4;
+		DrawUtils.drawTextFont(g, sigIRC.userFont, x+xoffset, y+yoffset+TextUtils.calculateStringBoundsFont(Integer.toString(displayedValue), sigIRC.userFont).getHeight()/2+3, new Color(184,181,192), Integer.toString(displayedValue));
+		xoffset+=TextUtils.calculateStringBoundsFont(Integer.toString(displayedValue), sigIRC.userFont).getWidth()+4;
 		if (lastValueChange>0) {
 			lastValueChange--;
 			g.drawImage((upArrow)?TwitchModule.UPARROWIMAGE:TwitchModule.DOWNARROWIMAGE, x+xoffset, y+yoffset, sigIRC.panel);

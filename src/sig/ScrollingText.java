@@ -88,9 +88,9 @@ public class ScrollingText {
 		
 		this.shadowSize=2;
 		
-		this.stringWidth = (int)TextUtils.calculateStringBoundsFont(this.message,MyPanel.programFont).getWidth();
-		this.stringHeight = (int)TextUtils.calculateStringBoundsFont(this.message,MyPanel.programFont).getHeight();
-		this.userstringWidth = (int)TextUtils.calculateStringBoundsFont(this.username,MyPanel.userFont).getWidth();
+		this.stringWidth = (int)TextUtils.calculateStringBoundsFont(this.message,sigIRC.programFont).getWidth();
+		this.stringHeight = (int)TextUtils.calculateStringBoundsFont(this.message,sigIRC.programFont).getHeight();
+		this.userstringWidth = (int)TextUtils.calculateStringBoundsFont(this.username,sigIRC.userFont).getWidth();
 	}
 	
 	public ScrollingText(String msg, double x, double y, boolean playSound) {
@@ -172,10 +172,10 @@ public class ScrollingText {
 	}
 	
 	public void draw(Graphics g) {
-		if (isAlive && WithinBounds(x,y,Math.max(TextUtils.calculateStringBoundsFont(username, MyPanel.userFont).getWidth(), TextUtils.calculateStringBoundsFont(message, MyPanel.programFont).getWidth()),Math.max(TextUtils.calculateStringBoundsFont(username, MyPanel.userFont).getHeight(), TextUtils.calculateStringBoundsFont(message, MyPanel.programFont).getHeight()))) {
+		if (isAlive && WithinBounds(x,y,Math.max(TextUtils.calculateStringBoundsFont(username, sigIRC.userFont).getWidth(), TextUtils.calculateStringBoundsFont(message, sigIRC.programFont).getWidth()),Math.max(TextUtils.calculateStringBoundsFont(username, sigIRC.userFont).getHeight(), TextUtils.calculateStringBoundsFont(message, sigIRC.programFont).getHeight()))) {
 			//DrawUtils.drawTextFont(g, MyPanel.userFont, x+8, y+stringHeight-20, Color.GREEN, username);
-			DrawUtils.drawOutlineText(g, MyPanel.userFont, x+8, y+stringHeight-20, 2, userColor, Color.BLACK, username);
-			DrawUtils.drawOutlineText(g, MyPanel.programFont, x, y+stringHeight, 2, Color.WHITE, Color.BLACK, message);
+			DrawUtils.drawOutlineText(g, sigIRC.userFont, x+8, y+stringHeight-20, 2, userColor, Color.BLACK, username);
+			DrawUtils.drawOutlineText(g, sigIRC.programFont, x, y+stringHeight, 2, Color.WHITE, Color.BLACK, message);
 		}
 	}
 
@@ -267,8 +267,8 @@ public class ScrollingText {
 				break;
 			}
 		}
-		textMaxWidth = (int)TextUtils.calculateStringBoundsFont(basemsg, sigIRC.panel.programFont).getWidth();
-		textMaxHeight = Math.max(textMaxHeight,(int)TextUtils.calculateStringBoundsFont(basemsg, sigIRC.panel.programFont).getHeight());
+		textMaxWidth = (int)TextUtils.calculateStringBoundsFont(basemsg, sigIRC.programFont).getWidth();
+		textMaxHeight = Math.max(textMaxHeight,(int)TextUtils.calculateStringBoundsFont(basemsg, sigIRC.programFont).getHeight());
 		return basemsg;
 	}
 
@@ -282,7 +282,7 @@ public class ScrollingText {
 
 	private void GenerateEmoticon(int pos, String basemsg, Emoticon e) {
 		String cutstring = basemsg.substring(0, pos);
-		double width = TextUtils.calculateStringBoundsFont(cutstring, sigIRC.panel.programFont).getWidth();
+		double width = TextUtils.calculateStringBoundsFont(cutstring, sigIRC.programFont).getWidth();
 		//System.out.println("Width of '"+cutstring+"' is "+width);
 		sigIRC.createEmoticon(e, this, (int)(width), 0);
 		textMaxHeight = Math.max(textMaxHeight, e.getImage().getHeight());

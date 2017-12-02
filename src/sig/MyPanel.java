@@ -3,7 +3,6 @@ package sig;
 import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
-import java.awt.Font;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
@@ -35,12 +34,6 @@ import sig.modules.ChatLog.ChatLogMessage;
 import sig.utils.FileUtils;
 
 public class MyPanel extends JPanel implements MouseListener, ActionListener, MouseWheelListener, KeyListener, ComponentListener, WindowListener{
-	//List<String> messages = new ArrayList<String>();
-	final public static Font programFont = new Font(sigIRC.messageFont,0,24);
-	final public static Font userFont = new Font(sigIRC.usernameFont,0,16);
-	final public static Font smallFont = new Font(sigIRC.touhoumotherConsoleFont,0,12);
-	final public static Font rabiRibiMoneyDisplayFont = new Font("CP Font",0,16);
-	final public static Font rabiRibiTinyDisplayFont = new Font("CP Font",0,12);
 	public int lastMouseX = 0;
 	public int lastMouseY = 0;
 
@@ -227,7 +220,7 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 			m.windowClosed(ev);
 		}
 		sigIRC.config.saveProperties();
-		if (sigIRC.autoUpdateProgram) {
+		if (sigIRC.autoUpdateProgram==0) {
 			try {
 				FileUtils.copyFile(new File(sigIRC.PROGRAM_UPDATE_FILE), new File(sigIRC.BASEDIR+"sigIRCv2.jar"));
 			} catch (IOException e) {

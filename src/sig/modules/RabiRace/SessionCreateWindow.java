@@ -474,7 +474,7 @@ public class SessionCreateWindow extends JFrame{
 	            setBackground(list.getBackground());
 	            setForeground(list.getForeground());
 	        }
-			setFont(sigIRC.panel.rabiRibiMoneyDisplayFont);
+			setFont(sigIRC.rabiRibiMoneyDisplayFont);
 			setIconTextGap(4);
 			return this;
 		}

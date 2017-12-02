@@ -12,7 +12,8 @@ import sig.sigIRC;
 public class TextUtils {
 
 	public static Rectangle2D calculateStringBoundsFont(String msg, Font font) {
-		FontRenderContext frc = sigIRC.panel.getFontMetrics(font).getFontRenderContext();
+		//System.out.println(sigIRC.loadingdialog);
+		FontRenderContext frc = sigIRC.loadingdialog.getFontMetrics(font).getFontRenderContext();
 		return font.getStringBounds(msg, frc);
 	}
 	

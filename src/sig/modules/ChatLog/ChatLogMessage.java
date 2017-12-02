@@ -46,7 +46,7 @@ public class ChatLogMessage {
 		this.username = DetectUsername(displayMessage);
 		if (this.username!=null) {
 			displayMessage.set(0,GetMessage(displayMessage.get(0)+" "));
-			usernameWidth = (int)TextUtils.calculateStringBoundsFont(this.username, sigIRC.panel.userFont).getWidth();
+			usernameWidth = (int)TextUtils.calculateStringBoundsFont(this.username, sigIRC.userFont).getWidth();
 		}
 		for (int i=0;i<displayMessage.size();i++) {
 			//System.out.println("displayMessage["+i+"] before: "+displayMessage.get(i));
@@ -99,7 +99,7 @@ public class ChatLogMessage {
 
 	private void GenerateEmoticon(int textpos, int xpos, int ypos, String basemsg, Emoticon e) {
 		String cutstring = basemsg.substring(0, textpos);
-		double width = TextUtils.calculateStringBoundsFont(cutstring, sigIRC.panel.userFont).getWidth();
+		double width = TextUtils.calculateStringBoundsFont(cutstring, sigIRC.userFont).getWidth();
 		//System.out.println("Width of '"+cutstring+"' is "+width);
 		//System.out.println("Offsetting emote by "+xpos+"+"+width);
 		sigIRC.createEmoticon(e, this, (int)(xpos+width), ypos+16);
@@ -156,11 +156,11 @@ public class ChatLogMessage {
 
 	private void WrapText() {
 		String rawmessage = rawMessage;
-		int textWidth = (int)TextUtils.calculateStringBoundsFont(rawmessage, sigIRC.panel.userFont).getWidth();
+		int textWidth = (int)TextUtils.calculateStringBoundsFont(rawmessage, sigIRC.userFont).getWidth();
 		int maxWidth = (int)refModule.getPosition().getWidth()-BORDER_SPACING;
 		do {
 			rawmessage = BreakTextAtNextSection(rawmessage+" ",maxWidth);
-			textWidth = (int)TextUtils.calculateStringBoundsFont(rawmessage, sigIRC.panel.userFont).getWidth();
+			textWidth = (int)TextUtils.calculateStringBoundsFont(rawmessage, sigIRC.userFont).getWidth();
 		} while (textWidth>maxWidth);
 		if (rawmessage.length()>0) {
 			displayMessage.add(rawmessage);
@@ -171,12 +171,12 @@ public class ChatLogMessage {
 
 	private String BreakTextAtNextSection(String msg, int maxWidth) {
 		int marker = 1;
-		int textWidth = (int)TextUtils.calculateStringBoundsFont(msg.substring(0, marker), sigIRC.panel.userFont).getWidth();
+		int textWidth = (int)TextUtils.calculateStringBoundsFont(msg.substring(0, marker), sigIRC.userFont).getWidth();
 		while (textWidth<maxWidth) {
 			if (marker<msg.length()) {
 				int tempmarker = msg.indexOf(' ', marker);
 				if (tempmarker!=-1) {
-					textWidth = (int)TextUtils.calculateStringBoundsFont(msg.substring(0, tempmarker), sigIRC.panel.userFont).getWidth();
+					textWidth = (int)TextUtils.calculateStringBoundsFont(msg.substring(0, tempmarker), sigIRC.userFont).getWidth();
 					if (textWidth<maxWidth) {
 						marker = tempmarker+1;
 					}
@@ -213,10 +213,10 @@ public class ChatLogMessage {
 			for (int i=0;i<displayMessage.size();i++) {
 				//System.out.println(displayMessage.get(i));
 				if (username!=null && i==0) {
-					DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, refModule.getPosition().getX()+position.getX(), refModule.getPosition().getY()+position.getY()+(i*MESSAGE_SPACING)+32, 2, GetUserNameColor(this.username), SHADOW_COL, this.username);
-					DrawUtils.drawTextFont(g, sigIRC.panel.userFont, refModule.getPosition().getX()+position.getX()+usernameWidth+2, refModule.getPosition().getY()+position.getY()+(i*MESSAGE_SPACING)+32, Color.BLACK, displayMessage.get(i));	
+					DrawUtils.drawOutlineText(g, sigIRC.userFont, refModule.getPosition().getX()+position.getX(), refModule.getPosition().getY()+position.getY()+(i*MESSAGE_SPACING)+32, 2, GetUserNameColor(this.username), SHADOW_COL, this.username);
+					DrawUtils.drawTextFont(g, sigIRC.userFont, refModule.getPosition().getX()+position.getX()+usernameWidth+2, refModule.getPosition().getY()+position.getY()+(i*MESSAGE_SPACING)+32, Color.BLACK, displayMessage.get(i));	
 				} else {
-					DrawUtils.drawTextFont(g, sigIRC.panel.userFont, refModule.getPosition().getX()+position.getX(), refModule.getPosition().getY()+position.getY()+(i*MESSAGE_SPACING)+32, Color.BLACK, displayMessage.get(i));
+					DrawUtils.drawTextFont(g, sigIRC.userFont, refModule.getPosition().getX()+position.getX(), refModule.getPosition().getY()+position.getY()+(i*MESSAGE_SPACING)+32, Color.BLACK, displayMessage.get(i));
 				}
 			}
 			g.drawImage(Module.MSG_SEPARATOR, (int)(refModule.getPosition().getX()+position.getX()+8), (int)(refModule.getPosition().getY()+position.getY()+messageDisplaySize.getY()+12), (int)(messageDisplaySize.getX()-8), 1, sigIRC.panel);

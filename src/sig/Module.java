@@ -36,7 +36,7 @@ public class Module {
 		this.name = moduleName;
 		this.enabled=true;
 		
-		this.titleHeight = (int)TextUtils.calculateStringBoundsFont(this.name, sigIRC.panel.userFont).getHeight();
+		this.titleHeight = (int)TextUtils.calculateStringBoundsFont(this.name, sigIRC.userFont).getHeight();
 	}
 	
 	public Module(Rectangle2D bounds, String moduleName, boolean enabled) {
@@ -148,7 +148,7 @@ public class Module {
 				(int)position.getWidth()-4,
 				Module.IMG_DRAGBAR.getHeight(),
 				sigIRC.panel);
-			DrawUtils.drawTextFont(g, sigIRC.panel.smallFont, (int)position.getX(), (int)position.getY()-titleHeight/2+4, Color.BLACK, this.name);
+			DrawUtils.drawTextFont(g, sigIRC.smallFont, (int)position.getX(), (int)position.getY()-titleHeight/2+4, Color.BLACK, this.name);
 			//g.fillRect((int)position.getX(), (int)position.getY(), (int)position.getWidth(), (int)position.getHeight());
 		}
 	}

@@ -37,6 +37,8 @@ import sig.utils.GithubUtils;
 import sig.utils.MemoryUtils;
 import sig.utils.TextUtils;
 import sig.windows.IntroDialog;
+import sig.windows.LoadingDialog;
+import sig.windows.TwitchEmoteDownload;
 
 import java.awt.Color;
 import java.awt.Dimension;
@@ -89,7 +91,7 @@ public class sigIRC{
 	final public static String WINDOWTITLE = "sigIRCv2"; 
 	public final static String PROGRAM_EXECUTABLE_URL = "https://github.com/sigonasr2/sigIRCv2/raw/master/sigIRCv2.jar";
 	public static ConfigFile config;
-	static String server;
+	public static String server;
 	public static String nickname;
 	public static String channel;
 	public static boolean authenticated=false;
@@ -112,8 +114,8 @@ public class sigIRC{
 	static String messageFont="Gill Sans Ultra Bold Condensed";
 	static String usernameFont="GillSansMTStd-Book";
 	static String touhoumotherConsoleFont="Agency FB Bold";
-	static boolean touhoumothermodule_enabled=false;
-	static boolean twitchmodule_enabled=true;
+	public static boolean touhoumothermodule_enabled=false;
+	public static boolean twitchmodule_enabled=true;
 	public static boolean chatlogmodule_enabled=true;
 	static boolean downloadsComplete=false;
 	static boolean hardwareAcceleration=true;
@@ -160,7 +162,7 @@ public class sigIRC{
 	public final static String SUBEMOTELISTFILE = "sigIRC/subemotes.json";
 	public static long channel_id = -1;
 	public static int lastSubEmoteUpdate = -1;
-	public static boolean autoUpdateProgram = true;
+	public static int autoUpdateProgram = 0; //0 = Auto Update, 1 = Notify, 2 = Disabled
 	public static Image programIcon;
 	final public static int MAX_CONNECTION_RETRIES = 100; 
 	public static int retryCounter = 0;
@@ -171,6 +173,8 @@ public class sigIRC{
 	public static boolean downloadedSubEmotes=false;
 	public static boolean subEmotesCompleted=false;
 	public static boolean disableChatMessages=false;
+	
+	public static LoadingDialog loadingdialog;
 	
 	static int lastWindowX = 0;
 	static int lastWindowY = 0;
@@ -239,13 +243,14 @@ public class sigIRC{
 		chatlogmodule_backgroundColor = config.getProperty("CHATLOG_module_BackgroundColor", "195,195,195,255");
 		chatlogMessageHistory = config.getInteger("CHATLOG_module_MessageHistory",50);
 		hardwareAcceleration = config.getBoolean("hardware_acceleration",true);
-		autoUpdateProgram = config.getBoolean("Automatically_Update_Program", true);
+		autoUpdateProgram = config.getInteger("Auto_Update_Program", 0);
 		disableChatMessages = config.getBoolean("Disable_Chat_Messages", false);
 		lastSubEmoteUpdate = config.getInteger("lastSubEmote_APIUpdate",Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
 		manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
 		//System.out.println(manager.auth().hasAccessToken());
 		
-		new IntroDialog();
+		//new IntroDialog();
+		loadingdialog = new LoadingDialog();
 
 		/*
 		
@@ -296,6 +301,10 @@ public class sigIRC{
 		return conf; 
 	}
 
+	/**
+	 * Now handled by LoadingDialog.
+	 */
+	@Deprecated
 	public static void DownloadAllRequiredDependencies() {
 		FileManager manager = new FileManager("sigIRC/oauthToken.txt"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/Emotes/",true); manager.verifyAndFetchFileFromServer();
@@ -337,9 +346,9 @@ public class sigIRC{
 		System.out.println("Downloaded Dependencies. ");
 	}
 
-	private static void DownloadProgramUpdate() {
+	public static void DownloadProgramUpdate() {
 		//System.out.println("Last commit size was "+GithubUtils.getSizeOfFileFromLatestGithubCommit("sigIRCv2.jar")+"B");
-		if (autoUpdateProgram) {
+		if (autoUpdateProgram==0) {
 			File updatedir = new File(sigIRC.BASEDIR+"sigIRC/updates/");
 			updatedir.mkdirs();
 			File controllerdir = new File(ControllerModule.CONTROLLERPATH);
@@ -497,17 +506,8 @@ public class sigIRC{
 		//return true;
 	}
 
-	private static void performTwitchEmoteUpdate() {
+	public static void prepareTwitchEmoteUpdate() {
 		try {
-			JSONObject twitchemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/global.json");
-			System.out.println("Twitch emote Json read.");
-			for (String emotes : twitchemotes.keySet()) {
-				JSONObject emote = twitchemotes.getJSONObject(emotes);
-				int id = emote.getInt("id");
-				String name = emote.getString("code");
-				emoticons.add(new Emoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0")));
-				System.out.println("Emote "+id+" with name "+name);
-			}
 					//System.out.println("Subscriber object: "+subemotes);
 					String[] channel_names = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/subscribers.txt");
 					subchannelCount = channel_names.length;
@@ -530,30 +530,7 @@ public class sigIRC{
 			}*/
 		} catch (JSONException e) {
 			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
 		}
-		
-		emoticons.add(new Emoticon(":)","1"));
-		emoticons.add(new Emoticon(":(","2"));
-		emoticons.add(new Emoticon(":o","3"));
-		emoticons.add(new Emoticon(":O","3"));
-		emoticons.add(new Emoticon(":z","4"));
-		emoticons.add(new Emoticon(":Z","4"));
-		emoticons.add(new Emoticon("B)","5"));
-		emoticons.add(new Emoticon(":\\","6"));
-		emoticons.add(new Emoticon(":/","6"));
-		emoticons.add(new Emoticon(";)","7"));
-		emoticons.add(new Emoticon(";p","8"));
-		emoticons.add(new Emoticon(";P","8"));
-		emoticons.add(new Emoticon(":p","9"));
-		emoticons.add(new Emoticon(":P","9"));
-		emoticons.add(new Emoticon("R)","10"));
-		emoticons.add(new Emoticon("o_O","20"));
-		emoticons.add(new Emoticon("O_o","20"));
-		emoticons.add(new Emoticon(":D","11"));
-		emoticons.add(new Emoticon(">(","12"));
-		emoticons.add(new Emoticon("<3","13"));
 	}
 
 	/*private static void DefineEmoticons() {
@@ -669,4 +646,15 @@ public class sigIRC{
 	public static void createEmoticon(Emoticon emote, ChatLogMessage textref, int x, int y) {
 		chatlogtwitchemoticons.add(new ChatLogTwitchEmote(emote,textref,x,y));
 	}
+
+	final public static Font rabiRibiTinyDisplayFont = new Font("CP Font",0,12);
+
+	final public static Font rabiRibiMoneyDisplayFont = new Font("CP Font",0,16);
+
+	final public static Font smallFont = new Font(touhoumotherConsoleFont,0,12);
+
+	final public static Font userFont = new Font(usernameFont,0,16);
+
+	//List<String> messages = new ArrayList<String>();
+	final public static Font programFont = new Font(messageFont,0,24);
 }

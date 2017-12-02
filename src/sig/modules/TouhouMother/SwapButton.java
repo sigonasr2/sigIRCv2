@@ -17,7 +17,6 @@ import java.util.Arrays;
 
 import javax.imageio.ImageIO;
 
-import sig.MyPanel;
 import sig.sigIRC;
 import sig.modules.TouhouMotherModule;
 import sig.utils.DrawUtils;
@@ -48,7 +47,7 @@ public class SwapButton extends TouhouMotherButton{
 	public void draw(Graphics g) {
 		super.draw(g);
 		if (displaytime>0) {
-			DrawUtils.drawOutlineText(g, MyPanel.smallFont, x+buttonimg.getWidth()+4, y+buttonimg.getHeight(), 2, Color.WHITE, new Color(60,0,150), message);
+			DrawUtils.drawOutlineText(g, sigIRC.smallFont, x+buttonimg.getWidth()+4, y+buttonimg.getHeight(), 2, Color.WHITE, new Color(60,0,150), message);
 		}
 	}
 	

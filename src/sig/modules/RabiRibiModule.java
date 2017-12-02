@@ -62,7 +62,7 @@ public class RabiRibiModule extends Module{
 			if (moneyearned>0 && moneytime>playtime) {
 				setTarget(overlay.getScreenPosition(readFloatFromErinaData(MemoryOffset.ERINA_XPOS), readFloatFromErinaData(MemoryOffset.ERINA_YPOS)));
 				//System.out.println(x+","+y);
-				DrawUtils.drawCenteredOutlineText(g, sigIRC.panel.rabiRibiMoneyDisplayFont, (int)x, (int)y-96, 2, Color.ORANGE, Color.BLACK, "+"+moneyearned+"EN");
+				DrawUtils.drawCenteredOutlineText(g, sigIRC.rabiRibiMoneyDisplayFont, (int)x, (int)y-96, 2, Color.ORANGE, Color.BLACK, "+"+moneyearned+"EN");
 			}
 		}
 	};
@@ -234,9 +234,9 @@ public class RabiRibiModule extends Module{
 			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "HP: "+readIntFromErinaData(MemoryOffset.ERINA_HP)+"/"+readIntFromErinaData(MemoryOffset.ERINA_MAXHP));
 			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "POS ("+(int)readFloatFromErinaData(MemoryOffset.ERINA_XPOS)/1280+","+(int)readFloatFromErinaData(MemoryOffset.ERINA_YPOS)/720+")");
 			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "MAP: "+readIntFromMemory(MemoryOffset.MAPID));*/
-			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "POS ("+(readFloatFromErinaData(MemoryOffset.ERINA_XPOS))+","+(readFloatFromErinaData(MemoryOffset.ERINA_YPOS))+")");
-			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "MONEY: ("+(readIntFromMemory(MemoryOffset.MONEY))+")");
-			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "CAMERA ("+(readIntFromMemory(MemoryOffset.CAMERA_XPOS))+","+(readIntFromMemory(MemoryOffset.CAMERA_YPOS))+")");
+			DrawUtils.drawOutlineText(g, sigIRC.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "POS ("+(readFloatFromErinaData(MemoryOffset.ERINA_XPOS))+","+(readFloatFromErinaData(MemoryOffset.ERINA_YPOS))+")");
+			DrawUtils.drawOutlineText(g, sigIRC.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "MONEY: ("+(readIntFromMemory(MemoryOffset.MONEY))+")");
+			DrawUtils.drawOutlineText(g, sigIRC.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "CAMERA ("+(readIntFromMemory(MemoryOffset.CAMERA_XPOS))+","+(readIntFromMemory(MemoryOffset.CAMERA_YPOS))+")");
 			//DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, "SCREENPOS ("+overlay.getScreenPosition(readFloatFromErinaData(MemoryOffset.ERINA_XPOS), readFloatFromErinaData(MemoryOffset.ERINA_YPOS))+")");
 			overlay.draw(g);
 			/*DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, 
@@ -255,8 +255,8 @@ public class RabiRibiModule extends Module{
 				for (Integer numb : entities.keySet()) {
 					Entity ent = entities.get(numb);
 					if (ent.getLastHitTime()>readIntFromMemory(MemoryOffset.PLAYTIME)-180) {
-						for (String s : TextUtils.WrapText("Entity "+ent.getID()+": "+ent.getHealth()+"/"+ent.getMaxHealth()+" HP   "+((ent.getHealth()/(float)ent.getMaxHealth())*100)+"%".replaceAll(",", ", "), sigIRC.panel.programFont, position.getWidth()-20)) { 
-							DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX()+20, position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, 
+						for (String s : TextUtils.WrapText("Entity "+ent.getID()+": "+ent.getHealth()+"/"+ent.getMaxHealth()+" HP   "+((ent.getHealth()/(float)ent.getMaxHealth())*100)+"%".replaceAll(",", ", "), sigIRC.programFont, position.getWidth()-20)) { 
+							DrawUtils.drawOutlineText(g, sigIRC.programFont, position.getX()+20, position.getY()+(i+=24), 3, Color.BLACK, Color.WHITE, 
 									s);
 						}
 					}
@@ -270,7 +270,7 @@ public class RabiRibiModule extends Module{
 			int playtime = readIntFromMemory(MemoryOffset.PLAYTIME);
 			
 			if (statustext.length()>0 && statustime>playtime-300) {
-				DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, position.getX(), position.getY()+(i+=48), 3, Color.GREEN, Color.LIGHT_GRAY, statustext);
+				DrawUtils.drawOutlineText(g, sigIRC.programFont, position.getX(), position.getY()+(i+=48), 3, Color.GREEN, Color.LIGHT_GRAY, statustext);
 			}
 			
 			en_counter.draw(g);

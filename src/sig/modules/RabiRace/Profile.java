@@ -341,18 +341,18 @@ public class Profile {
 			//g2.fillRect(1, 1, 32, 32);
 			g2.drawImage(avatar.getAvatarImage(), 1, 1, sigIRC.panel);
 			g2.setColor(ScrollingText.GetUserNameColor(displayName));
-			DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, 54, 26, 1, g2.getColor(), Color.BLACK, displayName);
-			DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.2), 50, 1, GetDifficultyColor(), Color.BLACK, GetDifficultyName());
+			DrawUtils.drawOutlineText(g2, sigIRC.rabiRibiMoneyDisplayFont, 54, 26, 1, g2.getColor(), Color.BLACK, displayName);
+			DrawUtils.drawCenteredOutlineText(g2, sigIRC.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.2), 50, 1, GetDifficultyColor(), Color.BLACK, GetDifficultyName());
 			String text = TextUtils.convertSecondsToTimeFormat(playtime/60);
 			if (isPaused) {
 				g2.setColor(new Color(128,96,0));
 			} else {
 				g2.setColor(Color.BLACK);
 			}
-			DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, (int)(tmp.getWidth() - TextUtils.calculateStringBoundsFont(text, sigIRC.panel.rabiRibiMoneyDisplayFont).getWidth()) - 2, 16, 1, g2.getColor(), Color.GRAY, text);
+			DrawUtils.drawOutlineText(g2, sigIRC.rabiRibiMoneyDisplayFont, (int)(tmp.getWidth() - TextUtils.calculateStringBoundsFont(text, sigIRC.rabiRibiMoneyDisplayFont).getWidth()) - 2, 16, 1, g2.getColor(), Color.GRAY, text);
 			text = "Map "+df.format(mappct)+"%  Item "+df.format(itempct)+"%";
 			//DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, (int)(parent.position.getWidth() - TextUtils.calculateStringBoundsFont(text, sigIRC.panel.rabiRibiMoneyDisplayFont).getWidth()) - 2, 16, 1, g2.getColor(), Color.GRAY, text);
-			DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.6), 50, 2, Color.WHITE, Color.BLACK, text);
+			DrawUtils.drawCenteredOutlineText(g2, sigIRC.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.6), 50, 2, Color.WHITE, Color.BLACK, text);
 			
 			statUpdateCacheImage = tmp.getScaledInstance(w, -1, Image.SCALE_AREA_AVERAGING);
 			//stat_update_required = false;
@@ -487,12 +487,12 @@ public class Profile {
 					if (size*icon_size<width) {
 						g2.drawImage(data.getImage(), (int)(+border+((count++)*icon_size)), (int)(+96+32)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), sigIRC.panel);
 						if (badges.get(data)==2) {
-							DrawUtils.drawOutlineText(g2, sigIRC.panel.smallFont, (int)(+border+((count-1)*icon_size))+4, (int)(+96+32)+icon_size+shiftyval, 1, Color.WHITE, TEAL, "E");
+							DrawUtils.drawOutlineText(g2, sigIRC.smallFont, (int)(+border+((count-1)*icon_size))+4, (int)(+96+32)+icon_size+shiftyval, 1, Color.WHITE, TEAL, "E");
 						}
 					} else {
 						g2.drawImage(data.getImage(), (int)(+border+((width/size)*(count++))), (int)(+96+32)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), sigIRC.panel);
 						if (badges.get(data)==2) {
-							DrawUtils.drawOutlineText(g2, sigIRC.panel.smallFont, (int)(+border+((width/size)*(count-1)))+4, (int)(+96+32)+icon_size+shiftyval, 1, Color.WHITE, TEAL, "E");
+							DrawUtils.drawOutlineText(g2, sigIRC.smallFont, (int)(+border+((width/size)*(count-1)))+4, (int)(+96+32)+icon_size+shiftyval, 1, Color.WHITE, TEAL, "E");
 						}
 					}
 				}
@@ -524,7 +524,7 @@ public class Profile {
 					} else {
 						g2.drawImage(img,(int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56)+shiftyval, (int)icon_size, (int)icon_size, sigIRC.panel);
 					}
-					DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.programFont, (int)((+border+((i)*(spacing))-icon_size/2)+(spacing/2)+4), (int)(+96+56+icon_size+12)+shiftyval, 1, Color.WHITE, Color.BLUE, Integer.toString(amts[i++]));
+					DrawUtils.drawCenteredOutlineText(g2, sigIRC.programFont, (int)((+border+((i)*(spacing))-icon_size/2)+(spacing/2)+4), (int)(+96+56+icon_size+12)+shiftyval, 1, Color.WHITE, Color.BLUE, Integer.toString(amts[i++]));
 				}
 			} catch (ConcurrentModificationException e) {
 				
