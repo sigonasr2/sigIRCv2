@@ -11,6 +11,7 @@ import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
 import java.net.URL;
+import java.net.UnknownHostException;
 import java.nio.channels.FileChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
@@ -207,18 +208,21 @@ public class FileUtils {
 	  }
 
 	  public static JSONObject readJsonFromUrl(String url, String file, boolean writeToFile) throws IOException, JSONException {
-	    InputStream is = new URL(url).openStream();
+		InputStream is;  
 	    try {
+		  is = new URL(url).openStream();
 	      BufferedReader rd = new BufferedReader(new InputStreamReader(is, Charset.forName("UTF-8")));
 	      String jsonText = readAll(rd);
 	      if (writeToFile) {
 	    	  writetoFile(new String[]{jsonText},file);
 	      }
 	      JSONObject json = new JSONObject(jsonText);
-	      return json;
-	    } finally {
 	      is.close();
+	      return json;
+	    } catch (UnknownHostException e) {
+	    	sigIRC.offlineMode = true;
 	    }
+	    return null;
 	  }
 
 	  public static JSONArray readJsonArrayFromUrl(String url, String file, boolean writeToFile) throws IOException, JSONException {

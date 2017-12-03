@@ -99,7 +99,7 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         		break;
         	}
         }
-        if (!sigIRC.overlayMode) {
+        if (!sigIRC.overlayMode && sigIRC.button!=null) {
         	sigIRC.button.draw(g);
         }
     }  
@@ -183,19 +183,23 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 	}
 
 	public static void UpdateComponent(Component com) {
-		sigIRC.windowX = (int)sigIRC.window.getLocationOnScreen().getX(); 
-		sigIRC.windowY = (int)sigIRC.window.getLocationOnScreen().getY();
-		sigIRC.windowWidth = sigIRC.window.getWidth(); 
-		sigIRC.windowHeight = sigIRC.window.getHeight();
-		sigIRC.config.setInteger("windowX", sigIRC.windowX);
-		sigIRC.config.setInteger("windowY", sigIRC.windowY);
-		sigIRC.config.setInteger("windowWidth", sigIRC.windowWidth);
-		sigIRC.config.setInteger("windowHeight", sigIRC.windowHeight);
-		sigIRC.button.x = sigIRC.panel.getX()+sigIRC.panel.getWidth()-96;
-		sigIRC.button.y = 64+sigIRC.rowobj.size()*sigIRC.rowSpacing;
-		//com.repaint();
-		//sigIRC.panel.repaint();
-		sigIRC.config.saveProperties();
+		if (sigIRC.window!=null && sigIRC.window.getLocationOnScreen()!=null) {
+			sigIRC.windowX = (int)sigIRC.window.getLocationOnScreen().getX(); 
+			sigIRC.windowY = (int)sigIRC.window.getLocationOnScreen().getY();
+			sigIRC.windowWidth = sigIRC.window.getWidth(); 
+			sigIRC.windowHeight = sigIRC.window.getHeight();
+			sigIRC.config.setInteger("windowX", sigIRC.windowX);
+			sigIRC.config.setInteger("windowY", sigIRC.windowY);
+			sigIRC.config.setInteger("windowWidth", sigIRC.windowWidth);
+			sigIRC.config.setInteger("windowHeight", sigIRC.windowHeight);
+			if (sigIRC.button!=null) {
+				sigIRC.button.x = sigIRC.panel.getX()+sigIRC.panel.getWidth()-96;
+				sigIRC.button.y = 64+sigIRC.rowobj.size()*sigIRC.rowSpacing;
+			}
+			//com.repaint();
+			//sigIRC.panel.repaint();
+			sigIRC.config.saveProperties();
+		}
 	}
 
 	@Override
@@ -220,7 +224,7 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 			m.windowClosed(ev);
 		}
 		sigIRC.config.saveProperties();
-		if (sigIRC.autoUpdateProgram==0) {
+		if (sigIRC.autoUpdateProgram==0 && !sigIRC.offlineMode && sigIRC.updateAvailable) {
 			try {
 				FileUtils.copyFile(new File(sigIRC.PROGRAM_UPDATE_FILE), new File(sigIRC.BASEDIR+"sigIRCv2.jar"));
 			} catch (IOException e) {

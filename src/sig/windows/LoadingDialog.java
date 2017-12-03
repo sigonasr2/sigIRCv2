@@ -4,6 +4,7 @@ import java.awt.Dimension;
 import java.io.File;
 import java.io.IOException;
 import java.net.MalformedURLException;
+import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -101,21 +102,26 @@ public class LoadingDialog extends JFrame{
 			managers.add(new FileManager("sigIRC/rabi-ribi/items/attack_up.png"));
 		}
 		
-		JSONObject twitchemotes;
-		try {
-			twitchemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/global.json");
-			System.out.println("Twitch emote Json read.");
-			for (String emotes : twitchemotes.keySet()) {
-				JSONObject emote = twitchemotes.getJSONObject(emotes);
-				int id = emote.getInt("id");
-				String name = emote.getString("code");
-				LoadingDialog.emotes.add(new TwitchEmoteDownload(name,id));
-				managers.add(new FakeFileManager("_FAKE_"));
-				//emoticons.add(new Emoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0")));
-				System.out.println("Emote "+id+" with name "+name);
+		if (!sigIRC.offlineMode) {
+			JSONObject twitchemotes;
+			try {
+				twitchemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/global.json");
+				System.out.println("Twitch emote Json read.");
+				if (twitchemotes!=null) {
+					for (String emotes : twitchemotes.keySet()) {
+						JSONObject emote = twitchemotes.getJSONObject(emotes);
+						int id = emote.getInt("id");
+						String name = emote.getString("code");
+						LoadingDialog.emotes.add(new TwitchEmoteDownload(name,id));
+						managers.add(new FakeFileManager("_FAKE_"));
+						//emoticons.add(new Emoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0")));
+						System.out.println("Emote "+id+" with name "+name);
+					}
+				}
+			} catch (NullPointerException | JSONException | IOException e) {
+				sigIRC.offlineMode=true;
+				e.printStackTrace();
 			}
-		} catch (JSONException | IOException e) {
-			e.printStackTrace();
 		}
 		
 		bar.setValue(0);
@@ -148,20 +154,25 @@ public class LoadingDialog extends JFrame{
 		
 		for (TwitchEmoteDownload d : emotes) {
 			try {
-				d.download();
+				if (!sigIRC.offlineMode) {
+					d.download();
+				}
 				bar.setValue(bar.getValue()+1);
 				UpdateBar();
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			}
 		}
-		
 
-		sigIRC.prepareTwitchEmoteUpdate();
+		if (!sigIRC.offlineMode) {
+			sigIRC.prepareTwitchEmoteUpdate();
+		}
 		twitchEmoteUpdate.setDone();
 		bar.setValue(bar.getValue()+1);
 		UpdateBar();
-		sigIRC.DownloadProgramUpdate();
+		if (!sigIRC.offlineMode) {
+			sigIRC.DownloadProgramUpdate();
+		}
 		programUpdate.setDone();
 		bar.setValue(bar.getValue()+1);
 		UpdateBar();
@@ -186,6 +197,10 @@ public class LoadingDialog extends JFrame{
 		sigIRC.emoticons.add(new Emoticon(":D","11"));
 		sigIRC.emoticons.add(new Emoticon(">(","12"));
 		sigIRC.emoticons.add(new Emoticon("<3","13"));
+		
+		//Load is done. Start up the panel.
+		sigIRC.window = new ProgramWindow();
+		this.setVisible(false);
 	}
 
 	private void UpdateBar() {

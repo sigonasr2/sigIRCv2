@@ -38,6 +38,7 @@ import sig.utils.MemoryUtils;
 import sig.utils.TextUtils;
 import sig.windows.IntroDialog;
 import sig.windows.LoadingDialog;
+import sig.windows.ProgramWindow;
 import sig.windows.TwitchEmoteDownload;
 
 import java.awt.Color;
@@ -73,6 +74,7 @@ public class sigIRC{
 	final public static String VERSION = "1.0"; 
 	
 	public static MyPanel panel = null;
+	public static boolean offlineMode = false;
 	public static ColorPanel colorpanel = null;
 	public static List<ScrollingText> textobj = new ArrayList<ScrollingText>();
 	public static List<TextRow> rowobj = new ArrayList<TextRow>();
@@ -99,15 +101,16 @@ public class sigIRC{
 	final public static int DINGTIMER=150;
 	static boolean dingEnabled=true;
 	static int dingThreshold;
-	static Color backgroundcol;
+	public static Color backgroundcol;
 	public static BackgroundColorButton button;
-	public static JFrame window;
-	static boolean overlayMode=false;
-	static boolean showWindowControls=false;
-	static int windowX=0;
-	static int windowY=0;
-	static int windowWidth=0;
-	static int windowHeight=0;
+	public static ProgramWindow window;
+	public static boolean overlayMode=false;
+	public static boolean showWindowControls=false;
+	public static boolean updateAvailable=false;
+	public static int windowX=0;
+	public static int windowY=0;
+	public static int windowWidth=0;
+	public static int windowHeight=0;
 	static int chatRows=3;
 	static int chatScrollSpd=4;
 	static int rowSpacing=64;
@@ -118,7 +121,7 @@ public class sigIRC{
 	public static boolean twitchmodule_enabled=true;
 	public static boolean chatlogmodule_enabled=true;
 	static boolean downloadsComplete=false;
-	static boolean hardwareAcceleration=true;
+	public static boolean hardwareAcceleration=true;
 	static boolean playedoAuthSoundOnce=false;
 	public static int twitchmodule_width=500;
 	public static int twitchmodule_height=200;
@@ -251,7 +254,9 @@ public class sigIRC{
 		
 		//new IntroDialog();
 		loadingdialog = new LoadingDialog();
-
+		
+		
+		
 		/*
 		
 		DownloadAllRequiredDependencies();
@@ -365,6 +370,7 @@ public class sigIRC{
 						programFile.delete();
 					}
 					org.apache.commons.io.FileUtils.copyURLToFile(new URL(sigIRC.PROGRAM_EXECUTABLE_URL),programFile);
+					sigIRC.updateAvailable=true;
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
