@@ -46,9 +46,9 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
     	setFocusable(true);
     }
 
-    public Dimension getPreferredSize() {
+    /*public Dimension getPreferredSize() {
         return new Dimension(1280,480);
-    }
+    }*/
 
     public void paintComponent(Graphics g) {
         super.paintComponent(g);
@@ -68,6 +68,7 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         	lastMouseY = -1;
         }*/
 		//
+        /*
         for (Module m : sigIRC.modules) {
         	m.draw(g);
         }
@@ -98,10 +99,7 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         	} else {
         		break;
         	}
-        }
-        if (!sigIRC.overlayMode && sigIRC.button!=null) {
-        	sigIRC.button.draw(g);
-        }
+        }*/
     }  
     
     public void addMessage(String message) {
@@ -125,7 +123,6 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 		for (Module m : sigIRC.modules) {
 			m.mouseModuleMousePress(ev);
 		}
-        sigIRC.button.onClickEvent(ev);
 	}
 
 	@Override
@@ -192,10 +189,6 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 			sigIRC.config.setInteger("windowY", sigIRC.windowY);
 			sigIRC.config.setInteger("windowWidth", sigIRC.windowWidth);
 			sigIRC.config.setInteger("windowHeight", sigIRC.windowHeight);
-			if (sigIRC.button!=null) {
-				sigIRC.button.x = sigIRC.panel.getX()+sigIRC.panel.getWidth()-96;
-				sigIRC.button.y = 64+sigIRC.rowobj.size()*sigIRC.rowSpacing;
-			}
 			//com.repaint();
 			//sigIRC.panel.repaint();
 			sigIRC.config.saveProperties();

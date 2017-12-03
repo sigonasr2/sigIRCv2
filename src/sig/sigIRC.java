@@ -102,7 +102,7 @@ public class sigIRC{
 	static boolean dingEnabled=true;
 	static int dingThreshold;
 	public static Color backgroundcol;
-	public static BackgroundColorButton button;
+	//public static BackgroundColorButton button;
 	public static ProgramWindow window;
 	public static boolean overlayMode=false;
 	public static boolean showWindowControls=false;
@@ -165,6 +165,7 @@ public class sigIRC{
 	public final static String SUBEMOTELISTFILE = "sigIRC/subemotes.json";
 	public static long channel_id = -1;
 	public static int lastSubEmoteUpdate = -1;
+	public static int framerate = 30;
 	public static int autoUpdateProgram = 0; //0 = Auto Update, 1 = Notify, 2 = Disabled
 	public static Image programIcon;
 	final public static int MAX_CONNECTION_RETRIES = 100; 
@@ -181,6 +182,17 @@ public class sigIRC{
 	
 	static int lastWindowX = 0;
 	static int lastWindowY = 0;
+
+	final public static Font rabiRibiTinyDisplayFont = new Font("CP Font",0,12);
+
+	final public static Font rabiRibiMoneyDisplayFont = new Font("CP Font",0,16);
+
+	final public static Font smallFont = new Font(touhoumotherConsoleFont,0,12);
+
+	final public static Font userFont = new Font(usernameFont,0,16);
+
+	//List<String> messages = new ArrayList<String>();
+	final public static Font programFont = new Font(messageFont,0,24);
 
 	public static Twitch manager = new Twitch();
 	
@@ -249,6 +261,7 @@ public class sigIRC{
 		autoUpdateProgram = config.getInteger("Auto_Update_Program", 0);
 		disableChatMessages = config.getBoolean("Disable_Chat_Messages", false);
 		lastSubEmoteUpdate = config.getInteger("lastSubEmote_APIUpdate",Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+		framerate = config.getInteger("Max_FPS",30);
 		manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
 		//System.out.println(manager.auth().hasAccessToken());
 		
@@ -622,7 +635,7 @@ public class sigIRC{
         
        f.setIconImage(programIcon);
 
-        button = new BackgroundColorButton(new File(sigIRC.BASEDIR+"backcolor.png"),panel.getX()+panel.getWidth()-96,64+rowobj.size()*rowSpacing);
+        //button = new BackgroundColorButton(new File(sigIRC.BASEDIR+"backcolor.png"),panel.getX()+panel.getWidth()-96,64+rowobj.size()*rowSpacing);
         if (sigIRC.overlayMode) {
         	f.setBackground(new Color(0,0,0,0));
             f.setAlwaysOnTop(true);
@@ -652,15 +665,4 @@ public class sigIRC{
 	public static void createEmoticon(Emoticon emote, ChatLogMessage textref, int x, int y) {
 		chatlogtwitchemoticons.add(new ChatLogTwitchEmote(emote,textref,x,y));
 	}
-
-	final public static Font rabiRibiTinyDisplayFont = new Font("CP Font",0,12);
-
-	final public static Font rabiRibiMoneyDisplayFont = new Font("CP Font",0,16);
-
-	final public static Font smallFont = new Font(touhoumotherConsoleFont,0,12);
-
-	final public static Font userFont = new Font(usernameFont,0,16);
-
-	//List<String> messages = new ArrayList<String>();
-	final public static Font programFont = new Font(messageFont,0,24);
 }

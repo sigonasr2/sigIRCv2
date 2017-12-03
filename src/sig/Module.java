@@ -11,14 +11,20 @@ import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.util.Vector;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
+import javax.swing.JFrame;
+import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import sig.utils.DrawUtils;
 import sig.utils.TextUtils;
 
-public class Module {
-	public Rectangle2D position;
+public class Module extends JFrame{
+	public JPanel panel;
+	public Rectangle position;
 	protected boolean enabled;
 	protected String name;
 	public static BufferedImage IMG_DRAGBAR;
@@ -30,16 +36,34 @@ public class Module {
 	Point dragOffset;
 	boolean dragging=false;
 	public static boolean DRAGGING=false;
+	public Graphics myGraphics;
 
-	public Module(Rectangle2D bounds, String moduleName) {
+	public Module(Rectangle bounds, String moduleName) {
 		this.position = bounds;
 		this.name = moduleName;
 		this.enabled=true;
+		this.setVisible(true);
+		panel = new JPanel(){
+		    public void paintComponent(Graphics g) {
+		    	super.paintComponent(g);
+		    	draw(g);
+		    }
+		};
 		
 		this.titleHeight = (int)TextUtils.calculateStringBoundsFont(this.name, sigIRC.userFont).getHeight();
+		
+		this.setSize((int)position.getWidth(), (int)position.getHeight());
+		panel.setSize(this.getSize());
+		
+		this.add(panel);
+
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		scheduler.scheduleWithFixedDelay(()->{
+			panel.repaint();
+		},(long)((1d/sigIRC.framerate)*1000),(long)((1d/sigIRC.framerate)*1000),TimeUnit.MILLISECONDS);
 	}
 	
-	public Module(Rectangle2D bounds, String moduleName, boolean enabled) {
+	public Module(Rectangle bounds, String moduleName, boolean enabled) {
 		this(bounds, moduleName);
 		this.enabled=enabled;
 	}
@@ -132,12 +156,9 @@ public class Module {
 	}
 	
 	public void draw(Graphics g) {
-		drawModuleHeader(g);
-		/*SwingUtilities.invokeLater(new Runnable() {
-            public void run() {
-            	sigIRC.panel.repaint(getDrawBounds().getBounds());
-            }  
-        });*/
+		g.fillRect(0, 0, (int)position.getWidth(), (int)position.getHeight());
+		DrawUtils.drawText(g, 0, 16, Color.WHITE, "Test");
+		System.out.println("Test");
 	}
 
 	private void drawModuleHeader(Graphics g) {
