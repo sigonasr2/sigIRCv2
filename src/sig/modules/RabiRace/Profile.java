@@ -448,6 +448,7 @@ public class Profile {
 								DrawUtils.drawImageScaled(g2, item.getImage(), (int)(border+i*spacing),(int)(36+16),icon_size*2, icon_size*2,new Color(0,0,0,192),sigIRC.panel);
 							}
 						}
+						spacing=width/5;
 					}break;
 				}
 			} else {
