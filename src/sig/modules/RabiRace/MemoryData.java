@@ -42,6 +42,7 @@ public enum MemoryData {
 	CHARGE_RING(MemoryOffset.CHARGE_RING,"Charge Ring","charge_ring.png",true),
 	CARROT_SHOOTER(MemoryOffset.CARROT_SHOOTER,"Carrot Shooter","carrot_shooter.png",true),
 	SUPER_CARROT(MemoryOffset.SUPER_CARROT,"Super Carrot","super_carrot.png",true),
+	GOLD_CARROT(MemoryOffset.GOLD_CARROT,"Gold Carrot","gold_carrot.png",true),
 	/*DLC_ITEM1(MemoryOffset.DLC_ITEM1,"","",true),
 	DLC_ITEM2(MemoryOffset.DLC_ITEM2,"","",true),
 	DLC_ITEM4(MemoryOffset.DLC_ITEM4,"","",true),*/
