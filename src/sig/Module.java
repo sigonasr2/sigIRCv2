@@ -4,25 +4,37 @@ import java.awt.Cursor;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
+import java.awt.event.ActionEvent;
+import java.awt.event.ActionListener;
+import java.awt.event.ComponentEvent;
+import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
+import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
+import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
+import java.awt.event.WindowListener;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
+import java.io.IOException;
 import java.util.Vector;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
 
+import javax.imageio.ImageIO;
+import javax.swing.ImageIcon;
 import javax.swing.JFrame;
 import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import sig.utils.DrawUtils;
 import sig.utils.TextUtils;
+import sig.windows.ProgramWindow;
 
-public class Module extends JFrame{
+public class Module extends JFrame implements MouseListener, MouseWheelListener, KeyListener, ComponentListener, WindowListener{
 	public JPanel panel;
 	public Rectangle position;
 	protected boolean enabled;
@@ -37,18 +49,33 @@ public class Module extends JFrame{
 	boolean dragging=false;
 	public static boolean DRAGGING=false;
 	public Graphics myGraphics;
-
+	long lasttime = System.currentTimeMillis();
+	float avgfps = sigIRC.framerate;
+	int counter = 0;
+	int avgcount = 10;
+	int[] sum = new int[10];
+	int windowUpdateCounter = 30;
+	
 	public Module(Rectangle bounds, String moduleName) {
+		
+		this.addMouseListener(this);
+		this.addMouseWheelListener(this);
+		this.addKeyListener(this);
+		this.addComponentListener(this);
+		this.addWindowListener(this);
+		
 		this.position = bounds;
 		this.name = moduleName;
 		this.enabled=true;
 		this.setVisible(true);
+		this.setTitle(moduleName);
 		panel = new JPanel(){
 		    public void paintComponent(Graphics g) {
 		    	super.paintComponent(g);
 		    	draw(g);
 		    }
 		};
+		this.setLocation((int)position.getX(), (int)position.getY());
 		
 		this.titleHeight = (int)TextUtils.calculateStringBoundsFont(this.name, sigIRC.userFont).getHeight();
 		
@@ -59,8 +86,10 @@ public class Module extends JFrame{
 
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleWithFixedDelay(()->{
+			updateFPSCounter();
+			run();
 			panel.repaint();
-		},(long)((1d/sigIRC.framerate)*1000),(long)((1d/sigIRC.framerate)*1000),TimeUnit.MILLISECONDS);
+		},(long)((1d/(sigIRC.framerate+1))*1000),(long)((1d/(sigIRC.framerate+1))*1000),TimeUnit.MILLISECONDS);
 	}
 	
 	public Module(Rectangle bounds, String moduleName, boolean enabled) {
@@ -68,26 +97,22 @@ public class Module extends JFrame{
 		this.enabled=enabled;
 	}
 	
-	protected void mouseModuleMousePress(MouseEvent ev) {
-		int mouseX = ev.getX();
-		int mouseY = ev.getY();
-		//System.out.println(mouseX + "," + mouseY);
-		enableWindowDrag(mouseX,mouseY);
-		mousePressed(ev);
+
+
+	public void updateFPSCounter() {
+		float val = 1000f/(System.currentTimeMillis()-lasttime);
+		sum[counter++ % sum.length] = (int)val;
+		avgfps = (float)sum(sum)/sum.length;
+		this.setTitle(name+" - "+(int)Math.round(avgfps)+" FPS");
+		lasttime=System.currentTimeMillis();
 	}
 	
-	private void enableWindowDrag(int mouseX, int mouseY) {
-		if (!sigIRC.overlayMode && !dragging && inDragBounds(mouseX,mouseY) && !DRAGGING) {
-			//Enable dragging.
-			dragOffset = new Point((int)position.getX() - mouseX,(int)position.getY()-mouseY);
-			dragging=DRAGGING=true;
+	private int sum(int[] array) {
+		int val = 0;
+		for (int i=0;i<array.length;i++) {
+			val+=array[i];
 		}
-	}
-	
-	public boolean inDragBounds(int x, int y) {
-		return x>=position.getX() && x<=position.getX()+position.getWidth() &&
-				y>=(int)position.getY()-Module.IMG_DRAGBAR.getHeight() &&
-				y<=(int)position.getY();
+		return val;
 	}
 
 	public void mousePressed(MouseEvent ev) {
@@ -101,51 +126,10 @@ public class Module extends JFrame{
 	}
 
 	public void mouseReleased(MouseEvent ev) {
-		if (dragging) {
-			dragging=DRAGGING=false;
-			ApplyConfigWindowProperties();
-			sigIRC.config.saveProperties();
-		}
 	}
 	
 	protected void moduleRun() {
-		dragWindow();
-		modifyCursor();
 		run();
-	}
-
-	private void modifyCursor() {
-		if (!sigIRC.overlayMode) {
-			int cursortype = sigIRC.panel.getCursor().getType();
-			if (inDragZone &&
-					cursortype!=Cursor.MOVE_CURSOR) {
-				sigIRC.panel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-			} else 
-			if (!inDragZone && cursortype!=Cursor.DEFAULT_CURSOR) {
-				sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-			}
-		}
-	}
-
-	private void dragWindow() {
-		if (dragging) {
-			//sigIRC.panel.repaint(getDrawBounds().getBounds());
-			int mouseX = sigIRC.panel.lastMouseX+(int)dragOffset.getX();
-			int mouseY = sigIRC.panel.lastMouseY+(int)dragOffset.getY();
-			int oldX = (int)position.getX();
-			int oldY = (int)position.getY();
-			position = new Rectangle((int)Math.min(Math.max(0,mouseX),sigIRC.window.getWidth()-position.getWidth()), (int)Math.min(Math.max(titleHeight,mouseY),sigIRC.window.getHeight()-position.getHeight()-titleHeight*2),(int)position.getWidth(),(int)position.getHeight());
-			//System.out.println(sigIRC.panel.lastMouseX+","+sigIRC.panel.lastMouseY);
-			ModuleDragEvent(oldX,oldY,mouseX,mouseY);
-		}
-		if (inDragBounds(sigIRC.panel.lastMouseX,sigIRC.panel.lastMouseY)) {
-			inDragZone=true;
-			//System.out.println("In Drag Zone for Module "+name);
-			//sigIRC.panel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-		} /*else
-		if (sigIRC.panel.getCursor().getType()==Cursor.MOVE_CURSOR) {
-			sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-		}*/
 	}
 	
 	public Rectangle2D getPosition() {
@@ -156,27 +140,8 @@ public class Module extends JFrame{
 	}
 	
 	public void draw(Graphics g) {
-		g.fillRect(0, 0, (int)position.getWidth(), (int)position.getHeight());
-		DrawUtils.drawText(g, 0, 16, Color.WHITE, "Test");
-		System.out.println("Test");
-	}
-
-	private void drawModuleHeader(Graphics g) {
-		if (!sigIRC.overlayMode) {
-			g.drawImage(Module.IMG_DRAGBAR, 
-				(int)position.getX()+2, 
-				(int)position.getY()-Module.IMG_DRAGBAR.getHeight(),
-				(int)position.getWidth()-4,
-				Module.IMG_DRAGBAR.getHeight(),
-				sigIRC.panel);
-			DrawUtils.drawTextFont(g, sigIRC.smallFont, (int)position.getX(), (int)position.getY()-titleHeight/2+4, Color.BLACK, this.name);
-			//g.fillRect((int)position.getX(), (int)position.getY(), (int)position.getWidth(), (int)position.getHeight());
-		}
-	}
-	
-	private Rectangle2D getDrawBounds() {
-		Rectangle2D drawBounds = new Rectangle((int)position.getX()-2,(int)position.getY()-titleHeight+3-1,(int)position.getWidth()+2,(int)position.getHeight()+titleHeight+1);
-		return drawBounds;
+		//g.fillRect(0, 0, (int)position.getWidth(), (int)position.getHeight());
+		//DrawUtils.drawText(g, 0, 16, Color.WHITE, "Test");
 	}
 	
 	public void ModuleDragEvent(int oldX, int oldY, int newX, int newY) {
@@ -194,6 +159,113 @@ public class Module extends JFrame{
 	}
 	
 	public void windowClosed(WindowEvent ev) {
+		
+	}
+
+	@Override
+	public void windowActivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowClosing(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeactivated(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowDeiconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowIconified(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void windowOpened(WindowEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void componentHidden(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void componentMoved(ComponentEvent e) {
+		UpdatePosition(e);
+	}
+
+	private void UpdatePosition(ComponentEvent e) {
+		position = new Rectangle((int)e.getComponent().getLocationOnScreen().getX(),(int)e.getComponent().getLocationOnScreen().getY(),e.getComponent().getWidth(),e.getComponent().getHeight()-16);
+		//System.out.println(position);
+		ApplyConfigWindowProperties();
+		sigIRC.configNeedsUpdating = System.currentTimeMillis();
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		UpdatePosition(e);
+	}
+
+	@Override
+	public void componentShown(ComponentEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyPressed(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyReleased(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void keyTyped(KeyEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseWheelMoved(MouseWheelEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseClicked(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseEntered(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void mouseExited(MouseEvent e) {
+		// TODO Auto-generated method stub
 		
 	}
 }

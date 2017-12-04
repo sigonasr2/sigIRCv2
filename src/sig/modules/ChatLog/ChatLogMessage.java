@@ -198,10 +198,10 @@ public class ChatLogMessage {
 		/*SwingUtilities.invokeLater(new Runnable() {
             public void run() {
             	sigIRC.panel.repaint(
-					(int)Math.max(refModule.getPosition().getX()+position.getX(),0), 
-					(int)Math.max(refModule.getPosition().getY()+position.getY(),0), 
-					(int)Math.min(sigIRC.panel.getWidth()-(refModule.getPosition().getX()+position.getX()+messageDisplaySize.getX()),messageDisplaySize.getX()), 
-					(int)Math.min(sigIRC.panel.getHeight()-(refModule.getPosition().getY()+position.getY()+messageDisplaySize.getY()),messageDisplaySize.getY()));
+					(int)Math.max(position.getX(),0), 
+					(int)Math.max(position.getY(),0), 
+					(int)Math.min(sigIRC.panel.getWidth()-(position.getX()+messageDisplaySize.getX()),messageDisplaySize.getX()), 
+					(int)Math.min(sigIRC.panel.getHeight()-(position.getY()+messageDisplaySize.getY()),messageDisplaySize.getY()));
 		    }  
 		});*/
 		//System.out.println(refModule.getPosition()+","+position);
@@ -213,14 +213,14 @@ public class ChatLogMessage {
 			for (int i=0;i<displayMessage.size();i++) {
 				//System.out.println(displayMessage.get(i));
 				if (username!=null && i==0) {
-					DrawUtils.drawOutlineText(g, sigIRC.userFont, refModule.getPosition().getX()+position.getX(), refModule.getPosition().getY()+position.getY()+(i*MESSAGE_SPACING)+32, 2, GetUserNameColor(this.username), SHADOW_COL, this.username);
-					DrawUtils.drawTextFont(g, sigIRC.userFont, refModule.getPosition().getX()+position.getX()+usernameWidth+2, refModule.getPosition().getY()+position.getY()+(i*MESSAGE_SPACING)+32, Color.BLACK, displayMessage.get(i));	
+					DrawUtils.drawOutlineText(g, sigIRC.userFont, position.getX(), position.getY()+(i*MESSAGE_SPACING)+32, 2, GetUserNameColor(this.username), SHADOW_COL, this.username);
+					DrawUtils.drawTextFont(g, sigIRC.userFont, position.getX()+usernameWidth+2, position.getY()+(i*MESSAGE_SPACING)+32, Color.BLACK, displayMessage.get(i));	
 				} else {
-					DrawUtils.drawTextFont(g, sigIRC.userFont, refModule.getPosition().getX()+position.getX(), refModule.getPosition().getY()+position.getY()+(i*MESSAGE_SPACING)+32, Color.BLACK, displayMessage.get(i));
+					DrawUtils.drawTextFont(g, sigIRC.userFont, position.getX(), position.getY()+(i*MESSAGE_SPACING)+32, Color.BLACK, displayMessage.get(i));
 				}
 			}
-			g.drawImage(Module.MSG_SEPARATOR, (int)(refModule.getPosition().getX()+position.getX()+8), (int)(refModule.getPosition().getY()+position.getY()+messageDisplaySize.getY()+12), (int)(messageDisplaySize.getX()-8), 1, sigIRC.panel);
-			//g.drawLine((int)(refModule.getPosition().getX()+position.getX()+8), (int)(refModule.getPosition().getY()+position.getY()+messageDisplaySize.getY()+32), (int)(refModule.getPosition().getX()+position.getX()+messageDisplaySize.getX()-8), (int)(refModule.getPosition().getY()+position.getY()+messageDisplaySize.getY()+32));
+			g.drawImage(Module.MSG_SEPARATOR, (int)(position.getX()+8), (int)(position.getY()+messageDisplaySize.getY()+12), (int)(messageDisplaySize.getX()-8), 1, sigIRC.panel);
+			//g.drawLine((int)(position.getX()+8), (int)(position.getY()+messageDisplaySize.getY()+32), (int)(position.getX()+messageDisplaySize.getX()-8), (int)(position.getY()+messageDisplaySize.getY()+32));
 		}
 	}
 
@@ -242,8 +242,8 @@ public class ChatLogMessage {
 	}
 	
 	public boolean isVisible() {
-		return (refModule.getPosition().getY()+position.getY()+MESSAGE_SPACING)>refModule.getPosition().getY() &&
-				(refModule.getPosition().getY()+position.getY()+messageDisplaySize.getY())<refModule.getPosition().getY()+refModule.getPosition().getHeight()-16;
+		return (position.getY()+MESSAGE_SPACING)>0 &&
+				(position.getY()+messageDisplaySize.getY())<refModule.getPosition().getHeight()-16;
 	}
 	
 	/*

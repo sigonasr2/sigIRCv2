@@ -33,16 +33,12 @@ import sig.modules.ChatLogModule;
 import sig.modules.ChatLog.ChatLogMessage;
 import sig.utils.FileUtils;
 
-public class MyPanel extends JPanel implements MouseListener, ActionListener, MouseWheelListener, KeyListener, ComponentListener, WindowListener{
+public class MyPanel extends JPanel{
 	public int lastMouseX = 0;
 	public int lastMouseY = 0;
 
     public MyPanel() {
         //setBorder(BorderFactory.createLineBorder(Color.black));
-    	addMouseListener(this);
-    	addMouseWheelListener(this);
-        addComponentListener(this);
-    	addKeyListener(this);
     	setFocusable(true);
     }
 
@@ -114,71 +110,6 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
     	//ChatLogMessage.importMessages(message);
     }
 
-	@Override
-	public void mouseClicked(MouseEvent ev) {
-	}
-
-	@Override
-	public void mousePressed(MouseEvent ev) {
-		for (Module m : sigIRC.modules) {
-			m.mouseModuleMousePress(ev);
-		}
-	}
-
-	@Override
-	public void mouseReleased(MouseEvent ev) {
-		for (Module m : sigIRC.modules) {
-			m.mouseReleased(ev);
-		}
-	}
-
-	@Override
-	public void mouseEntered(MouseEvent ev) {
-	}
-
-	@Override
-	public void mouseExited(MouseEvent ev) {
-	}
-
-	@Override
-	public void actionPerformed(ActionEvent ev) {
-	}
-
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent ev) {
-		for (Module m : sigIRC.modules) {
-			m.mouseWheel(ev);
-		}
-	}
-
-	@Override
-	public void keyTyped(KeyEvent e) {
-	}
-
-	@Override
-	public void keyPressed(KeyEvent ev) {
-		for (Module m : sigIRC.modules) {
-			m.keypressed(ev);
-		}
-	}
-
-	@Override
-	public void keyReleased(KeyEvent ev) {
-		for (Module m : sigIRC.modules) {
-			m.keyreleased(ev);
-		}
-	}
-
-	@Override
-	public void componentResized(ComponentEvent ev) {
-		UpdateComponent(ev.getComponent());
-	}
-
-	@Override
-	public void componentMoved(ComponentEvent ev) {
-		UpdateComponent(ev.getComponent());
-	}
-
 	public static void UpdateComponent(Component com) {
 		if (sigIRC.window!=null && sigIRC.window.getLocationOnScreen()!=null) {
 			sigIRC.windowX = (int)sigIRC.window.getLocationOnScreen().getX(); 
@@ -193,52 +124,5 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 			//sigIRC.panel.repaint();
 			sigIRC.config.saveProperties();
 		}
-	}
-
-	@Override
-	public void componentShown(ComponentEvent ev) {
-	}
-
-	@Override
-	public void componentHidden(ComponentEvent ev) {
-	}
-
-	@Override
-	public void windowActivated(WindowEvent ev) {
-	}
-
-	@Override
-	public void windowClosed(WindowEvent ev) {
-	}
-
-	@Override
-	public void windowClosing(WindowEvent ev) {
-		for (Module m : sigIRC.modules) {
-			m.windowClosed(ev);
-		}
-		sigIRC.config.saveProperties();
-		if (sigIRC.autoUpdateProgram==0 && !sigIRC.offlineMode && sigIRC.updateAvailable) {
-			try {
-				FileUtils.copyFile(new File(sigIRC.PROGRAM_UPDATE_FILE), new File(sigIRC.BASEDIR+"sigIRCv2.jar"));
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-		}
-	}
-
-	@Override
-	public void windowDeactivated(WindowEvent ev) {
-	}
-
-	@Override
-	public void windowDeiconified(WindowEvent ev) {
-	}
-
-	@Override
-	public void windowIconified(WindowEvent ev) {
-	}
-
-	@Override
-	public void windowOpened(WindowEvent ev) {
 	}
 }

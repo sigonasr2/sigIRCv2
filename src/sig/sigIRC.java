@@ -84,8 +84,8 @@ public class sigIRC{
 	public static List<ChatLogTwitchEmote> chatlogtwitchemoticons = new ArrayList<ChatLogTwitchEmote>();
 	public static List<CustomSound> customsounds = new ArrayList<CustomSound>();
 	public static List<Module> modules = new ArrayList<Module>();
-	static UpdateEvent updater = new UpdateEvent();
-	static Timer programClock = new Timer(32,updater);
+	//static UpdateEvent updater = new UpdateEvent();
+	//static Timer programClock = new Timer(32,updater);
 	final public static int BASESCROLLSPD = 4;
 	final public static int ROWSEPARATION = 64;
 	final public static String BASEDIR = "./"; 
@@ -170,6 +170,7 @@ public class sigIRC{
 	public static Image programIcon;
 	final public static int MAX_CONNECTION_RETRIES = 100; 
 	public static int retryCounter = 0;
+	public static long configNeedsUpdating = 0; //Set it to System.currentTimeMillis() to request a configuration save.
 	
 	public static int subchannelCount = 0;
 	public static HashMap<Long,String> subchannelIds = new HashMap<Long,String>();
@@ -641,7 +642,7 @@ public class sigIRC{
             f.setAlwaysOnTop(true);
         }
         //f.setOpacity(0.5f);
-        f.addWindowListener(sigIRC.panel);
+        //f.addWindowListener(sigIRC.panel);
         return f;
     }
 

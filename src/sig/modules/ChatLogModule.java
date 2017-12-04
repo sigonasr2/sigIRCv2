@@ -2,6 +2,8 @@ package sig.modules;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
+import java.awt.event.ComponentEvent;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Rectangle2D;
@@ -29,12 +31,16 @@ public class ChatLogModule extends Module{
 	public static ChatLogModule chatlogmodule;
 	public int scrolllog_yoffset = 0;
 	public Color backgroundColor;
+	long positionsNeedUpdating = 0; //Set it to System.currentTimeMillis() to request a configuration save.
+	Rectangle prevpos;
+	
 
-	public ChatLogModule(Rectangle2D bounds, String moduleName) {
+	public ChatLogModule(Rectangle bounds, String moduleName) {
 		super(bounds, moduleName);
 		//Initialize();
 		chatlogmodule = this;
 		backgroundColor = DrawUtils.convertStringToColor(sigIRC.chatlogmodule_backgroundColor);
+		prevpos = (Rectangle)position.clone();
 	}
 
 	private void Initialize() {
@@ -71,12 +77,20 @@ public class ChatLogModule extends Module{
 				}
 			}
 		}
+		if (positionsNeedUpdating!=0 && System.currentTimeMillis()-positionsNeedUpdating>1000) {
+			positionsNeedUpdating=0;
+			int diff = (int)(position.getHeight()-prevpos.getHeight());
+			prevpos = (Rectangle)position.clone();
+			for (ChatLogMessage clm : messageHistory) {
+				clm.position.y+=diff;
+			}
+		}
 	}
 	
 	public void draw(Graphics g) {
 		super.draw(g);
 		g.setColor(backgroundColor);
-		g.fill3DRect((int)position.getX(), (int)position.getY(), (int)position.getWidth(), (int)position.getHeight(), true);
+		g.fill3DRect(0, 0, (int)position.getWidth(), (int)position.getHeight(), true);
 		g.setColor(Color.BLACK);
 		for (int i=0; i<messageHistory.size();i++) {
 			ChatLogMessage clm = messageHistory.get(i);
@@ -93,8 +107,12 @@ public class ChatLogModule extends Module{
 	public void ApplyConfigWindowProperties() {
 		sigIRC.chatlogmodule_X=(int)position.getX();
 		sigIRC.chatlogmodule_Y=(int)position.getY();
+		sigIRC.chatlogmodule_width=(int)position.getWidth();
+		sigIRC.chatlogmodule_height=(int)position.getHeight();
 		sigIRC.config.setInteger("CHATLOG_module_X", sigIRC.chatlogmodule_X);
 		sigIRC.config.setInteger("CHATLOG_module_Y", sigIRC.chatlogmodule_Y);
+		sigIRC.config.setInteger("CHATLOG_module_width", sigIRC.chatlogmodule_width);
+		sigIRC.config.setInteger("CHATLOG_module_height", sigIRC.chatlogmodule_height);
 	}
 	
 	public void mouseWheel(MouseWheelEvent ev) {
@@ -125,6 +143,11 @@ public class ChatLogModule extends Module{
 			return clm.isVisible();
 		}
 		return true;
+	}
+
+	@Override
+	public void componentResized(ComponentEvent e) {
+		this.positionsNeedUpdating=System.currentTimeMillis();
 	}
 
 	public void moveAllMessages(int yAmt) {
