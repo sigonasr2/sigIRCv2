@@ -31,6 +31,7 @@ import sig.Module;
 import sig.MyPanel;
 import sig.sigIRC;
 import sig.modules.ChatLogModule;
+import sig.modules.ScrollingChatModule;
 
 @SuppressWarnings("serial")
 public class ProgramWindow extends JFrame{
@@ -89,7 +90,8 @@ public class ProgramWindow extends JFrame{
 		sigIRC.panel.add(myLabel);
         
         if (!sigIRC.disableChatMessages) {
-        	ModuleButton button = new ModuleButton("Scrolling Chat",new Module(new Rectangle(0,0,0,0),"Test"));
+        	ScrollingChatModule mod = new ScrollingChatModule(new Rectangle((int)sigIRC.scrollingchatmodule_X,(int)sigIRC.scrollingchatmodule_Y,(int)sigIRC.scrollingchatmodule_width,(int)sigIRC.scrollingchatmodule_height),"Scrolling Chat");
+        	ModuleButton button = new ModuleButton("Scrolling Chat",mod);
         	sigIRC.panel.add(button);
         }
         if (sigIRC.chatlogmodule_enabled) {

@@ -201,6 +201,7 @@ public class LoadingDialog extends JFrame{
 		//Load is done. Start up the panel.
 		sigIRC.window = new ProgramWindow();
 		this.setVisible(false);
+		sigIRC.downloadsComplete=true;
 	}
 
 	private void UpdateBar() {

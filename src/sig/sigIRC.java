@@ -99,8 +99,8 @@ public class sigIRC{
 	public static boolean authenticated=false;
 	public static int lastPlayedDing=0;
 	final public static int DINGTIMER=150;
-	static boolean dingEnabled=true;
-	static int dingThreshold;
+	public static boolean dingEnabled=true;
+	public static int dingThreshold;
 	public static Color backgroundcol;
 	//public static BackgroundColorButton button;
 	public static ProgramWindow window;
@@ -120,9 +120,9 @@ public class sigIRC{
 	public static boolean touhoumothermodule_enabled=false;
 	public static boolean twitchmodule_enabled=true;
 	public static boolean chatlogmodule_enabled=true;
-	static boolean downloadsComplete=false;
+	public static boolean downloadsComplete=false;
 	public static boolean hardwareAcceleration=true;
-	static boolean playedoAuthSoundOnce=false;
+	public static boolean playedoAuthSoundOnce=false;
 	public static int twitchmodule_width=500;
 	public static int twitchmodule_height=200;
 	public static int twitchmodule_X=320;
@@ -183,6 +183,11 @@ public class sigIRC{
 	
 	static int lastWindowX = 0;
 	static int lastWindowY = 0;
+	
+	public static int scrollingchatmodule_X=0;
+	public static int scrollingchatmodule_Y=0;
+	public static int scrollingchatmodule_width=0;
+	public static int scrollingchatmodule_height=0;
 
 	final public static Font rabiRibiTinyDisplayFont = new Font("CP Font",0,12);
 
@@ -238,6 +243,10 @@ public class sigIRC{
 		touhoumothermodule_Y = config.getInteger("TOUHOUMOTHER_module_Y",312);
 		touhoumothermodule_width = config.getInteger("TOUHOUMOTHER_module_width",320);
 		touhoumothermodule_height = config.getInteger("TOUHOUMOTHER_module_height",312);
+		scrollingchatmodule_X = config.getInteger("SCROLLINGCHAT_module_X",0);
+		scrollingchatmodule_Y = config.getInteger("SCROLLINGCHAT_module_Y",312);
+		scrollingchatmodule_width = config.getInteger("SCROLLINGCHAT_module_width",320);
+		scrollingchatmodule_height = config.getInteger("SCROLLINGCHAT_module_height",312);
 		/*rabiribimodule_X = config.getInteger("RABIRIBI_module_X",0);
 		rabiribimodule_Y = config.getInteger("RABIRIBI_module_Y",312);
 		rabiribimodule_width = config.getInteger("RABIRIBI_module_width",320);
@@ -570,6 +579,7 @@ public class sigIRC{
 	public static void runIRCLoop(String channel, BufferedWriter writer, BufferedReader reader) throws IOException {
 		String line;
 		while ((line = reader.readLine( )) != null) {
+			System.out.println("Waiting for data..."+line);
 		    if (line.toLowerCase( ).startsWith("PING ")) {
 		        // We must respond to PINGs to avoid being disconnected.
 		        writer.write("PONG " + line.substring(5) + "\r\n");

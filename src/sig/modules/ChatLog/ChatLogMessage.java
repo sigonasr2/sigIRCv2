@@ -25,7 +25,7 @@ public class ChatLogMessage {
 	String username;
 	List<String> displayMessage = new ArrayList<String>();
 	final static public int MESSAGE_SPACING = 24;
-	final static public int BORDER_SPACING = 8;
+	final static public int BORDER_SPACING = 16;
 	final static public Color SHADOW_COL = new Color(35,35,35,255); 
 	int usernameWidth = 0;
 	boolean active=true;
@@ -170,7 +170,7 @@ public class ChatLogMessage {
 	}
 
 	private String BreakTextAtNextSection(String msg, int maxWidth) {
-		int marker = 1;
+		int marker = msg.indexOf(' ');
 		int textWidth = (int)TextUtils.calculateStringBoundsFont(msg.substring(0, marker), sigIRC.userFont).getWidth();
 		while (textWidth<maxWidth) {
 			if (marker<msg.length()) {
@@ -213,15 +213,22 @@ public class ChatLogMessage {
 			for (int i=0;i<displayMessage.size();i++) {
 				//System.out.println(displayMessage.get(i));
 				if (username!=null && i==0) {
-					DrawUtils.drawOutlineText(g, sigIRC.userFont, position.getX(), position.getY()+(i*MESSAGE_SPACING)+32, 2, GetUserNameColor(this.username), SHADOW_COL, this.username);
-					DrawUtils.drawTextFont(g, sigIRC.userFont, position.getX()+usernameWidth+2, position.getY()+(i*MESSAGE_SPACING)+32, Color.BLACK, displayMessage.get(i));	
+					DrawUtils.drawOutlineText(g, sigIRC.userFont, position.getX(), position.getY()+(i*MESSAGE_SPACING)+32-Module.WINDOW_EXTRA_BORDER, 2, GetUserNameColor(this.username), SHADOW_COL, this.username);
+					DrawUtils.drawTextFont(g, sigIRC.userFont, position.getX()+usernameWidth+2, position.getY()+(i*MESSAGE_SPACING)+32-Module.WINDOW_EXTRA_BORDER, Color.BLACK, displayMessage.get(i));	
 				} else {
-					DrawUtils.drawTextFont(g, sigIRC.userFont, position.getX(), position.getY()+(i*MESSAGE_SPACING)+32, Color.BLACK, displayMessage.get(i));
+					DrawUtils.drawTextFont(g, sigIRC.userFont, position.getX(), position.getY()+(i*MESSAGE_SPACING)+32-Module.WINDOW_EXTRA_BORDER, Color.BLACK, displayMessage.get(i));
 				}
 			}
-			g.drawImage(Module.MSG_SEPARATOR, (int)(position.getX()+8), (int)(position.getY()+messageDisplaySize.getY()+12), (int)(messageDisplaySize.getX()-8), 1, sigIRC.panel);
+			g.drawImage(Module.MSG_SEPARATOR, (int)(position.getX()+8), (int)(position.getY()+messageDisplaySize.getY()+8-Module.WINDOW_EXTRA_BORDER), (int)(messageDisplaySize.getX()-8), 1, sigIRC.panel);
 			//g.drawLine((int)(position.getX()+8), (int)(position.getY()+messageDisplaySize.getY()+32), (int)(position.getX()+messageDisplaySize.getX()-8), (int)(position.getY()+messageDisplaySize.getY()+32));
 		}
+		for (int i=0;i<sigIRC.chatlogtwitchemoticons.size();i++) {
+        	if (sigIRC.chatlogtwitchemoticons.get(i).textRefIsVisible()) {
+        		ChatLogTwitchEmote emote = sigIRC.chatlogtwitchemoticons.get(i);
+        		//System.out.println("Twitch emote is "+emote.emote.getEmoteName()+" "+emote.x+","+emote.y);
+        		sigIRC.chatlogtwitchemoticons.get(i).draw(g);
+        	}
+        }
 	}
 
 	public static void importMessages(String...logContents) {
@@ -242,7 +249,7 @@ public class ChatLogMessage {
 	}
 	
 	public boolean isVisible() {
-		return (position.getY()+MESSAGE_SPACING)>0 &&
+		return (position.getY()+MESSAGE_SPACING-Module.WINDOW_EXTRA_BORDER)>0 &&
 				(position.getY()+messageDisplaySize.getY())<refModule.getPosition().getHeight()-16;
 	}
 	

@@ -30,6 +30,7 @@ import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
 import sig.modules.ChatLogModule;
+import sig.modules.ScrollingChatModule;
 import sig.modules.ChatLog.ChatLogMessage;
 import sig.utils.FileUtils;
 
@@ -51,8 +52,8 @@ public class MyPanel extends JPanel{
         // Draw Text
         //int counter=18;
         if (sigIRC.panel!=null) {
-	        lastMouseX = (int)(MouseInfo.getPointerInfo().getLocation().getX()-sigIRC.panel.getLocationOnScreen().getX());
-	        lastMouseY = (int)(MouseInfo.getPointerInfo().getLocation().getY()-sigIRC.panel.getLocationOnScreen().getY());
+	        lastMouseX = (int)(MouseInfo.getPointerInfo().getLocation().getX());
+	        lastMouseY = (int)(MouseInfo.getPointerInfo().getLocation().getY());
 	        //System.out.println("("+lastMouseX+","+lastMouseY+")");
         }
         /*if (sigIRC.window!=null && sigIRC.window.getMousePosition(true)!=null && sigIRC.overlayMode) {
@@ -103,7 +104,7 @@ public class MyPanel extends JPanel{
     }
     
     public void addMessage(String message, boolean playSound) {
-    	ScrollingText text = new ScrollingText(message,this.getWidth(),(int)(Math.random()*128),playSound);
+    	ScrollingText text = new ScrollingText(message,ScrollingChatModule.module.getWidth(),(int)(Math.random()*128),playSound);
     	TextRow row = TextRow.PickRandomTextRow(text.getUsername());
     	sigIRC.textobj.add(text);
     	row.updateRow(text);

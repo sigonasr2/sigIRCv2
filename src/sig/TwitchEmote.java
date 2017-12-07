@@ -3,6 +3,8 @@ import java.awt.Graphics;
 
 import javax.swing.SwingUtilities;
 
+import sig.modules.ScrollingChatModule;
+
 public class TwitchEmote {
 	Emoticon emote;
 	int x=0; //X Offset
@@ -38,7 +40,7 @@ public class TwitchEmote {
 
 	public void draw(Graphics g) {
 		if (WithinBounds((int)(text.getX()+x), (int)(text.getY()+y), emote.getImage().getWidth(), emote.getImage().getHeight())) {
-			g.drawImage(emote.getImage(), (int)(text.getX()+x), (int)(text.getY()+y), sigIRC.panel);
+			g.drawImage(emote.getImage(), (int)(text.getX()+x), (int)(text.getY()+y), ScrollingChatModule.module.panel);
 		}
 	}
 	
@@ -47,7 +49,7 @@ public class TwitchEmote {
 	}
 
 	private boolean WithinBounds(double x, double y, double w, double h) {
-		if (x<sigIRC.panel.getWidth() && x+w>0 && y<sigIRC.panel.getHeight() && y+h>0) {
+		if (x<ScrollingChatModule.module.getWidth() && x+w>0 && y<ScrollingChatModule.module.getHeight() && y+h>0) {
 			return true;
 		}
 		return false;

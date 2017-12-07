@@ -11,9 +11,7 @@ import java.awt.event.ComponentListener;
 import java.awt.event.KeyEvent;
 import java.awt.event.KeyListener;
 import java.awt.event.MouseEvent;
-import java.awt.event.MouseListener;
 import java.awt.event.MouseWheelEvent;
-import java.awt.event.MouseWheelListener;
 import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.awt.geom.Rectangle2D;
@@ -27,21 +25,21 @@ import java.util.concurrent.TimeUnit;
 import javax.imageio.ImageIO;
 import javax.swing.ImageIcon;
 import javax.swing.JFrame;
-import javax.swing.JPanel;
 import javax.swing.SwingUtilities;
 
 import sig.utils.DrawUtils;
 import sig.utils.TextUtils;
 import sig.windows.ProgramWindow;
 
-public class Module extends JFrame implements MouseListener, MouseWheelListener, KeyListener, ComponentListener, WindowListener{
-	public JPanel panel;
+public class Module extends JFrame implements ComponentListener, WindowListener, KeyListener{
+	public ListenerPanel panel;
 	public Rectangle position;
 	protected boolean enabled;
 	protected String name;
 	public static BufferedImage IMG_DRAGBAR;
 	public static BufferedImage MSG_SEPARATOR;
 	public static boolean inDragZone=false;
+	final public static int WINDOW_EXTRA_BORDER = 32; //Number of pixels that the border takes up (Reduces the size of the window) 
 	
 	final protected int titleHeight;
 	
@@ -58,18 +56,16 @@ public class Module extends JFrame implements MouseListener, MouseWheelListener,
 	
 	public Module(Rectangle bounds, String moduleName) {
 		
-		this.addMouseListener(this);
-		this.addMouseWheelListener(this);
-		this.addKeyListener(this);
 		this.addComponentListener(this);
 		this.addWindowListener(this);
+		this.addKeyListener(this);
 		
 		this.position = bounds;
 		this.name = moduleName;
 		this.enabled=true;
 		this.setVisible(true);
 		this.setTitle(moduleName);
-		panel = new JPanel(){
+		panel = new ListenerPanel(this){
 		    public void paintComponent(Graphics g) {
 		    	super.paintComponent(g);
 		    	draw(g);
@@ -79,10 +75,12 @@ public class Module extends JFrame implements MouseListener, MouseWheelListener,
 		
 		this.titleHeight = (int)TextUtils.calculateStringBoundsFont(this.name, sigIRC.userFont).getHeight();
 		
+		
 		this.setSize((int)position.getWidth(), (int)position.getHeight());
 		panel.setSize(this.getSize());
 		
 		this.add(panel);
+		//this.pack();
 
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleWithFixedDelay(()->{
@@ -114,18 +112,12 @@ public class Module extends JFrame implements MouseListener, MouseWheelListener,
 		}
 		return val;
 	}
-
-	public void mousePressed(MouseEvent ev) {
-	}
 	
 	public void ApplyConfigWindowProperties() {
 	}
 	
 	public void SaveConfig() {
 		
-	}
-
-	public void mouseReleased(MouseEvent ev) {
 	}
 	
 	protected void moduleRun() {
@@ -146,16 +138,6 @@ public class Module extends JFrame implements MouseListener, MouseWheelListener,
 	
 	public void ModuleDragEvent(int oldX, int oldY, int newX, int newY) {
 		
-	}
-
-	public void mouseWheel(MouseWheelEvent ev) {
-	}
-
-	public void keypressed(KeyEvent ev) {
-		
-	}
-
-	public void keyreleased(KeyEvent ev) {
 	}
 	
 	public void windowClosed(WindowEvent ev) {
@@ -210,7 +192,7 @@ public class Module extends JFrame implements MouseListener, MouseWheelListener,
 	}
 
 	private void UpdatePosition(ComponentEvent e) {
-		position = new Rectangle((int)e.getComponent().getLocationOnScreen().getX(),(int)e.getComponent().getLocationOnScreen().getY(),e.getComponent().getWidth(),e.getComponent().getHeight()-16);
+		position = new Rectangle((int)e.getComponent().getLocationOnScreen().getX(),(int)e.getComponent().getLocationOnScreen().getY(),e.getComponent().getWidth(),e.getComponent().getHeight());
 		//System.out.println(position);
 		ApplyConfigWindowProperties();
 		sigIRC.configNeedsUpdating = System.currentTimeMillis();
@@ -226,46 +208,47 @@ public class Module extends JFrame implements MouseListener, MouseWheelListener,
 		// TODO Auto-generated method stub
 		
 	}
-
-	@Override
+	
 	public void keyPressed(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void keyReleased(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void keyTyped(KeyEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
-	public void mouseWheelMoved(MouseWheelEvent e) {
+	public void mouseWheelMoved(MouseWheelEvent arg0) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void mouseClicked(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void mouseEntered(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
 	}
 
-	@Override
 	public void mouseExited(MouseEvent e) {
 		// TODO Auto-generated method stub
 		
+	}
+
+	public void mousePressed(MouseEvent e) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	public void mouseReleased(MouseEvent e) {
 	}
 }

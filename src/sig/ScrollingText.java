@@ -20,6 +20,7 @@ import javax.sound.sampled.LineUnavailableException;
 import javax.sound.sampled.UnsupportedAudioFileException;
 import javax.swing.SwingUtilities;
 
+import sig.modules.ScrollingChatModule;
 import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
 import sig.utils.SoundUtils;
@@ -180,7 +181,7 @@ public class ScrollingText {
 	}
 
 	private boolean WithinBounds(double x, double y, double w, double h) {
-		if (x<sigIRC.panel.getWidth() && x+w>0 && y<sigIRC.panel.getHeight() && y+h>0) {
+		if (x<ScrollingChatModule.module.getWidth() && x+w>0 && y<ScrollingChatModule.module.getHeight() && y+h>0) {
 			return true;
 		}
 		return false;
@@ -188,28 +189,28 @@ public class ScrollingText {
 
 	public int FindLeftMostCornerInDisplay() {
 		if (x-shadowSize>0) {
-			return Math.min((int)x-shadowSize, sigIRC.panel.getWidth());
+			return Math.min((int)x-shadowSize, ScrollingChatModule.module.getWidth());
 		} else {
 			return 0;
 		}
 	}
 	public int FindTopMostCornerInDisplay() {
 		if (y-shadowSize>0) {
-			return Math.min((int)y-shadowSize, sigIRC.panel.getHeight());
+			return Math.min((int)y-shadowSize, ScrollingChatModule.module.getHeight());
 		} else {
 			return 0;
 		}
 	}
 	public int FindRightMostCornerInDisplay() {
 		if (x+stringWidth+(int)sigIRC.BASESCROLLSPD+1+shadowSize+1>0) {
-			return Math.min(Math.max(stringWidth,userstringWidth+8)+(int)sigIRC.BASESCROLLSPD+1+shadowSize+1, sigIRC.panel.getWidth()-(int)x);
+			return Math.min(Math.max(stringWidth,userstringWidth+8)+(int)sigIRC.BASESCROLLSPD+1+shadowSize+1, ScrollingChatModule.module.getWidth()-(int)x);
 		} else {
 			return 0;
 		}
 	}
 	public int FindBottomMostCornerInDisplay() {
 		if (y+stringHeight+shadowSize>0) {
-			return Math.min(stringHeight+shadowSize+4, sigIRC.panel.getHeight()-(int)y);
+			return Math.min(stringHeight+shadowSize+4, ScrollingChatModule.module.getHeight()-(int)y);
 		} else {
 			return 0;
 		}

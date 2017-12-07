@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import javax.swing.SwingUtilities;
 
 import sig.Emoticon;
+import sig.Module;
 import sig.ScrollingText;
 import sig.sigIRC;
 
@@ -42,13 +43,15 @@ public class ChatLogTwitchEmote {
 	}
 
 	public void draw(Graphics g) {
-		if (WithinBounds((int)(text.position.getX()+x), (int)(text.position.getY()+y), emote.getImage().getWidth(), emote.getImage().getHeight())) {
-			g.drawImage(emote.getImage(), (int)(text.refModule.getPosition().getX()+text.position.getX()+x), (int)(text.refModule.getPosition().getY()+text.position.getY()+y), sigIRC.panel);
+		if (WithinBounds((int)(text.position.getX()+x), (int)(text.position.getY()+y-Module.WINDOW_EXTRA_BORDER), emote.getImage().getWidth(), emote.getImage().getHeight())) {
+			//g.drawString("Emote", (int)(text.position.getX()+x), (int)(text.position.getY()+y));
+			//System.out.println("Emote Pos: "+(int)(text.position.getX()+x)+","+(int)(text.position.getY()+y));
+			g.drawImage(emote.getImage(), (int)(text.position.getX()+x), (int)(text.position.getY()+y-Module.WINDOW_EXTRA_BORDER), text.refModule.panel);
 		}
 	}
 
 	private boolean WithinBounds(double x, double y, double w, double h) {
-		if (x<sigIRC.panel.getWidth() && x+w>0 && y<sigIRC.panel.getHeight() && y+h>0) {
+		if (x<text.refModule.panel.getWidth() && x+w>0 && y<text.refModule.panel.getHeight() && y+h>0) {
 			return true;
 		}
 		return false;

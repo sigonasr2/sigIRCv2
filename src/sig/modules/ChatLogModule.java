@@ -32,7 +32,8 @@ public class ChatLogModule extends Module{
 	public int scrolllog_yoffset = 0;
 	public Color backgroundColor;
 	long positionsNeedUpdating = 0; //Set it to System.currentTimeMillis() to request a configuration save.
-	Rectangle prevpos;
+	Rectangle prevpos = (Rectangle)position.clone();
+	int justOpened=2;
 	
 
 	public ChatLogModule(Rectangle bounds, String moduleName) {
@@ -40,7 +41,6 @@ public class ChatLogModule extends Module{
 		//Initialize();
 		chatlogmodule = this;
 		backgroundColor = DrawUtils.convertStringToColor(sigIRC.chatlogmodule_backgroundColor);
-		prevpos = (Rectangle)position.clone();
 	}
 
 	private void Initialize() {
@@ -77,13 +77,22 @@ public class ChatLogModule extends Module{
 				}
 			}
 		}
+		if (positionsNeedUpdating==0 && (prevpos.getWidth()!=position.getWidth() || prevpos.getHeight()!=position.getHeight())) {
+			positionsNeedUpdating=System.currentTimeMillis();
+		}
 		if (positionsNeedUpdating!=0 && System.currentTimeMillis()-positionsNeedUpdating>1000) {
 			positionsNeedUpdating=0;
 			int diff = (int)(position.getHeight()-prevpos.getHeight());
 			prevpos = (Rectangle)position.clone();
-			for (ChatLogMessage clm : messageHistory) {
+			/*for (ChatLogMessage clm : messageHistory) {
 				clm.position.y+=diff;
-			}
+			}*/
+			messageHistory.clear();
+			sigIRC.chatlogtwitchemoticons.clear();
+			Initialize();
+			moveAllMessages(-scrolllog_yoffset);
+			scrolllog_yoffset=0;
+			repaint();
 		}
 	}
 	
@@ -92,13 +101,15 @@ public class ChatLogModule extends Module{
 		g.setColor(backgroundColor);
 		g.fill3DRect(0, 0, (int)position.getWidth(), (int)position.getHeight(), true);
 		g.setColor(Color.BLACK);
-		for (int i=0; i<messageHistory.size();i++) {
-			ChatLogMessage clm = messageHistory.get(i);
-			if (clm!=null) {
-				try {
-					clm.draw(g);
-				} catch (ConcurrentModificationException e) {
-					e.printStackTrace();
+		if (messageHistory!=null) {
+			for (int i=0; i<messageHistory.size();i++) {
+				ChatLogMessage clm = messageHistory.get(i);
+				if (clm!=null) {
+					try {
+						clm.draw(g);
+					} catch (ConcurrentModificationException e) {
+						e.printStackTrace();
+					}
 				}
 			}
 		}
@@ -113,11 +124,12 @@ public class ChatLogModule extends Module{
 		sigIRC.config.setInteger("CHATLOG_module_Y", sigIRC.chatlogmodule_Y);
 		sigIRC.config.setInteger("CHATLOG_module_width", sigIRC.chatlogmodule_width);
 		sigIRC.config.setInteger("CHATLOG_module_height", sigIRC.chatlogmodule_height);
+		sigIRC.config.saveProperties();
 	}
 	
-	public void mouseWheel(MouseWheelEvent ev) {
+	public void mouseWheelMoved(MouseWheelEvent ev) {
 		if (mouseInBounds(ev.getX(),ev.getY())) {
-			int scrollMult = 8;
+			int scrollMult = 12;
 			int scrollAmt = -ev.getWheelRotation()*scrollMult;
 			if (scrollAmt>0) {
 				if (HighestMessageIsVisible()) {
@@ -145,11 +157,6 @@ public class ChatLogModule extends Module{
 		return true;
 	}
 
-	@Override
-	public void componentResized(ComponentEvent e) {
-		this.positionsNeedUpdating=System.currentTimeMillis();
-	}
-
 	public void moveAllMessages(int yAmt) {
 		for (int i=0;i<messageHistory.size();i++) {
 			ChatLogMessage clm = messageHistory.get(i);
@@ -164,14 +171,14 @@ public class ChatLogModule extends Module{
 	}
 
 	private boolean mouseInBounds(int mouseX, int mouseY) {
-		return mouseX>=position.getX() &&
-				mouseX<=position.getX()+position.getWidth() &&
-				mouseY>=position.getX() &&
-				mouseY<=position.getX()+position.getHeight();
+		return mouseX>=0 &&
+				mouseX<=0+position.getWidth() &&
+				mouseY>=0 &&
+				mouseY<=0+position.getHeight();
 	}
 
 
-	public void keypressed(KeyEvent ev) {
+	public void keyPressed(KeyEvent ev) {
 		int key = ev.getKeyCode();
 		int scroll = 0;
 		if (key==KeyEvent.VK_PAGE_UP) {
@@ -181,7 +188,7 @@ public class ChatLogModule extends Module{
 			scroll=-8;
 		}
 		if (key==KeyEvent.VK_HOME) {
-			scroll=Math.abs(GetHighestMessagePosition());
+			scroll=Math.abs(GetHighestMessagePosition()-Module.WINDOW_EXTRA_BORDER);
 		}
 		if (key==KeyEvent.VK_END) {
 			moveAllMessages(-scrolllog_yoffset);
