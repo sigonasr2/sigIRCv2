@@ -1,6 +1,7 @@
 package sig;
 import java.awt.Color;
 import java.awt.Cursor;
+import java.awt.Dimension;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.awt.Rectangle;
@@ -55,7 +56,12 @@ public class Module extends JFrame implements ComponentListener, WindowListener,
 	int windowUpdateCounter = 30;
 	
 	public Module(Rectangle bounds, String moduleName) {
-		
+
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		this.addComponentListener(this);
 		this.addWindowListener(this);
 		this.addKeyListener(this);
@@ -76,8 +82,8 @@ public class Module extends JFrame implements ComponentListener, WindowListener,
 		this.titleHeight = (int)TextUtils.calculateStringBoundsFont(this.name, sigIRC.userFont).getHeight();
 		
 		
-		this.setSize((int)position.getWidth(), (int)position.getHeight());
-		panel.setSize(this.getSize());
+		this.setMinimumSize(new Dimension((int)position.getWidth(), (int)position.getHeight()));
+		panel.setMinimumSize(this.getMinimumSize());
 		
 		this.add(panel);
 		//this.pack();

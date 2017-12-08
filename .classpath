@@ -15,5 +15,26 @@
 	<classpathentry kind="lib" path="lib/lwjgl-natives-windows.jar"/>
 	<classpathentry kind="lib" path="lib/jna-4.5.0.jar"/>
 	<classpathentry kind="lib" path="lib/jna-platform-4.5.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/basicplayer3.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/commons-io-2.5.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/commons-logging-api.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/jl1.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/jna-4.5.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/jna-platform-4.5.0.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/jogg-0.0.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/jorbis-0.0.15.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/jspeex0.9.7.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/lwjgl.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/lwjgl-glfw.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/lwjgl-glfw-natives-linux.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/lwjgl-glfw-natives-macos.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/lwjgl-glfw-natives-windows.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/lwjgl-natives-linux.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/lwjgl-natives-macos.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/lwjgl-natives-windows.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/mp3spi1.9.4.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/tritonus_share.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/twitch-api-wrapper-0.3-jar-with-dependencies.jar"/>
+	<classpathentry kind="lib" path="C:/Users/Joshua Sigona/git/sigIRCv2/lib/vorbisspi1.0.2.jar"/>
 	<classpathentry kind="output" path="bin"/>
 </classpath>

@@ -28,20 +28,18 @@ public class ScrollingChatModule extends Module{
 		
 		ScrollingChatModule.module = this;
 		String[] filedata = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/oauthToken.txt");
-		
-		final String oauth = filedata[0].trim().substring(0, Math.min(36,filedata[0].trim().length()));
-		Thread t = new Thread(()->{
-			sigIRC.InitializeIRCConnection(sigIRC.server, sigIRC.nickname, sigIRC.channel, oauth);
-		});
-		
-		t.start();
 
-	    UpdateSubEmoticons();
+		for (int i=0;i<sigIRC.chatRows;i++) {
+			sigIRC.rowobj.add(new TextRow(32+sigIRC.ROWSEPARATION*i));
+		}
+	    //UpdateSubEmoticons();
 	}
 
 	public void run() {
+		super.run();
 	    UpdateScrollingText();
 	    UpdateAuthenticationCountdownMessage();
+		//System.out.println("Called.");
 	}
 
 
@@ -61,7 +59,20 @@ public class ScrollingChatModule extends Module{
 		}
 	}
 	
+	public void ApplyConfigWindowProperties() {
+		sigIRC.scrollingchatmodule_X=(int)position.getX();
+		sigIRC.scrollingchatmodule_Y=(int)position.getY();
+		sigIRC.scrollingchatmodule_width=(int)position.getWidth();
+		sigIRC.scrollingchatmodule_height=(int)position.getHeight();
+		sigIRC.config.setInteger("SCROLLINGCHAT_module_X", sigIRC.scrollingchatmodule_X);
+		sigIRC.config.setInteger("SCROLLINGCHAT_module_Y", sigIRC.scrollingchatmodule_Y);
+		sigIRC.config.setInteger("SCROLLINGCHAT_module_width", sigIRC.scrollingchatmodule_width);
+		sigIRC.config.setInteger("SCROLLINGCHAT_module_height", sigIRC.scrollingchatmodule_height);
+		sigIRC.config.saveProperties();
+	}
+	
 	public void draw(Graphics g) {
+		super.draw(g);
 		for (int i=0;i<sigIRC.textobj.size();i++) {
         	if (sigIRC.textobj.get(i).isActive()) {
         		if (sigIRC.overlayMode) {
@@ -167,7 +178,7 @@ public class ScrollingChatModule extends Module{
 	    	}
 	    }
 		for (int i=0;i<sigIRC.textobj.size();i++) {
-			System.out.println(sigIRC.textobj.get(i).getX()+","+sigIRC.textobj.get(i).getY());
+			//System.out.println(sigIRC.textobj.get(i).getX()+","+sigIRC.textobj.get(i).getY());
 	    	boolean keep = sigIRC.textobj.get(i).run();
 	    	if (!keep) {
 	    		sigIRC.textobj.remove(i--);

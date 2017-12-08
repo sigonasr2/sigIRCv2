@@ -24,7 +24,7 @@ import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
 
 public class ChatLogModule extends Module{
-	public static int messageHistoryCount = 50;
+	public static int messageHistoryCount = 20;
 	public List<ChatLogMessage> messageHistory = new ArrayList<ChatLogMessage>();
 	int delay = 150;
 	boolean initialized=false;
@@ -34,6 +34,7 @@ public class ChatLogModule extends Module{
 	long positionsNeedUpdating = 0; //Set it to System.currentTimeMillis() to request a configuration save.
 	Rectangle prevpos = (Rectangle)position.clone();
 	int justOpened=2;
+	public List<String> messageQueue = new ArrayList<String>();
 	
 
 	public ChatLogModule(Rectangle bounds, String moduleName) {
@@ -59,6 +60,10 @@ public class ChatLogModule extends Module{
 	
 	public void run() {
 		super.run();
+		for (int i=0;i<messageQueue.size();i++) {
+			messageHistory.add(new ChatLogMessage(messageQueue.remove(0)));
+			i--;
+		}
 		if (delay>0 && sigIRC.subEmotesCompleted) {
 			delay--;
 		} else 

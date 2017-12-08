@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.List;
 import java.util.Random;
 
@@ -34,25 +35,32 @@ public class ChatLogMessage {
 		this.refModule = ChatLogModule.chatlogmodule;
 		this.rawMessage = rawMessage;
 		this.position = new Point(0,(int)refModule.getPosition().getHeight()-MESSAGE_SPACING);
+		//System.out.println("1");
 		WrapText();
+		//System.out.println("2");
 		for (ChatLogMessage clm : this.refModule.messageHistory) {
 			clm.position.setLocation(
 					clm.position.getX(), 
 					clm.position.getY()-messageDisplaySize.getY());
 			//System.out.println(clm.rawMessage+": "+clm.position);
 		}
+		//System.out.println("3");
 		this.position.setLocation(this.position.getX(), this.position.getY()-messageDisplaySize.getY()+ChatLogModule.chatlogmodule.scrolllog_yoffset);
 		//System.out.println(displayMessage);
 		this.username = DetectUsername(displayMessage);
+		//System.out.println("4");
 		if (this.username!=null) {
 			displayMessage.set(0,GetMessage(displayMessage.get(0)+" "));
 			usernameWidth = (int)TextUtils.calculateStringBoundsFont(this.username, sigIRC.userFont).getWidth();
 		}
 		for (int i=0;i<displayMessage.size();i++) {
 			//System.out.println("displayMessage["+i+"] before: "+displayMessage.get(i));
-			displayMessage.set(i, ReplaceMessageWithEmoticons(" "+displayMessage.get(i)+" ",(i==0)?usernameWidth:0,i*MESSAGE_SPACING));
+			String msg = ReplaceMessageWithEmoticons(" "+displayMessage.get(i)+" ",(i==0)?usernameWidth:0,i*MESSAGE_SPACING);
+			displayMessage.set(i, msg);
 			//System.out.println("displayMessage["+i+"] after: "+displayMessage.get(i));
 		}
+		//System.out.println("5  "+displayMessage.size());
+		//System.out.println("6");
 	}
 	
 	private String ReplaceMessageWithEmoticons(String basemsg, int xpos, int ypos) {
@@ -233,12 +241,16 @@ public class ChatLogMessage {
 
 	public static void importMessages(String...logContents) {
 		if (sigIRC.chatlogmodule_enabled) {
+			//System.out.println("Adding chat message "+Arrays.toString(logContents));
 			for (String s : logContents) {
+				//System.out.println("  For "+s+":");
 				if (s!=null) {
 					if (ChatLogModule.chatlogmodule.messageHistory.size()>=ChatLogModule.messageHistoryCount) {
+						//System.out.println("   Removed.");
 						ChatLogModule.chatlogmodule.messageHistory.remove(0).cleanup();
 					}
-					ChatLogModule.chatlogmodule.messageHistory.add(new ChatLogMessage(s));
+					//System.out.println(" Adding "+s+".");
+					ChatLogModule.chatlogmodule.messageQueue.add(s);
 				}
 			}
 		}

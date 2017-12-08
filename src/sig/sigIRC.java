@@ -111,7 +111,7 @@ public class sigIRC{
 	public static int windowY=0;
 	public static int windowWidth=0;
 	public static int windowHeight=0;
-	static int chatRows=3;
+	public static int chatRows=3;
 	static int chatScrollSpd=4;
 	static int rowSpacing=64;
 	static String messageFont="Gill Sans Ultra Bold Condensed";

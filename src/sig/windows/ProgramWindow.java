@@ -1,7 +1,6 @@
 package sig.windows;
 
 import java.awt.Color;
-import java.awt.Dimension;
 import java.awt.GridLayout;
 import java.awt.Image;
 import java.awt.Rectangle;
@@ -10,6 +9,7 @@ import java.io.File;
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Map;
 import java.util.concurrent.Executors;
 import java.util.concurrent.ScheduledExecutorService;
 import java.util.concurrent.TimeUnit;
@@ -21,10 +21,12 @@ import javax.swing.ImageIcon;
 import javax.swing.JButton;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
-import javax.swing.JToggleButton;
-import javax.swing.event.ChangeEvent;
-import javax.swing.event.ChangeListener;
 
+import javazoom.jlgui.basicplayer.BasicController;
+import javazoom.jlgui.basicplayer.BasicPlayer;
+import javazoom.jlgui.basicplayer.BasicPlayerEvent;
+import javazoom.jlgui.basicplayer.BasicPlayerException;
+import javazoom.jlgui.basicplayer.BasicPlayerListener;
 import sig.BackgroundColorButton;
 import sig.ColorPanel;
 import sig.Module;
@@ -117,6 +119,15 @@ public class ProgramWindow extends JFrame{
         }
 		GridLayout myLayout = new GridLayout(0,1);
 		sigIRC.panel.setLayout(myLayout);
+		
+		///Play MUSIC
+		/*BasicPlayer player = new BasicPlayer();
+		try {
+			player.open(new File("D:\\Videos\\4K Video Downloader\\3R2 - The Truth Never Spoken (Energetic Trance Mix).mp3"));
+			player.play();
+		} catch (BasicPlayerException e) {
+			e.printStackTrace();
+		}*/
         
         //colorpanel = new ColorPanel();
         //this.add(colorpanel);
@@ -138,41 +149,5 @@ public class ProgramWindow extends JFrame{
         //this.addWindowListener(sigIRC.panel);
         
         //Module testMod = new Module(new Rectangle(0,0,640,480),"Test");
-	}
-}
-
-@SuppressWarnings("serial")
-class ModuleButton extends JToggleButton{
-	String label = "";
-	ModuleButton button;
-	Module myModule;
-	public ModuleButton(String label, Module module) {
-		this.label=label;
-		this.button=this;
-		this.myModule=module;
-		this.setBackground(Color.DARK_GRAY);
-		this.setText(label);
-		this.setToolTipText("Click to enable and disable the \n"+label+" module.");
-		this.setPreferredSize(new Dimension(160,56));
-		this.setForeground(Color.GRAY);
-		this.setIconTextGap(4);
-		this.setSelectedIcon(ProgramWindow.selected_icon);
-		this.setIcon(ProgramWindow.deselected_icon);
-		this.setSelected(true);
-		button.setForeground(Color.BLUE);
-		this.addChangeListener(new ChangeListener() {
-			@Override
-			public void stateChanged(ChangeEvent e) {
-				if (button.isSelected()) {
-					button.setForeground(Color.BLUE);
-				}
-				else {
-					button.setBackground(Color.DARK_GRAY);
-					button.setForeground(Color.GRAY);
-				}
-				myModule.setVisible(button.isSelected());
-			}
-			
-		});
 	}
 }

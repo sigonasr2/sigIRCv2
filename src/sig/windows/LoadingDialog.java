@@ -197,7 +197,13 @@ public class LoadingDialog extends JFrame{
 		sigIRC.emoticons.add(new Emoticon(":D","11"));
 		sigIRC.emoticons.add(new Emoticon(">(","12"));
 		sigIRC.emoticons.add(new Emoticon("<3","13"));
-		
+
+
+		try {
+			Thread.sleep(1000);
+		} catch (InterruptedException e) {
+			e.printStackTrace();
+		}
 		//Load is done. Start up the panel.
 		sigIRC.window = new ProgramWindow();
 		this.setVisible(false);
