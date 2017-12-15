@@ -25,6 +25,11 @@ public class JoinButton extends ClickableButton{
 			try {
 				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=leavesession&name="+RabiRaceModule.module.myProfile.username+"&session="+RabiRaceModule.mySession.id),file);
 				RabiRaceModule.mySession=null;
+				if (
+				RabiRaceModule.module.myProfile!=null) {
+					RabiRaceModule.module.myProfile.image_display_update_required = true;
+					RabiRaceModule.module.myProfile.stat_update_required = true;
+				}
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {

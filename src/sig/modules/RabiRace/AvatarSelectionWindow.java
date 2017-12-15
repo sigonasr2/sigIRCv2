@@ -83,7 +83,7 @@ class ImagePanel extends JPanel implements MouseListener{
 			g.setColor(new Color(0,0,64));
 			g.fillRect(0, 0, 50, 50);
 		}
-		g.drawImage(img, 0, 0, this);
+		g.drawImage(img, 0, 0, null);
 		if (selected) {
 			g.setColor(Color.YELLOW);
 			for (int i=0;i<2;i++) {

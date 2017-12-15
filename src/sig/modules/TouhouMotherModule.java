@@ -144,7 +144,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	}
 	
 	public void DrawBossAndPlayerInfo(Graphics g) {
-		g.drawImage(bossImage, (int)position.getX()+4, (int)position.getY()+4, sigIRC.panel);
+		g.drawImage(bossImage, (int)position.getX()+4, (int)position.getY()+4, null);
 		DrawUtils.drawOutlineText(g, sigIRC.programFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+4, (int)position.getY()+4+16, 1, Color.WHITE, new Color(30,0,86,255), 
 				currentBoss.getName());
 		DrawUtils.drawOutlineText(g, sigIRC.userFont, Math.min(bossImage.getWidth()+4,160)+(int)position.getX()+4, (int)position.getY()+4+48, 1, Color.WHITE, new Color(30,0,86,255), 

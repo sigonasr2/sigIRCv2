@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
+import java.awt.event.ComponentEvent;
 import java.awt.event.MouseEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
@@ -166,8 +167,8 @@ public class RabiRaceModule extends Module{
 		
 		//trimeadProfile.username = "trimead";
 		
-		join_button = new JoinButton(new Rectangle(2,(int)(position.getHeight()-18),120,18),"Join Session (0)",this);
-		create_button = new CreateButton(new Rectangle(122,(int)(position.getHeight()-18),120,18),"Create Session",this);
+		join_button = new JoinButton(new Rectangle(2,(int)(position.getHeight()-Module.WINDOW_EXTRA_BORDER-36),120,18),"Join Session (0)",this);
+		create_button = new CreateButton(new Rectangle(122,(int)(position.getHeight()-Module.WINDOW_EXTRA_BORDER-36),120,18),"Create Session",this);
 	}
 
 	private void AddImagesToImageMap(File dir, String DIRECTORY) {
@@ -298,6 +299,18 @@ public class RabiRaceModule extends Module{
 			if (lastScrollX>0) {
 				lastScrollX-=ScrollingText.SCROLLSPD;
 			}
+		}
+	}
+	
+	public void componentResized(ComponentEvent e) {
+		super.componentResized(e);
+		if (myProfile!=null) {
+			myProfile.image_display_update_required=true;
+			myProfile.stat_update_required=true;
+		}
+		if (join_button!=null && create_button!=null) {
+			join_button.y=(int)(position.getHeight()-Module.WINDOW_EXTRA_BORDER-36);
+			create_button.y=(int)(position.getHeight()-Module.WINDOW_EXTRA_BORDER-36);
 		}
 	}
 	
@@ -455,7 +468,6 @@ public class RabiRaceModule extends Module{
 	
 	public void draw(Graphics g) {
 		super.draw(g);
-		
 		if (!foundRabiRibi) {
 			DrawUtils.drawTextFont(g, sigIRC.userFont, 0, 0+26, Color.BLACK, "Rabi-Ribi not found! Please start it.");
 		} else {
@@ -476,8 +488,9 @@ public class RabiRaceModule extends Module{
 				mouseoverAvatar=false;
 			}
 			
-			g.drawImage(panel, (int)0, (int)0, module.panel);
-			g.drawImage(myProfile.getStatText((int)position.getWidth()-24,mySession), (int)0, (int)0, module.panel);
+			g.drawImage(panel, (int)0, (int)0, null);
+			g.drawImage(myProfile.getStatText((int)position.getWidth()-24,mySession), (int)0, (int)0, null);
+			g.drawImage(myProfile.getRainbowEggPanel((int)position.getWidth()-24,mySession), (int)0, (int)0, null);
 			
 			//Profile.DrawMultiPanel(g, (int)(0), (int)(0)+panel.getHeight(sigIRC.panel), (int)position.getWidth(), testing);
 			if (mySession!=null) {

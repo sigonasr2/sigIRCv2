@@ -35,7 +35,7 @@ public class BackgroundColorButton {
 	
 	public void draw(Graphics g) {
 		if (buttonEnabled) {
-			g.drawImage(buttonimg, x, y, sigIRC.panel);
+			g.drawImage(buttonimg, x, y, null);
 		}
 	}
 	

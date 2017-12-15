@@ -46,7 +46,7 @@ public class ChatLogTwitchEmote {
 		if (WithinBounds((int)(text.position.getX()+x), (int)(text.position.getY()+y-Module.WINDOW_EXTRA_BORDER), emote.getImage().getWidth(), emote.getImage().getHeight())) {
 			//g.drawString("Emote", (int)(text.position.getX()+x), (int)(text.position.getY()+y));
 			//System.out.println("Emote Pos: "+(int)(text.position.getX()+x)+","+(int)(text.position.getY()+y));
-			g.drawImage(emote.getImage(), (int)(text.position.getX()+x), (int)(text.position.getY()+y-Module.WINDOW_EXTRA_BORDER), text.refModule.panel);
+			g.drawImage(emote.getImage(), (int)(text.position.getX()+x), (int)(text.position.getY()+y-Module.WINDOW_EXTRA_BORDER), null);
 		}
 	}
 

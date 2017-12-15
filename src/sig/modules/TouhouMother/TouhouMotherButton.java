@@ -35,7 +35,7 @@ public class TouhouMotherButton {
 	}
 	
 	public void draw(Graphics g) {
-		g.drawImage(buttonimg, x, y, sigIRC.panel);
+		g.drawImage(buttonimg, x, y, null);
 	}
 	
 	public void onClickEvent(MouseEvent ev) {

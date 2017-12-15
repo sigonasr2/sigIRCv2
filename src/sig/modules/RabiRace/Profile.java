@@ -101,13 +101,13 @@ public class Profile {
 				oldProfile.loop!=loop ||
 				oldProfile.itempct!=itempct ||
 				oldProfile.mappct!=mappct) {
-			System.out.println("Something has changed.");
+			//System.out.println("Something has changed.");
 			count++;
 		} else {
-			System.out.println("All values are the same... "+oldProfile.playtime+","+playtime+"|"
+			/*System.out.println("All values are the same... "+oldProfile.playtime+","+playtime+"|"
 					+oldProfile.avatarval+","+avatar.value+"|"+oldProfile.isPaused+","+isPaused+"|"
 					+oldProfile.difficulty+","+difficulty+"|"+oldProfile.loop+","+loop+"|"
-					+oldProfile.itempct+","+itempct+"|"+oldProfile.mappct+","+mappct+"|");
+					+oldProfile.itempct+","+itempct+"|"+oldProfile.mappct+","+mappct+"|");*/
 		}
 		return count;
 	}
@@ -384,7 +384,7 @@ public class Profile {
 			
 			g2.setColor(Color.BLACK);
 			//g2.fillRect(1, 1, 32, 32);
-			g2.drawImage(avatar.getAvatarImage(), 1, 1, parent.panel);
+			g2.drawImage(avatar.getAvatarImage(), 1, 1, null);
 			g2.setColor(ScrollingText.GetUserNameColor(displayName));
 			DrawUtils.drawOutlineText(g2, sigIRC.rabiRibiMoneyDisplayFont, 54, 26, 1, g2.getColor(), Color.BLACK, displayName);
 			DrawUtils.drawCenteredOutlineText(g2, sigIRC.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.2), 50, 1, GetDifficultyColor(), Color.BLACK, GetDifficultyName());
@@ -494,7 +494,7 @@ public class Profile {
 						} else {
 							img = Profile.darkRainbowEggImage;
 						}
-						g2.drawImage(img, (int)(border+i*spacing-img.getWidth(parent.panel)/4),(int)(36), parent.panel);
+						g2.drawImage(img, (int)(border+i*spacing-img.getWidth(parent.panel)/4),(int)(36), null);
 					}
 				}break;
 			}
@@ -537,10 +537,11 @@ public class Profile {
 			int counting=0;
 			for (Image img : imgs) {
 				if (counting++==5) {
-					g2.drawImage(img, (int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56)+shiftyval,(int)icon_size,(int)icon_size,parent.panel);
+					g2.drawImage(rainbowEggImage, (int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56)+shiftyval,(int)icon_size,(int)icon_size,null);
 					//DrawUtils.drawImageScaled(g2, img,(int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56)+shiftyval, (int)icon_size, (int)icon_size, RabiRaceModule.rainbowcycler.getCycleColor(), parent.panel);
 				}
-				DrawUtils.drawCenteredOutlineText(g2, sigIRC.programFont, (int)((+border+((i)*(spacing))-icon_size/2)+(spacing/2)+4), (int)(+96+56+icon_size+12)+shiftyval, 1, Color.WHITE, Color.BLUE, Integer.toString(amts[i++]));
+				//DrawUtils.drawCenteredOutlineText(g2, sigIRC.programFont, (int)((+border+((i)*(spacing))-icon_size/2)+(spacing/2)+4), (int)(+96+56+icon_size+12)+shiftyval, 1, Color.WHITE, Color.BLUE, Integer.toString(amts[i++]));
+				i++;
 			}
 		} catch (ConcurrentModificationException e) {
 			
@@ -549,6 +550,7 @@ public class Profile {
 		//g.drawImage(tmp, (int)parent.position.getX(), (int)parent.position.getY(), 120, 64, sigIRC.panel);
 		//image_display_update_required=false;
 		//System.out.println("Updated Image Display for user "+username+".");
+		return tmp.getScaledInstance(w, -1, Image.SCALE_AREA_AVERAGING);
 	}
 
 	public Image getStatPanel(int w, Session session) {
@@ -576,12 +578,13 @@ public class Profile {
 						if (session.eggCount>0) {
 							spacing = width/session.eggCount;
 							rainbowEggLimit = session.eggCount;
+							//shiftyval+=RabiRaceModule.image_map.get("easter_egg.png").getHeight(parent.panel);
 						} else {
 							spacing = width/5;
 							rainbowEggLimit = session.eggCount;
 						}
 						//Image img = RabiRaceModule.image_map.get("easter_egg.png");
-						for (int i=0;i<session.eggCount;i++) {
+						/*for (int i=0;i<session.eggCount;i++) {
 							//Color col = (rainbowEggCount>i)?RabiRaceModule.rainbowcycler.getCycleColor():new Color(0,0,0,192);
 							//DrawUtils.drawImage(g2, img, (int)(border+i*spacing-img.getWidth(parent.panel)/4),(int)(36),col,parent.panel);
 							Image img;
@@ -591,7 +594,7 @@ public class Profile {
 								img = Profile.darkRainbowEggImage;
 							}
 							g2.drawImage(img, (int)(border+i*spacing-img.getWidth(parent.panel)/4),(int)(36), parent.panel);
-						}
+						}*/
 					}break;
 					case 1:{ //Item Hunt.
 						spacing = width/session.itemHuntData.length;
@@ -602,9 +605,9 @@ public class Profile {
 									(badges.containsKey(item) &&
 									badges.get(item)>=1)) {
 								//DrawUtils.drawImage(g2, item.getImage(), (int)(border+i*spacing-item.getImage().getWidth(sigIRC.panel)/4),(int)(36),col,sigIRC.panel);
-								g2.drawImage(item.getImage(), (int)(border+i*spacing),(int)(36+16), icon_size*2, icon_size*2, parent.panel);
+								g2.drawImage(item.getImage(), (int)(border+i*spacing),(int)(36+16), icon_size*2, icon_size*2, null);
 							} else {
-								DrawUtils.drawImageScaled(g2, item.getImage(), (int)(border+i*spacing),(int)(36+16),icon_size*2, icon_size*2,new Color(0,0,0,192),parent.panel);
+								DrawUtils.drawImageScaled(g2, item.getImage(), (int)(border+i*spacing),(int)(36+16),icon_size*2, icon_size*2,new Color(0,0,0,192),null);
 							}
 						}
 						spacing=width/5;
@@ -629,15 +632,15 @@ public class Profile {
 					if (key_items.get(data)<0) {
 						Image img = data.getImage().getScaledInstance(icon_size, icon_size, Image.SCALE_DEFAULT);
 						if (size*icon_size<width) {
-							DrawUtils.drawImageScaled(g2, img, (int)(+border+((count++)*icon_size)), (int)(+96+8)+shiftyval, (int)icon_size*iconsize, (int)icon_size*iconsize, new Color(0,0,0,128), parent.panel);
+							DrawUtils.drawImageScaled(g2, img, (int)(+border+((count++)*icon_size)), (int)(+96+8)+shiftyval, (int)icon_size*iconsize, (int)icon_size*iconsize, new Color(0,0,0,128), null);
 						} else {
-							DrawUtils.drawImageScaled(g2, img, (int)(+border+((width/size)*(count++))), (int)(+96+8)+shiftyval, (int)icon_size*iconsize, (int)icon_size*iconsize, new Color(0,0,0,128), parent.panel);
+							DrawUtils.drawImageScaled(g2, img, (int)(+border+((width/size)*(count++))), (int)(+96+8)+shiftyval, (int)icon_size*iconsize, (int)icon_size*iconsize, new Color(0,0,0,128), null);
 						}
 					} else {
 						if (size*icon_size<width) {
-							g2.drawImage(data.getImage(), (int)(+border+((count++)*icon_size)), (int)(+96+8)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), parent.panel);
+							g2.drawImage(data.getImage(), (int)(+border+((count++)*icon_size)), (int)(+96+8)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), null);
 						} else {
-							g2.drawImage(data.getImage(), (int)(+border+((width/size)*(count++))), (int)(+96+8)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), parent.panel);
+							g2.drawImage(data.getImage(), (int)(+border+((width/size)*(count++))), (int)(+96+8)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), null);
 						}
 					}
 				}
@@ -645,12 +648,12 @@ public class Profile {
 				size = badges.size();
 				for (MemoryData data : badges.keySet()) {
 					if (size*icon_size<width) {
-						g2.drawImage(data.getImage(), (int)(+border+((count++)*icon_size)), (int)(+96+32)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), parent.panel);
+						g2.drawImage(data.getImage(), (int)(+border+((count++)*icon_size)), (int)(+96+32)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), null);
 						if (badges.get(data)==2) {
 							DrawUtils.drawOutlineText(g2, sigIRC.smallFont, (int)(+border+((count-1)*icon_size))+4, (int)(+96+32)+icon_size+shiftyval, 1, Color.WHITE, TEAL, "E");
 						}
 					} else {
-						g2.drawImage(data.getImage(), (int)(+border+((width/size)*(count++))), (int)(+96+32)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), parent.panel);
+						g2.drawImage(data.getImage(), (int)(+border+((width/size)*(count++))), (int)(+96+32)+shiftyval, (int)(icon_size*iconsize), (int)(icon_size*iconsize), null);
 						if (badges.get(data)==2) {
 							DrawUtils.drawOutlineText(g2, sigIRC.smallFont, (int)(+border+((width/size)*(count-1)))+4, (int)(+96+32)+icon_size+shiftyval, 1, Color.WHITE, TEAL, "E");
 						}
@@ -679,11 +682,9 @@ public class Profile {
 				//g2.drawImage(RabiRaceModule.image_map.get("bunny_strike.png"),(int)(+border+(i++)*(spacing)-img2.getWidth(sigIRC.panel)/4),(int)(+96+56), (int)icon_size, (int)icon_size, sigIRC.panel);
 				int counting=0;
 				for (Image img : imgs) {
-					if (counting++==5) {
-						g2.drawImage(img, (int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56)+shiftyval,(int)icon_size,(int)icon_size,parent.panel);
-						//DrawUtils.drawImageScaled(g2, img,(int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56)+shiftyval, (int)icon_size, (int)icon_size, RabiRaceModule.rainbowcycler.getCycleColor(), parent.panel);
-					} else {
-						g2.drawImage(img,(int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56)+shiftyval, (int)icon_size, (int)icon_size, parent.panel);
+					if (counting++!=5) {
+						//Rainbow egg is drawn separately.
+						g2.drawImage(img,(int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56)+shiftyval, (int)icon_size, (int)icon_size, null);
 					}
 					DrawUtils.drawCenteredOutlineText(g2, sigIRC.programFont, (int)((+border+((i)*(spacing))-icon_size/2)+(spacing/2)+4), (int)(+96+56+icon_size+12)+shiftyval, 1, Color.WHITE, Color.BLUE, Integer.toString(amts[i++]));
 				}
@@ -696,7 +697,7 @@ public class Profile {
 			imageDisplayUpdateImage = tmp.getScaledInstance(w, -1, Image.SCALE_AREA_AVERAGING);
 			//g.drawImage(tmp, (int)parent.position.getX(), (int)parent.position.getY(), 120, 64, sigIRC.panel);
 			image_display_update_required=false;
-			System.out.println("Updated Image Display for user "+username+".");
+			//System.out.println("Updated Image Display for user "+username+".");
 		}
 		
 		return imageDisplayUpdateImage;
@@ -763,8 +764,10 @@ public class Profile {
 		for (Profile p : players) {
 			Image panel = p.getStatPanel(w,session);
 			Image panel2 = p.getStatText(w,session);
-			g.drawImage(panel,(int)(x+xx*panel.getWidth(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(y+yy*panel.getHeight(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(panel.getWidth(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(panel.getHeight(RabiRaceModule.module.panel)/((rows+cols)/2d)),RabiRaceModule.module.panel);
-			g.drawImage(panel2,(int)(x+xx*panel2.getWidth(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(y+yy*panel2.getHeight(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(panel2.getWidth(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(panel2.getHeight(RabiRaceModule.module.panel)/((rows+cols)/2d)),RabiRaceModule.module.panel);
+			Image panel3 = p.getRainbowEggPanel(w,session);
+			g.drawImage(panel,(int)(x+xx*panel.getWidth(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(y+yy*panel.getHeight(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(panel.getWidth(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(panel.getHeight(RabiRaceModule.module.panel)/((rows+cols)/2d)),null);
+			g.drawImage(panel2,(int)(x+xx*panel2.getWidth(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(y+yy*panel2.getHeight(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(panel2.getWidth(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(panel2.getHeight(RabiRaceModule.module.panel)/((rows+cols)/2d)),null);
+			g.drawImage(panel3,(int)(x+xx*panel3.getWidth(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(y+yy*panel3.getHeight(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(panel3.getWidth(RabiRaceModule.module.panel)/((rows+cols)/2d)),(int)(panel3.getHeight(RabiRaceModule.module.panel)/((rows+cols)/2d)),null);
 			if (xx+1<cols) {
 				xx++;
 			} else {

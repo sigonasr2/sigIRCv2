@@ -40,7 +40,7 @@ public class TwitchEmote {
 
 	public void draw(Graphics g) {
 		if (WithinBounds((int)(text.getX()+x), (int)(text.getY()+y), emote.getImage().getWidth(), emote.getImage().getHeight())) {
-			g.drawImage(emote.getImage(), (int)(text.getX()+x), (int)(text.getY()+y), ScrollingChatModule.module.panel);
+			g.drawImage(emote.getImage(), (int)(text.getX()+x), (int)(text.getY()+y), null);
 		}
 	}
 	

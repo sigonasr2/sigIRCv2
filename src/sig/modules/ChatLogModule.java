@@ -54,6 +54,7 @@ public class ChatLogModule extends Module{
 			if (logContents.length>messageHistoryCount) {
 				logContents = Arrays.copyOfRange(logContents, logContents.length-messageHistoryCount-1, logContents.length);
 			}
+			messageHistory.clear();
 			ChatLogMessage.importMessages(logContents);
 		} 
 	}
@@ -66,11 +67,6 @@ public class ChatLogModule extends Module{
 		}
 		if (delay>0 && sigIRC.subEmotesCompleted) {
 			delay--;
-		} else 
-		if (!initialized)
-		{
-			Initialize();
-			initialized=true;
 		}
 		for (int i=0; i<messageHistory.size();i++) {
 			ChatLogMessage clm = messageHistory.get(i);
@@ -97,7 +93,7 @@ public class ChatLogModule extends Module{
 			Initialize();
 			moveAllMessages(-scrolllog_yoffset);
 			scrolllog_yoffset=0;
-			repaint();
+			//repaint();
 		}
 	}
 	

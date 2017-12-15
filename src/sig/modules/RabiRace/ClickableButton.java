@@ -13,7 +13,7 @@ import sig.utils.DrawUtils;
 import sig.utils.TextUtils;
 
 public class ClickableButton {
-	protected int x,y,width,height;
+	public int x,y,width,height;
 	protected String label;
 	protected RabiRaceModule module;
 	

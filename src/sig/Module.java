@@ -145,10 +145,6 @@ public class Module extends JFrame implements ComponentListener, WindowListener,
 		updateFPSCounter();
 	}
 	
-	public void ModuleDragEvent(int oldX, int oldY, int newX, int newY) {
-		
-	}
-	
 	public void windowClosed(WindowEvent ev) {
 		
 	}

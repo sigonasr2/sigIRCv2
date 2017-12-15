@@ -227,7 +227,7 @@ public class ChatLogMessage {
 					DrawUtils.drawTextFont(g, sigIRC.userFont, position.getX(), position.getY()+(i*MESSAGE_SPACING)+32-Module.WINDOW_EXTRA_BORDER, Color.BLACK, displayMessage.get(i));
 				}
 			}
-			g.drawImage(Module.MSG_SEPARATOR, (int)(position.getX()+8), (int)(position.getY()+messageDisplaySize.getY()+8-Module.WINDOW_EXTRA_BORDER), (int)(messageDisplaySize.getX()-8), 1, sigIRC.panel);
+			g.drawImage(Module.MSG_SEPARATOR, (int)(position.getX()+8), (int)(position.getY()+messageDisplaySize.getY()+8-Module.WINDOW_EXTRA_BORDER), (int)(messageDisplaySize.getX()-8), 1, null);
 			//g.drawLine((int)(position.getX()+8), (int)(position.getY()+messageDisplaySize.getY()+32), (int)(position.getX()+messageDisplaySize.getX()-8), (int)(position.getY()+messageDisplaySize.getY()+32));
 		}
 		for (int i=0;i<sigIRC.chatlogtwitchemoticons.size();i++) {

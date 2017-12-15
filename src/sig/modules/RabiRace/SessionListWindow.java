@@ -150,7 +150,11 @@ public class SessionListWindow extends JFrame{
 			File file = new File(sigIRC.BASEDIR+"sigIRC/tmp_session.data");
 			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=joinsession&name="+RabiRaceModule.module.myProfile.username+"&session="+session.id+"&password="+hashedPass),file);
 			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/tmp_session.data");
-			
+
+			if (RabiRaceModule.module.myProfile!=null) {
+				RabiRaceModule.module.myProfile.image_display_update_required = true;
+				RabiRaceModule.module.myProfile.stat_update_required = true;
+			}
 			if (data.length==1) {
 				int errorCode = Integer.parseInt(data[0]);
 				switch (errorCode) {

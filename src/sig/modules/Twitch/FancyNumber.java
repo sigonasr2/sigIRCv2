@@ -52,7 +52,7 @@ public class FancyNumber {
 	public Rectangle draw(Graphics g, int x, int y) {
 		int xoffset = 0;
 		int yoffset = 0;
-		g.drawImage(icon, x, y, sigIRC.panel);
+		g.drawImage(icon, x, y, null);
 		xoffset+=icon.getWidth()+4;
 		if (displayedValue!=lastValue) {
 			if (delayCount==0) {
@@ -81,7 +81,7 @@ public class FancyNumber {
 		xoffset+=TextUtils.calculateStringBoundsFont(Integer.toString(displayedValue), sigIRC.userFont).getWidth()+4;
 		if (lastValueChange>0) {
 			lastValueChange--;
-			g.drawImage((upArrow)?TwitchModule.UPARROWIMAGE:TwitchModule.DOWNARROWIMAGE, x+xoffset, y+yoffset, sigIRC.panel);
+			g.drawImage((upArrow)?TwitchModule.UPARROWIMAGE:TwitchModule.DOWNARROWIMAGE, x+xoffset, y+yoffset, null);
 		}
 		xoffset+=((upArrow)?TwitchModule.UPARROWIMAGE.getWidth():TwitchModule.DOWNARROWIMAGE.getWidth())+4;
 		return new Rectangle(x,y,xoffset,yoffset+16);

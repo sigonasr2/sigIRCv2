@@ -125,7 +125,7 @@ public class DrawUtils {
 		g2.setColor(blend_col);
 		g2.fillRect(0, 0, img.getWidth(source), img.getHeight(source));
 		g2.dispose();
-		g.drawImage(tmp,(int)x,(int)y,source);
+		g.drawImage(tmp,(int)x,(int)y,null);
 	}
 	
 	public static void drawImageScaled(Graphics g, Image img, double x, double y, double xsize, double ysize, Color blend_col, ImageObserver source) {
@@ -136,7 +136,7 @@ public class DrawUtils {
 		g2.setColor(blend_col);
 		g2.fillRect(0, 0, img.getWidth(source), img.getHeight(source));
 		g2.dispose();
-		g.drawImage(tmp,(int)x,(int)y,(int)xsize,(int)ysize,source);
+		g.drawImage(tmp,(int)x,(int)y,(int)xsize,(int)ysize,null);
 	}
 	
 	public static Color invertColor(Color c) {

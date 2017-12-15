@@ -269,7 +269,7 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 				    public void paintComponent(Graphics g) {
 				        super.paintComponent(g);
 						try {
-							g.drawImage(ImageIO.read(new File(ControllerModule.CONTROLLERPATH+"4-way_axis.png")), 0, 0, this);
+							g.drawImage(ImageIO.read(new File(ControllerModule.CONTROLLERPATH+"4-way_axis.png")), 0, 0, null);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}
@@ -279,7 +279,7 @@ public class ControlConfigurationWindow extends JFrame implements WindowListener
 				    public void paintComponent(Graphics g) {
 				        super.paintComponent(g);
 						try {
-							g.drawImage(ImageIO.read(new File(ControllerModule.CONTROLLERPATH+"2-way_axis.png")), 0, 0, this);
+							g.drawImage(ImageIO.read(new File(ControllerModule.CONTROLLERPATH+"2-way_axis.png")), 0, 0, null);
 						} catch (IOException e) {
 							e.printStackTrace();
 						}

@@ -595,7 +595,7 @@ public class ControllerModule extends Module{
 					}
 				}*/
 			}
-			g.drawImage(controller_img, (int)(position.getX()), (int)(position.getY()), sigIRC.panel);
+			g.drawImage(controller_img, (int)(position.getX()), (int)(position.getY()), null);
 			for (ClickableButton cb : click_buttons) {
 				cb.draw(g);
 			}
@@ -653,7 +653,7 @@ public class ControllerModule extends Module{
 					g.setColor(color_identity);
 				}
 			}
-			g.drawImage(controller_overlay_img, (int)(position.getX()), (int)(position.getY()), sigIRC.panel);
+			g.drawImage(controller_overlay_img, (int)(position.getX()), (int)(position.getY()), null);
 
 			for (Axis a : axes) {
 				a.drawIndicator(g);
