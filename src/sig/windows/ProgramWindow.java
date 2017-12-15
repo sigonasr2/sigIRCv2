@@ -3,6 +3,7 @@ package sig.windows;
 import java.awt.Color;
 import java.awt.GridLayout;
 import java.awt.Image;
+import java.awt.MouseInfo;
 import java.awt.Rectangle;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
@@ -33,6 +34,7 @@ import sig.Module;
 import sig.MyPanel;
 import sig.sigIRC;
 import sig.modules.ChatLogModule;
+import sig.modules.RabiRaceModule;
 import sig.modules.ScrollingChatModule;
 
 @SuppressWarnings("serial")
@@ -40,9 +42,16 @@ public class ProgramWindow extends JFrame{
 
 	public static Icon deselected_icon,selected_icon; 
 	
-	List<ModuleButton> buttons = new ArrayList<ModuleButton>();
+	List<ModuleSelectButton> buttons = new ArrayList<ModuleSelectButton>();
+
+	public int lastMouseX = 0;
+
+	public int lastMouseY = 0;
+	
+	public static ProgramWindow frame;
 	
 	public ProgramWindow() {
+		ProgramWindow.frame=this;
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleWithFixedDelay(()->{
 			if (sigIRC.configNeedsUpdating>0 &&
@@ -51,6 +60,10 @@ public class ProgramWindow extends JFrame{
 				sigIRC.configNeedsUpdating=0;
 			}
 		},1000,1000,TimeUnit.MILLISECONDS);
+		scheduler.scheduleWithFixedDelay(()->{
+	        lastMouseX = (int)(MouseInfo.getPointerInfo().getLocation().getX());
+	        lastMouseY = (int)(MouseInfo.getPointerInfo().getLocation().getY());
+		},(long)((1d/(sigIRC.framerate+1))*1000),(long)((1d/(sigIRC.framerate+1))*1000),TimeUnit.MILLISECONDS);
 		
 		try {
 			sigIRC.programIcon = ImageIO.read(sigIRC.class.getResource("/resource/sigIRCicon.png"));
@@ -69,6 +82,7 @@ public class ProgramWindow extends JFrame{
 			JFrame.setDefaultLookAndFeelDecorated(true);
 		}
 		System.setProperty("sun.java2d.opengl", Boolean.toString(sigIRC.hardwareAcceleration));
+		System.setProperty("sun.java2d.d3d",Boolean.toString(true));
         JFrame f = new JFrame("sigIRCv2");
         this.setAutoRequestFocus(true);
         this.toFront();
@@ -93,28 +107,29 @@ public class ProgramWindow extends JFrame{
         
         if (!sigIRC.disableChatMessages) {
         	ScrollingChatModule mod = new ScrollingChatModule(new Rectangle((int)sigIRC.scrollingchatmodule_X,(int)sigIRC.scrollingchatmodule_Y,(int)sigIRC.scrollingchatmodule_width,(int)sigIRC.scrollingchatmodule_height),"Scrolling Chat");
-        	ModuleButton button = new ModuleButton("Scrolling Chat",mod);
+        	ModuleSelectButton button = new ModuleSelectButton("Scrolling Chat",mod);
         	sigIRC.panel.add(button);
         }
         if (sigIRC.chatlogmodule_enabled) {
             ChatLogModule mod = new ChatLogModule(new Rectangle(sigIRC.chatlogmodule_X,sigIRC.chatlogmodule_Y,sigIRC.chatlogmodule_width,sigIRC.chatlogmodule_height),"Chat Log");
-        	ModuleButton button = new ModuleButton("Chat Log",mod);
+        	ModuleSelectButton button = new ModuleSelectButton("Chat Log",mod);
         	sigIRC.panel.add(button);
         }
         if (sigIRC.controllermodule_enabled) {
-        	ModuleButton button = new ModuleButton("Controller",new Module(new Rectangle(0,0,0,0),"Test"));
+        	ModuleSelectButton button = new ModuleSelectButton("Controller",new Module(new Rectangle(0,0,0,0),"Test"));
         	sigIRC.panel.add(button);
         }
         if (sigIRC.twitchmodule_enabled) {
-        	ModuleButton button = new ModuleButton("Twitch",new Module(new Rectangle(0,0,0,0),"Test"));
+        	ModuleSelectButton button = new ModuleSelectButton("Twitch",new Module(new Rectangle(0,0,0,0),"Test"));
         	sigIRC.panel.add(button);
         }
         if (sigIRC.rabiracemodule_enabled) {
-        	ModuleButton button = new ModuleButton("Rabi-Race",new Module(new Rectangle(0,0,0,0),"Test"));
+        	RabiRaceModule mod = new RabiRaceModule(new Rectangle((int)sigIRC.rabiracemodule_X,(int)sigIRC.rabiracemodule_Y,(int)sigIRC.rabiracemodule_width,(int)sigIRC.rabiracemodule_height),"Rabi Race");
+        	ModuleSelectButton button = new ModuleSelectButton("Rabi-Race",mod);
         	sigIRC.panel.add(button);
         }
         if (sigIRC.touhoumothermodule_enabled) {
-        	ModuleButton button = new ModuleButton("Touhou Mother",new Module(new Rectangle(0,0,0,0),"Test"));
+        	ModuleSelectButton button = new ModuleSelectButton("Touhou Mother",new Module(new Rectangle(0,0,0,0),"Test"));
         	sigIRC.panel.add(button);
         }
 		GridLayout myLayout = new GridLayout(0,1);
@@ -133,7 +148,8 @@ public class ProgramWindow extends JFrame{
         //this.add(colorpanel);
         this.setLocationByPlatform(true);
         this.add(sigIRC.panel);
-        this.pack();
+        //this.pack();
+        this.setSize(240, 640);
         this.setVisible(true);
         //this.setLocation(sigIRC.windowX, sigIRC.windowY);
         //this.setSize(sigIRC.windowWidth, sigIRC.windowHeight);

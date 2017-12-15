@@ -67,9 +67,9 @@ public class Module extends JFrame implements ComponentListener, WindowListener,
 		this.addKeyListener(this);
 		
 		this.position = bounds;
+		System.out.println(position);
 		this.name = moduleName;
 		this.enabled=true;
-		this.setVisible(true);
 		this.setTitle(moduleName);
 		panel = new ListenerPanel(this){
 		    public void paintComponent(Graphics g) {
@@ -80,17 +80,19 @@ public class Module extends JFrame implements ComponentListener, WindowListener,
 		this.setLocation((int)position.getX(), (int)position.getY());
 		
 		this.titleHeight = (int)TextUtils.calculateStringBoundsFont(this.name, sigIRC.userFont).getHeight();
+
+		this.setSize(new Dimension((int)position.getWidth(), (int)position.getHeight()));
 		
-		
-		this.setMinimumSize(new Dimension((int)position.getWidth(), (int)position.getHeight()));
-		panel.setMinimumSize(this.getMinimumSize());
+		panel.setSize(this.getSize());
+		//System.out.println("Module "+moduleName+": "+position);
 		
 		this.add(panel);
 		//this.pack();
+		repaint();
+		this.setVisible(true);
 
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleWithFixedDelay(()->{
-			updateFPSCounter();
 			run();
 			panel.repaint();
 		},(long)((1d/(sigIRC.framerate+1))*1000),(long)((1d/(sigIRC.framerate+1))*1000),TimeUnit.MILLISECONDS);
@@ -140,6 +142,7 @@ public class Module extends JFrame implements ComponentListener, WindowListener,
 	public void draw(Graphics g) {
 		//g.fillRect(0, 0, (int)position.getWidth(), (int)position.getHeight());
 		//DrawUtils.drawText(g, 0, 16, Color.WHITE, "Test");
+		updateFPSCounter();
 	}
 	
 	public void ModuleDragEvent(int oldX, int oldY, int newX, int newY) {
@@ -194,7 +197,9 @@ public class Module extends JFrame implements ComponentListener, WindowListener,
 
 	@Override
 	public void componentMoved(ComponentEvent e) {
-		UpdatePosition(e);
+		if (this.isVisible()) {
+			UpdatePosition(e);
+		}
 	}
 
 	private void UpdatePosition(ComponentEvent e) {
@@ -206,7 +211,9 @@ public class Module extends JFrame implements ComponentListener, WindowListener,
 
 	@Override
 	public void componentResized(ComponentEvent e) {
-		UpdatePosition(e);
+		if (this.isVisible()) {
+			UpdatePosition(e);
+		}
 	}
 
 	@Override

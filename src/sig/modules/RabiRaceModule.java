@@ -49,6 +49,7 @@ import sig.modules.utils.PsapiTools;
 import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
 import sig.utils.TextUtils;
+import sig.windows.ProgramWindow;
 
 public class RabiRaceModule extends Module{
 	final static String ITEMS_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/items/";
@@ -80,7 +81,7 @@ public class RabiRaceModule extends Module{
 	public static List<MemoryData> key_items_list = new ArrayList<MemoryData>();  
 	public static List<MemoryData> badges_list = new ArrayList<MemoryData>(); 
 	
-	public RabiRaceModule(Rectangle2D bounds, String moduleName) {
+	public RabiRaceModule(Rectangle bounds, String moduleName) {
 		super(bounds, moduleName);
 		//Initialize();
 		Initialize();
@@ -281,8 +282,11 @@ public class RabiRaceModule extends Module{
 	}
 	
 	public void run() {
+		super.run();
 		if (foundRabiRibi) {
 			rainbowcycler.run();
+			//Profile.rainbowEggImage.flush();
+			//Profile.rainbowEggImage = DrawUtils.getBlendedImage(RabiRaceModule.module.panel.getGraphics().create(), RabiRaceModule.image_map.get("easter_egg.png"), RabiRaceModule.rainbowcycler.getCycleColor(), RabiRaceModule.window);
 			if (window!=null) {
 				window.run();
 			} 
@@ -302,6 +306,7 @@ public class RabiRaceModule extends Module{
 			//System.out.println("Called.");
 			int paused = readIntFromMemory(MemoryOffset.PAUSED);
 			float itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
+			myProfile.oldProfile.isPaused = myProfile.isPaused;
 			myProfile.isPaused = paused==1;
 			//System.out.println(itempct+","+paused);
 			if (paused==0 && itempct>=0) {
@@ -324,8 +329,16 @@ public class RabiRaceModule extends Module{
 				if (myProfile.compareAllChangedValues()>0) {
 					myProfile.image_display_update_required=true;
 				}
-				myProfile.stat_update_required=true;
+				if (myProfile.compareAllChangedStatValues()>0) {
+					myProfile.stat_update_required=true;
+				}
+				myProfile.oldProfile.avatarval = myProfile.avatar.value;
 				firstUpdate=false;
+			} else
+			if (myProfile.compareAllChangedStatValues()>0) {
+				myProfile.archiveAllValues();
+				myProfile.oldProfile.avatarval = myProfile.avatar.value;
+				myProfile.stat_update_required=true;
 			}
 			if (mySession!=null) {
 				for (Profile p : mySession.getPlayers()) {
@@ -342,8 +355,13 @@ public class RabiRaceModule extends Module{
 	public void ApplyConfigWindowProperties() {
 		sigIRC.rabiracemodule_X=(int)position.getX();
 		sigIRC.rabiracemodule_Y=(int)position.getY();
+		sigIRC.rabiracemodule_width=(int)position.getWidth();
+		sigIRC.rabiracemodule_height=(int)position.getHeight();
 		sigIRC.config.setInteger("RABIRACE_module_X", sigIRC.rabiracemodule_X);
 		sigIRC.config.setInteger("RABIRACE_module_Y", sigIRC.rabiracemodule_Y);
+		sigIRC.config.setInteger("RABIRACE_module_width", sigIRC.rabiracemodule_width);
+		sigIRC.config.setInteger("RABIRACE_module_height", sigIRC.rabiracemodule_height);
+		sigIRC.config.saveProperties();
 	}
 
 	/*public int readIntFromErinaData(MemoryOffset val) {
@@ -439,29 +457,29 @@ public class RabiRaceModule extends Module{
 		super.draw(g);
 		
 		if (!foundRabiRibi) {
-			DrawUtils.drawTextFont(g, sigIRC.userFont, position.getX(), position.getY()+26, Color.BLACK, "Rabi-Ribi not found! Please start it.");
+			DrawUtils.drawTextFont(g, sigIRC.userFont, 0, 0+26, Color.BLACK, "Rabi-Ribi not found! Please start it.");
 		} else {
 			//myProfile.draw(g);
-			Image panel = myProfile.getStatPanel((int)position.getWidth(),mySession);
-			
-			if (sigIRC.panel.lastMouseX>=position.getX() && 
-					sigIRC.panel.lastMouseX<=position.getX()+(int)((position.getWidth()/400)*50) &&
-					sigIRC.panel.lastMouseY>=position.getY() && 
-					sigIRC.panel.lastMouseY<=position.getY()+(int)(((position.getWidth()/400)*50))) {
+			Image panel = myProfile.getStatPanel((int)position.getWidth()-24,mySession);
+			//System.out.println(ProgramWindow.frame.lastMouseX+","+ProgramWindow.frame.lastMouseY+";"+position.getX()+","+position.getY());
+			if (ProgramWindow.frame.lastMouseX>=position.getX() && 
+					ProgramWindow.frame.lastMouseX<=position.getX()+(int)((position.getWidth()/400)*50) &&
+					ProgramWindow.frame.lastMouseY>=position.getY()+Module.WINDOW_EXTRA_BORDER && 
+					ProgramWindow.frame.lastMouseY<=position.getY()+Module.WINDOW_EXTRA_BORDER+(int)(((position.getWidth()/400)*50))) {
 				mouseoverAvatar=true;
 				Color ident = g.getColor();
 				g.setColor(new Color(196,196,196,128));
-				g.fillRect((int)(position.getX()+1), (int)(position.getY()+1), (int)((position.getWidth()/400)*50), (int)((position.getWidth()/400)*50));
+				g.fillRect((int)(0+1), (int)(0+1), (int)((position.getWidth()/400)*50), (int)((position.getWidth()/400)*50));
 				g.setColor(ident);
 				//System.out.println("Mouse over avatar.");
 			} else {
 				mouseoverAvatar=false;
 			}
 			
-			g.drawImage(panel, (int)position.getX(), (int)position.getY(), sigIRC.panel);
-			g.drawImage(myProfile.getStatText((int)position.getWidth(),mySession), (int)position.getX(), (int)position.getY(), sigIRC.panel);
+			g.drawImage(panel, (int)0, (int)0, module.panel);
+			g.drawImage(myProfile.getStatText((int)position.getWidth()-24,mySession), (int)0, (int)0, module.panel);
 			
-			//Profile.DrawMultiPanel(g, (int)(position.getX()), (int)(position.getY())+panel.getHeight(sigIRC.panel), (int)position.getWidth(), testing);
+			//Profile.DrawMultiPanel(g, (int)(0), (int)(0)+panel.getHeight(sigIRC.panel), (int)position.getWidth(), testing);
 			if (mySession!=null) {
 				List<Profile> sessionPlayers = new ArrayList<Profile>();
 				for (Profile p : mySession.getPlayers()) {
@@ -470,7 +488,7 @@ public class RabiRaceModule extends Module{
 						//System.out.println("Found unique player "+p);
 					}
 				}
-				Profile.DrawMultiPanel(g, (int)(position.getX()), (int)(position.getY())+panel.getHeight(sigIRC.panel), (int)position.getWidth(), mySession);
+				Profile.DrawMultiPanel(g, (int)(0), (int)(0)+panel.getHeight(module.panel), (int)position.getWidth()-24, mySession);
 			}
 			
 			if (firstCheck) {
@@ -480,7 +498,7 @@ public class RabiRaceModule extends Module{
 				}
 			}
 			g.setColor(Color.BLACK);
-			g.fillRect((int)(position.getX()), (int)(position.getY()+position.getHeight()-28-20), (int)(position.getWidth()), 20);
+			g.fillRect((int)(0), (int)(0+position.getHeight()-28-20), (int)(position.getWidth()), 20);
 			for (int i=0;i<messages.size();i++) {
 				messages.get(i).draw(g);
 			}
@@ -512,7 +530,7 @@ public class RabiRaceModule extends Module{
 		
 		public void draw(Graphics g) {
 			if (x<position.getWidth()) {
-				DrawUtils.drawOutlineText(g, sigIRC.rabiRibiTinyDisplayFont, position.getX()+x, position.getY()+y-6, 2, Color.WHITE, Color.GRAY, msg);
+				DrawUtils.drawOutlineText(g, sigIRC.rabiRibiTinyDisplayFont, 0+x, 0+y-6, 2, Color.WHITE, Color.GRAY, msg);
 			}
 		}
 	}

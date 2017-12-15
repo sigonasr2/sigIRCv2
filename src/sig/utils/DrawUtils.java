@@ -106,6 +106,17 @@ public class DrawUtils {
 		}
 	}
 	
+	public static Image getBlendedImage(Graphics g, Image img, Color blend_col, ImageObserver source) {
+		BufferedImage tmp = new BufferedImage(img.getWidth(source),img.getHeight(source),BufferedImage.TYPE_INT_ARGB);
+		Graphics2D g2 = tmp.createGraphics();
+		g2.drawImage(img, 0, 0, null);
+		g2.setComposite(AlphaComposite.SrcAtop);
+		g2.setColor(blend_col);
+		g2.fillRect(0, 0, img.getWidth(source), img.getHeight(source));
+		g2.dispose();
+		return tmp;
+	}
+	
 	public static void drawImage(Graphics g, Image img, double x, double y, Color blend_col, ImageObserver source) {
 		BufferedImage tmp = new BufferedImage(img.getWidth(source),img.getHeight(source),BufferedImage.TYPE_INT_ARGB);
 		Graphics2D g2 = tmp.createGraphics();

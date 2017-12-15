@@ -377,27 +377,30 @@ public class sigIRC{
 	public static void DownloadProgramUpdate() {
 		//System.out.println("Last commit size was "+GithubUtils.getSizeOfFileFromLatestGithubCommit("sigIRCv2.jar")+"B");
 		if (autoUpdateProgram==0) {
-			File updatedir = new File(sigIRC.BASEDIR+"sigIRC/updates/");
-			updatedir.mkdirs();
-			File controllerdir = new File(ControllerModule.CONTROLLERPATH);
-			controllerdir.mkdirs();
-			File programFile = new File(sigIRC.BASEDIR+"sigIRC/updates/sigIRCv2.jar");
-			File currentProgramFile = new File(sigIRC.BASEDIR+"sigIRCv2.jar");
-			System.out.println("File size is "+currentProgramFile.length());
-			long fileSize = GithubUtils.getSizeOfFileFromLatestGithubCommit("sigIRCv2.jar");
-			System.out.println("File size on Github is "+fileSize);
-			if (fileSize!=programFile.length()) {
-				System.out.println("File size on Github varies from currently running program... Downloading new program.");
-				try {
-					if (programFile.exists()) {
-						programFile.delete();
+			Thread t = new Thread(()->{
+				File updatedir = new File(sigIRC.BASEDIR+"sigIRC/updates/");
+				updatedir.mkdirs();
+				File controllerdir = new File(ControllerModule.CONTROLLERPATH);
+				controllerdir.mkdirs();
+				File programFile = new File(sigIRC.BASEDIR+"sigIRC/updates/sigIRCv2.jar");
+				File currentProgramFile = new File(sigIRC.BASEDIR+"sigIRCv2.jar");
+				System.out.println("File size is "+currentProgramFile.length());
+				long fileSize = GithubUtils.getSizeOfFileFromLatestGithubCommit("sigIRCv2.jar");
+				System.out.println("File size on Github is "+fileSize);
+				if (fileSize!=programFile.length()) {
+					System.out.println("File size on Github varies from currently running program... Downloading new program.");
+					try {
+						if (programFile.exists()) {
+							programFile.delete();
+						}
+						org.apache.commons.io.FileUtils.copyURLToFile(new URL(sigIRC.PROGRAM_EXECUTABLE_URL),programFile);
+						sigIRC.updateAvailable=true;
+					} catch (IOException e) {
+						e.printStackTrace();
 					}
-					org.apache.commons.io.FileUtils.copyURLToFile(new URL(sigIRC.PROGRAM_EXECUTABLE_URL),programFile);
-					sigIRC.updateAvailable=true;
-				} catch (IOException e) {
-					e.printStackTrace();
 				}
-			}
+			});
+			t.start();
 		}
 	}
 

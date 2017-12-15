@@ -14,6 +14,7 @@ import sig.Module;
 import sig.TextRow;
 import sig.sigIRC;
 import sig.utils.FileUtils;
+import sig.windows.ProgramWindow;
 
 public class ScrollingChatModule extends Module{
 
@@ -76,7 +77,7 @@ public class ScrollingChatModule extends Module{
 		for (int i=0;i<sigIRC.textobj.size();i++) {
         	if (sigIRC.textobj.get(i).isActive()) {
         		if (sigIRC.overlayMode) {
-	        		if (!sigIRC.textobj.get(i).intersects((int)(sigIRC.panel.lastMouseX-position.getX()),(int)(sigIRC.panel.lastMouseY-position.getY()))) {
+	        		if (!sigIRC.textobj.get(i).intersects((int)(ProgramWindow.frame.lastMouseX-position.getX()),(int)(ProgramWindow.frame.lastMouseY-position.getY()))) {
 	        			sigIRC.textobj.get(i).setVisible(true);
 	        			sigIRC.textobj.get(i).draw(g);
 	        		} else {

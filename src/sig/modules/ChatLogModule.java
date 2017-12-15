@@ -24,7 +24,7 @@ import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
 
 public class ChatLogModule extends Module{
-	public static int messageHistoryCount = 20;
+	public static int messageHistoryCount = 50;
 	public List<ChatLogMessage> messageHistory = new ArrayList<ChatLogMessage>();
 	int delay = 150;
 	boolean initialized=false;

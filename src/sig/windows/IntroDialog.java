@@ -108,6 +108,7 @@ public class IntroDialog extends JFrame{
 			e.printStackTrace();
 		}
 		
+		
 		moduleButtons = new ModuleButton[]{
 				new ModuleButton("Scrolling Chat"),
 				new ModuleButton("Chat Log"),

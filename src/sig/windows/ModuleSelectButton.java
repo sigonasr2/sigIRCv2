@@ -10,11 +10,11 @@ import javax.swing.event.ChangeListener;
 import sig.Module;
 
 @SuppressWarnings("serial")
-class ModuleButton extends JToggleButton{
+class ModuleSelectButton extends JToggleButton{
 	String label = "";
-	ModuleButton button;
+	ModuleSelectButton button;
 	Module myModule;
-	public ModuleButton(String label, Module module) {
+	public ModuleSelectButton(String label, Module module) {
 		this.label=label;
 		this.button=this;
 		this.myModule=module;

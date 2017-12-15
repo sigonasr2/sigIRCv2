@@ -35,10 +35,7 @@ import sig.modules.ChatLog.ChatLogMessage;
 import sig.utils.FileUtils;
 
 public class MyPanel extends JPanel{
-	public int lastMouseX = 0;
-	public int lastMouseY = 0;
-
-    public MyPanel() {
+	public MyPanel() {
         //setBorder(BorderFactory.createLineBorder(Color.black));
     	setFocusable(true);
     }
@@ -51,11 +48,6 @@ public class MyPanel extends JPanel{
         super.paintComponent(g);
         // Draw Text
         //int counter=18;
-        if (sigIRC.panel!=null) {
-	        lastMouseX = (int)(MouseInfo.getPointerInfo().getLocation().getX());
-	        lastMouseY = (int)(MouseInfo.getPointerInfo().getLocation().getY());
-	        //System.out.println("("+lastMouseX+","+lastMouseY+")");
-        }
         /*if (sigIRC.window!=null && sigIRC.window.getMousePosition(true)!=null && sigIRC.overlayMode) {
 	        lastMouseX = (int)sigIRC.window.getMousePosition(true).getX();
 	        lastMouseY = (int)sigIRC.window.getMousePosition(true).getY();

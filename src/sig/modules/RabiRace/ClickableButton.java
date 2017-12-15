@@ -37,19 +37,19 @@ public class ClickableButton {
 	}
 
 	public boolean mouseInsideBounds(MouseEvent ev) {
-		return ev.getX()>=module.getPosition().getX()+x && ev.getX()<=module.getPosition().getX()+x+width &&
-				ev.getY()>=module.getPosition().getY()+y && ev.getY()<=module.getPosition().getY()+y+height;
+		return ev.getX()>=0+x && ev.getX()<=0+x+width &&
+				ev.getY()>=0+y && ev.getY()<=0+y+height;
 	}
 	
 	public void draw(Graphics g) {
 		Color color_identity = g.getColor();
 		g.setColor(Color.WHITE);
-		g.drawRect((int)module.getPosition().getX()+x, 
-				(int)module.getPosition().getY()+y, width, height);
+		g.drawRect((int)0+x, 
+				(int)0+y, width, height);
 		g.setColor(Color.BLACK);
-		g.fillRect((int)module.getPosition().getX()+x+1, 
-				(int)module.getPosition().getY()+y+1, width-1, height-1);
-		DrawUtils.drawTextFont(g, sigIRC.userFont, module.getPosition().getX()+x-TextUtils.calculateStringBoundsFont(label, sigIRC.userFont).getWidth()/2+width/2, module.getPosition().getY()+y+height-1, Color.WHITE, label);
+		g.fillRect((int)0+x+1, 
+				(int)0+y+1, width-1, height-1);
+		DrawUtils.drawTextFont(g, sigIRC.userFont, 0+x-TextUtils.calculateStringBoundsFont(label, sigIRC.userFont).getWidth()/2+width/2, 0+y+height-1, Color.WHITE, label);
 		g.setColor(color_identity);
 	}
 }
