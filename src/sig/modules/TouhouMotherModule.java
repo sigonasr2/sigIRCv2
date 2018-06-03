@@ -15,12 +15,24 @@ import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
+import java.util.concurrent.Executors;
+import java.util.concurrent.ScheduledExecutorService;
+import java.util.concurrent.TimeUnit;
 
 import javax.imageio.ImageIO;
 import javax.swing.Timer;
 
+import com.sun.jna.Memory;
+import com.sun.jna.Pointer;
+import com.sun.jna.platform.win32.Kernel32;
+import com.sun.jna.platform.win32.WinNT;
+import com.sun.jna.platform.win32.WinNT.HANDLE;
+
+import sig.FileManager;
 import sig.Module;
 import sig.sigIRC;
+import sig.modules.RabiRibi.MemoryOffset;
+import sig.modules.RabiRibi.MemoryType;
 import sig.modules.TouhouMother.DataProperty;
 import sig.modules.TouhouMother.IncreaseTouhouMotherClockCount;
 import sig.modules.TouhouMother.KillButton;
@@ -31,6 +43,7 @@ import sig.modules.TouhouMother.TouhouMotherButton;
 import sig.modules.TouhouMother.TouhouMotherCharacterData;
 import sig.modules.TouhouMother.TouhouPlayerCharacter;
 import sig.modules.TouhouMother.UpdateButton;
+import sig.modules.utils.PsapiTools;
 import sig.modules.utils.SemiValidInteger;
 import sig.modules.utils.SemiValidString;
 import sig.utils.DrawUtils;
@@ -51,6 +64,11 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	String real_gameData=SemiValidString.ERROR_VALUE;
 	TouhouMotherBossData[] monsterDatabase;
 	TouhouMotherCharacterData[] characterDatabase = new TouhouMotherCharacterData[4];
+	final int PROCESS_PERMISSIONS = WinNT.PROCESS_QUERY_INFORMATION | WinNT.PROCESS_VM_READ;
+	boolean foundTouhouMother = false;
+	int touhouMotherPID = -1;
+	long touhouMotherMemOffset = 0;
+	public HANDLE touhouMotherProcess = null;
 	
 	public List<TimeRecord> recordDatabase = new ArrayList<TimeRecord>();
 	
@@ -89,12 +107,92 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		DisableTouhouMotherClockCount();
 		PopulateRecordDatabase();
 		DefineButton();
+		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		CheckTouhouMotherClient();
+		scheduler.scheduleWithFixedDelay(()->{
+			CheckTouhouMotherClient();
+		}, 5000, 5000, TimeUnit.MILLISECONDS);
+	}
+
+	private void CheckTouhouMotherClient() {
+		List<Integer> pids;
+		try {
+			pids = PsapiTools.getInstance().enumProcesses();	
+			boolean found=false;	
+			for (Integer pid : pids) {
+				HANDLE process = Kernel32.INSTANCE.OpenProcess(PROCESS_PERMISSIONS, true, pid);
+		        List<sig.modules.utils.Module> hModules;
+				try {
+					hModules = PsapiTools.getInstance().EnumProcessModules(process);
+					for(sig.modules.utils.Module m: hModules){
+						/*if (m.getFileName().contains("rpg") || m.getFileName().contains("Touhou")) {
+							System.out.println(m.getFileName()+":"+m.getEntryPoint());
+						}*/
+						if (m.getFileName().contains("RPG_RT")) {
+							found=true;
+							if (!foundTouhouMother) {
+								touhouMotherMemOffset = Pointer.nativeValue(m.getLpBaseOfDll().getPointer());
+								System.out.println("Found an instance of Touhou Mother at 0x"+Long.toHexString(touhouMotherMemOffset)+" | File:"+m.getFileName()+","+m.getBaseName());
+								touhouMotherPID=pid;
+								foundTouhouMother=true;
+								touhouMotherProcess=process;
+								break;
+							}
+							break;
+						}
+			        }
+					if (found) {
+						break;
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				if (process!=null) {
+					Kernel32.INSTANCE.CloseHandle(process);
+				}
+			}
+			if (!found && foundTouhouMother) {
+				foundTouhouMother=false;
+				System.out.println("Touhou Mother process lost.");
+			}
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
 	}
 
 	@Override
 	public void actionPerformed(ActionEvent ev) {
-		memory = FileUtils.readFromFile(sigIRC.BASEDIR+"memory");
+		//memory = FileUtils.readFromFile(sigIRC.BASEDIR+"memory");
 		//System.out.println(Arrays.toString(memory));
+		memory = new String[19];
+		
+		memory[0] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A84,0x6DC,0x2C0,0x8,0x6AC,0x2F0));
+		memory[1] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A90,0x8,0x2E8,0x8,0x6AC,0x2F0));
+		memory[2] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A88,0x454,0x310,0x8,0x6AC,0x2F0));
+		memory[3] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A68,0x3B4,0x37C,0x8,0x6AC,0x2F0));
+		memory[4] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A88,0x6C,0x400,0x8,0x6AC,0x2F0));
+		memory[5] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x2B0,0x384,0x724,0x4D8,0x2DC));
+		memory[6] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x584,0x308,0x6C0,0x73C,0x2D0));
+		memory[7] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A90,0x40,0x5C,0x34,0x6D8,0x190));
+		memory[8] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A58,0x410,0x734,0x424,0x6DC,0x2F0));
+		memory[9] = ReadStringFromBuriedMemoryOffset(0xA2BD8,0x68,0xC,0x0,0x0);
+		memory[10] = ReadStringFromBuriedMemoryOffset(0xA2BD4,0x4,0x9C,0xC,0x0,0x0);
+		memory[11] = ReadStringFromBuriedMemoryOffset(0xA2B70,0x1F8,0x278,0xC,0x0,0x0);
+		memory[12] = ReadStringFromBuriedMemoryOffset(0xA2BD8,0x64,0x10,0x690,0x0,0x0);
+		memory[13] = ReadStringFromBuriedMemoryOffset(0xA2BD8,0x10,0x694,0x690,0x0,0x0);
+		memory[14] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x654,0x308,0x4D4,0x720,0x140));
+		memory[15] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x27C,0x6FC,0x4D4,0x720,0x140));
+		memory[16] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A58,0x144,0x728,0x5C,0x744,0x140));
+		memory[17] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x1F4,0x774,0x72C,0x4F4,0x140));
+		memory[18] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A80,0x44,0x5F0,0x2A8,0x3EC,0x2A0));
+		
+		/*System.out.println("Value 1: "+readIntFromMemory(0xA2BD8));
+		System.out.println("Value 2: "+readIntFromMemoryOffset(0x64,readIntFromMemory(0xA2BD8)));
+		System.out.println("Value 3: "+readIntFromMemoryOffset(0x10,readIntFromMemoryOffset(0x64,readIntFromMemory(0xA2BD8))));
+		System.out.println("Value 4: "+readIntFromMemoryOffset(0x690,readIntFromMemoryOffset(0x10,readIntFromMemoryOffset(0x64,readIntFromMemory(0xA2BD8)))));
+		System.out.println("Value 5: "+readIntFromMemoryOffset(0x0,readIntFromMemoryOffset(0x690,readIntFromMemoryOffset(0x10,readIntFromMemoryOffset(0x64,readIntFromMemory(0xA2BD8))))));
+		System.out.println("Value 6: "+readStringFromMemoryOffset(0x0,readIntFromMemoryOffset(0x0,readIntFromMemoryOffset(0x690,readIntFromMemoryOffset(0x10,readIntFromMemoryOffset(0x64,readIntFromMemory(0xA2BD8)))))));*/
+		
 		if (memory.length>=14) {
 			ProcessMemoryData();
 			ValidateAndControlMonsterData();
@@ -107,6 +205,35 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		swapButton.run();
 		updateButton.run();
 		killButton.run();
+	}
+	
+	public int ReadIntFromBuriedMemoryOffset(long...offsets) {
+		int prev_val = 0;
+		for (int i=0;i<offsets.length;i++) {
+			if (i==0) {
+				prev_val = readIntFromMemory(offsets[i]);
+			} else {
+				prev_val = readIntFromMemoryOffset(offsets[i],prev_val);
+			}
+		}
+		return prev_val;
+	}
+	
+	public String ReadStringFromBuriedMemoryOffset(long...offsets) {
+		int prev_val = 0;
+		String final_val = "";
+		for (int i=0;i<offsets.length;i++) {
+			if (i==0) {
+				prev_val = readIntFromMemory(offsets[i]);
+			} else {
+				if (i==offsets.length-1) {
+					final_val = readStringFromMemoryOffset(offsets[i],prev_val);
+				} else {
+					prev_val = readIntFromMemoryOffset(offsets[i],prev_val);
+				}
+			}
+		}
+		return final_val;
 	}
 	
 	
@@ -266,7 +393,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		if (GetBossData(bossID.getValidInteger())!=null) {
 			bossHP = new SemiValidInteger(Arrays.copyOfRange(memory, 0, 8),GetBossData(bossID.getValidInteger()).getHP(),currentBoss!=null,(bossHP!=null)?bossHP.getTrustedSlot():-1);
 			gameData = new SemiValidString(Arrays.copyOfRange(memory, 9, 13));
-			//System.out.println(bossHP.toString()+";"+bossID.toString()+";"+gameData.toString());
+			System.out.println(bossHP.toString()+";"+bossID.toString()+";"+gameData.toString());
 			real_bossHP = bossHP.getValidInteger();
 			real_bossID = bossID.getValidInteger();
 			real_gameData = gameData.getValidString();
@@ -465,6 +592,10 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		monsterdata.add(new TouhouMotherBossData("Miss Satori", 108, 900000, "TME_108.png"));
 		monsterdata.add(new TouhouMotherBossData("Only God", 48, 4010, "TME_48.png"));
 		monsterDatabase = monsterdata.toArray(new TouhouMotherBossData[monsterdata.size()]);
+		FileManager manager;
+		for (TouhouMotherBossData boss : monsterDatabase) {
+			manager = new FileManager("Boss Sprites/"+boss.getImage()); manager.verifyAndFetchFileFromServer();
+		}
 	}
 	
 	/**
@@ -521,5 +652,82 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	
 	public Rectangle2D getBounds() {
 		return position;
+	}
+	
+
+	public int readIntFromMemory(long offset) {
+		Memory mem = new Memory(4);
+		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(touhouMotherMemOffset+offset), mem, 4, null);
+		return mem.getInt(0);
+	}
+	
+	public float readFloatFromMemory(long offset) {
+		Memory mem = new Memory(4);
+		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(touhouMotherMemOffset+offset), mem, 4, null);
+		return mem.getFloat(0);
+	}
+	
+	public float readFloatFromMemoryOffset(long val, long pointer) {
+		Memory mem = new Memory(4);
+		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(pointer+val), mem, 4, null);
+		return mem.getFloat(0);
+	}
+	
+	public int readIntFromMemoryOffset(long val, long pointer) {
+		Memory mem = new Memory(4);
+		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(pointer+val), mem, 4, null);
+		return mem.getInt(0);
+	}
+	
+	public String readStringFromMemoryOffset(long val, long pointer) {
+		Memory mem = new Memory(128);
+		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(pointer+val), mem, 128, null);
+		return mem.getString(0);
+	}
+	
+	public float readDirectFloatFromMemoryLocation(long pointer) {
+		Memory mem = new Memory(4);
+		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(pointer), mem, 4, null);
+		return mem.getFloat(0);
+	}
+	
+	public int readDirectIntFromMemoryLocation(long pointer) {
+		Memory mem = new Memory(4);
+		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(pointer), mem, 4, null);
+		return mem.getInt(0);
+	}
+	
+	public int readIntFromPointer(long val, long pointer) {
+		Memory mem = new Memory(4);
+		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(readIntFromMemory(pointer)+val), mem, 4, null);
+		return mem.getInt(0);
+	}
+	
+	public float readFloatFromPointer(long val, long pointer) {
+		Memory mem = new Memory(4);
+		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(readIntFromMemory(pointer)+val), mem, 4, null);
+		return mem.getFloat(0);
+	}
+	
+	public int readIntFromMemory(MemoryOffset val) {
+		return (int)readFromMemory(val,MemoryType.INTEGER);
+	}
+	
+	public float readFloatFromMemory(MemoryOffset val) {
+		return (float)readFromMemory(val,MemoryType.FLOAT);
+	}
+	
+	Object readFromMemory(MemoryOffset val, MemoryType type) {
+		Memory mem = new Memory(type.getSize());
+		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(touhouMotherMemOffset+val.getOffset()), mem, type.getSize(), null);
+		switch (type) {
+		case FLOAT:
+			return mem.getFloat(0);
+		case INTEGER:
+			return mem.getInt(0);
+		default:
+			System.out.println("WARNING! Type "+type+" does not have a defined value.");
+			return -1;
+		}
 	}
 }

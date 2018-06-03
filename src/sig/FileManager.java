@@ -46,7 +46,7 @@ public class FileManager {
 			if (!file.exists()) {
 				System.out.println("Could not find "+file.getAbsolutePath()+", retrieving file online from "+serverURL+file.getName()+".");
 				try {
-					org.apache.commons.io.FileUtils.copyURLToFile(new URL(serverURL+fileloc),file);
+					org.apache.commons.io.FileUtils.copyURLToFile(new URL(serverURL.replaceAll(" ", "%20")+fileloc.replaceAll(" ", "%20")),file);
 					if (file.exists()) {
 						System.out.println(" >> Successfully downloaded "+file.getAbsolutePath()+".");
 					}
