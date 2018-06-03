@@ -164,7 +164,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	public void actionPerformed(ActionEvent ev) {
 		//memory = FileUtils.readFromFile(sigIRC.BASEDIR+"memory");
 		//System.out.println(Arrays.toString(memory));
-		memory = new String[19];
+		memory = new String[]{"","","","","","","","","","","","","","","","","","",""};
 		
 		if (foundTouhouMother) {
 			memory[0] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A84,0x6DC,0x2C0,0x8,0x6AC,0x2F0));

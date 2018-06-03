@@ -33,7 +33,11 @@ public class TextUtils {
 	
 	public static boolean isNumeric(String str)
 	{
-	  return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+		if (str.length()>0) {
+		  return str.matches("-?\\d+(\\.\\d+)?");  //match a number with optional '-' and decimal.
+		} else {
+			return false;
+		}
 	}
 	
 	public static boolean isInteger(String s, int radix) {
