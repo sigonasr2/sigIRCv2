@@ -36,7 +36,7 @@ public class SemiValidInteger {
 			if (TextUtils.isNumeric(vals[i])) {
 				double d = Double.parseDouble(vals[i]);
 				if (d>Integer.MAX_VALUE) {
-					System.out.println("Double: "+d+" Val:"+vals[i]);
+					//System.out.println("Double: "+d+" Val:"+vals[i]);
 					vals[i] = Integer.toString((int)(d-((double)Integer.MAX_VALUE*2))-2);
 				}
 			}

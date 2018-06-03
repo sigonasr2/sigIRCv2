@@ -166,25 +166,27 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		//System.out.println(Arrays.toString(memory));
 		memory = new String[19];
 		
-		memory[0] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A84,0x6DC,0x2C0,0x8,0x6AC,0x2F0));
-		memory[1] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A90,0x8,0x2E8,0x8,0x6AC,0x2F0));
-		memory[2] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A88,0x454,0x310,0x8,0x6AC,0x2F0));
-		memory[3] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A68,0x3B4,0x37C,0x8,0x6AC,0x2F0));
-		memory[4] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A88,0x6C,0x400,0x8,0x6AC,0x2F0));
-		memory[5] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x2B0,0x384,0x724,0x4D8,0x2DC));
-		memory[6] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x584,0x308,0x6C0,0x73C,0x2D0));
-		memory[7] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A90,0x40,0x5C,0x34,0x6D8,0x190));
-		memory[8] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A58,0x410,0x734,0x424,0x6DC,0x2F0));
-		memory[9] = ReadStringFromBuriedMemoryOffset(0xA2BD8,0x68,0xC,0x0,0x0);
-		memory[10] = ReadStringFromBuriedMemoryOffset(0xA2BD4,0x4,0x9C,0xC,0x0,0x0);
-		memory[11] = ReadStringFromBuriedMemoryOffset(0xA2B70,0x1F8,0x278,0xC,0x0,0x0);
-		memory[12] = ReadStringFromBuriedMemoryOffset(0xA2BD8,0x64,0x10,0x690,0x0,0x0);
-		memory[13] = ReadStringFromBuriedMemoryOffset(0xA2BD8,0x10,0x694,0x690,0x0,0x0);
-		memory[14] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x654,0x308,0x4D4,0x720,0x140));
-		memory[15] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x27C,0x6FC,0x4D4,0x720,0x140));
-		memory[16] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A58,0x144,0x728,0x5C,0x744,0x140));
-		memory[17] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x1F4,0x774,0x72C,0x4F4,0x140));
-		memory[18] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A80,0x44,0x5F0,0x2A8,0x3EC,0x2A0));
+		if (foundTouhouMother) {
+			memory[0] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A84,0x6DC,0x2C0,0x8,0x6AC,0x2F0));
+			memory[1] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A90,0x8,0x2E8,0x8,0x6AC,0x2F0));
+			memory[2] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A88,0x454,0x310,0x8,0x6AC,0x2F0));
+			memory[3] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A68,0x3B4,0x37C,0x8,0x6AC,0x2F0));
+			memory[4] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A88,0x6C,0x400,0x8,0x6AC,0x2F0));
+			memory[5] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x2B0,0x384,0x724,0x4D8,0x2DC));
+			memory[6] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x584,0x308,0x6C0,0x73C,0x2D0));
+			memory[7] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A90,0x40,0x5C,0x34,0x6D8,0x190));
+			memory[8] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A58,0x410,0x734,0x424,0x6DC,0x2F0));
+			memory[9] = ReadStringFromBuriedMemoryOffset(0xA2BD8,0x68,0xC,0x0,0x0);
+			memory[10] = ReadStringFromBuriedMemoryOffset(0xA2BD4,0x4,0x9C,0xC,0x0,0x0);
+			memory[11] = ReadStringFromBuriedMemoryOffset(0xA2B70,0x1F8,0x278,0xC,0x0,0x0);
+			memory[12] = ReadStringFromBuriedMemoryOffset(0xA2BD8,0x64,0x10,0x690,0x0,0x0);
+			memory[13] = ReadStringFromBuriedMemoryOffset(0xA2BD8,0x10,0x694,0x690,0x0,0x0);
+			memory[14] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x654,0x308,0x4D4,0x720,0x140));
+			memory[15] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x27C,0x6FC,0x4D4,0x720,0x140));
+			memory[16] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A58,0x144,0x728,0x5C,0x744,0x140));
+			memory[17] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2BA0,0x1F4,0x774,0x72C,0x4F4,0x140));
+			memory[18] = Integer.toString(ReadIntFromBuriedMemoryOffset(0xA2A80,0x44,0x5F0,0x2A8,0x3EC,0x2A0));
+		}
 		
 		/*System.out.println("Value 1: "+readIntFromMemory(0xA2BD8));
 		System.out.println("Value 2: "+readIntFromMemoryOffset(0x64,readIntFromMemory(0xA2BD8)));
@@ -393,7 +395,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 		if (GetBossData(bossID.getValidInteger())!=null) {
 			bossHP = new SemiValidInteger(Arrays.copyOfRange(memory, 0, 8),GetBossData(bossID.getValidInteger()).getHP(),currentBoss!=null,(bossHP!=null)?bossHP.getTrustedSlot():-1);
 			gameData = new SemiValidString(Arrays.copyOfRange(memory, 9, 13));
-			System.out.println(bossHP.toString()+";"+bossID.toString()+";"+gameData.toString());
+			//System.out.println(bossHP.toString()+";"+bossID.toString()+";"+gameData.toString());
 			real_bossHP = bossHP.getValidInteger();
 			real_bossID = bossID.getValidInteger();
 			real_gameData = gameData.getValidString();
@@ -657,8 +659,11 @@ public class TouhouMotherModule extends Module implements ActionListener{
 
 	public int readIntFromMemory(long offset) {
 		Memory mem = new Memory(4);
-		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(touhouMotherMemOffset+offset), mem, 4, null);
-		return mem.getInt(0);
+		if (!Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(touhouMotherMemOffset+offset), mem, 4, null)) {
+			return -1;
+		} else {
+			return mem.getInt(0);
+		}
 	}
 	
 	public float readFloatFromMemory(long offset) {
@@ -675,14 +680,20 @@ public class TouhouMotherModule extends Module implements ActionListener{
 	
 	public int readIntFromMemoryOffset(long val, long pointer) {
 		Memory mem = new Memory(4);
-		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(pointer+val), mem, 4, null);
-		return mem.getInt(0);
+		if (!Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(pointer+val), mem, 4, null)) {
+			return -1;
+		} else {
+			 return mem.getInt(0);
+		}
 	}
 	
 	public String readStringFromMemoryOffset(long val, long pointer) {
 		Memory mem = new Memory(128);
-		Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(pointer+val), mem, 128, null);
-		return mem.getString(0);
+		if (!Kernel32.INSTANCE.ReadProcessMemory(touhouMotherProcess, new Pointer(pointer+val), mem, 128, null)) {
+			return "";
+		} else {
+			return mem.getString(0);
+		}
 	}
 	
 	public float readDirectFloatFromMemoryLocation(long pointer) {
