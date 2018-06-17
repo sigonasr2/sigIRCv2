@@ -50,7 +50,7 @@ public class PsapiTools {
             boolean success = psapi.EnumProcessModules(hProcess, lphModule, lphModule.length, lpcbNeededs);
             if (!success){
 	            int err=k32.GetLastError();
-	            if (err!=6) {
+	            if (err!=6 && err!=299) {
 	            	throw new Exception("EnumProcessModules failed. Error: "+err);
 	            }
             }
