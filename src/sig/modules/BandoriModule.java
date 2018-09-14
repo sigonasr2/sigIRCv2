@@ -94,7 +94,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("saya_bread",Arrays.asList("bread"));
 		stamp_map.put("arisa_doki",Arrays.asList("doki"));
 		stamp_map.put("ran_same",Arrays.asList("sameasalways","alwayssame","alwaysthesame"));
-		stamp_map.put("moca_youdidit",Arrays.asList("youdidit","congratulations","buns"));
+		stamp_map.put("moca_youdidit",Arrays.asList("youdidit","congratulations","buns","mocatastic"));
 		stamp_map.put("himari_heyheyhoh",Arrays.asList("heyo","heyheyhoh","heyhey","hihi"));
 		stamp_map.put("tomoe_letsdothis",Arrays.asList("letsdothis","letsdoit"));
 		stamp_map.put("tsugumi_wecandoit",Arrays.asList("wegotthis","wegotit","wecan"));
@@ -120,7 +120,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("kaoru_suchalovelyevening",Arrays.asList("goodevening","lovelyevening","beautifulnight","grandnight","wonderfulevening"));
 		stamp_map.put("rimi_congrats",Arrays.asList("grats"));
 		stamp_map.put("ran_somethingbigiscoming",Arrays.asList("somethingbig","iscoming"));
-		stamp_map.put("tsugumi_comeon",Arrays.asList("comeon","dontbeafraid","dontbeshy"));
+		stamp_map.put("tsugumi_comeon",Arrays.asList("comeon","dontbeafraid","dontbeshy","tsugurific"));
 		stamp_map.put("tae_fufusocute",Arrays.asList("socute","kawaii","fufu","adorable","cute"));
 		stamp_map.put("eve_marchintobattle",Arrays.asList("marchintobattle","chargeintobattle"));
 		stamp_map.put("saya_illtry",Arrays.asList("illtry","itachance","itatry","atleastonce"));
@@ -156,12 +156,14 @@ public class BandoriModule extends Module{
 					if (message.contains(message_search)) {
 						foundmatch = true;
 						CreateStamp(key);
+						System.out.println("Stamp "+key+" created by user "+user+" MESSAGE:"+message+".");
 						break;
 					}
 				} else {
 					if (filteredmessage.contains(message_search)) {
 						foundmatch=true;
 						CreateStamp(key);
+						System.out.println("Stamp "+key+" created by user "+user+" MESSAGE:"+message+".");
 						break;
 					}
 				}
