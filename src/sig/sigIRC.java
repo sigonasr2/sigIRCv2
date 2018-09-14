@@ -22,6 +22,7 @@ import com.sun.jna.platform.win32.WinNT;
 import com.sun.jna.platform.win32.WinNT.HANDLE;
 import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 
+import sig.modules.BandoriModule;
 import sig.modules.ChatLogModule;
 import sig.modules.ControllerModule;
 import sig.modules.RabiRaceModule;
@@ -135,6 +136,11 @@ public class sigIRC{
 	public static int rabiribimodule_height=312;
 	public static int rabiribimodule_X=0;
 	public static int rabiribimodule_Y=312;
+	public static int bandorimodule_width=320;
+	public static int bandorimodule_height=312;
+	public static int bandorimodule_X=0;
+	public static int bandorimodule_Y=312;
+	public static boolean bandorimodule_enabled=false;
 	public static boolean rabiribimodule_enabled=false;
 	public static int rabiracemodule_width=320;
 	public static int rabiracemodule_height=312;
@@ -220,6 +226,11 @@ public class sigIRC{
 		rabiribimodule_width = config.getInteger("RABIRIBI_module_width",320);
 		rabiribimodule_height = config.getInteger("RABIRIBI_module_height",312);
 		rabiribimodule_enabled = config.getBoolean("Module_rabiribi_Enabled", false);*/
+		bandorimodule_X = config.getInteger("BANDORI_module_X", 240);
+		bandorimodule_Y = config.getInteger("BANDORI_module_Y", 0);
+		bandorimodule_width = config.getInteger("BANDORI_module_width", 640);
+		bandorimodule_height = config.getInteger("BANDORI_module_height", 120);
+		bandorimodule_enabled = config.getBoolean("Module_bandori_Enabled", false);
 		rabiracemodule_X = config.getInteger("RABIRACE_module_X",0);
 		rabiracemodule_Y = config.getInteger("RABIRACE_module_Y",312);
 		rabiracemodule_width = config.getInteger("RABIRACE_module_width",320);
@@ -327,6 +338,8 @@ public class sigIRC{
 		manager = new FileManager("update.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("backcolor.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("drag_bar.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/stamps1.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/stamps2.png"); manager.verifyAndFetchFileFromServer();
 		DownloadProgramUpdate();
 		System.out.println("Downloaded Dependencies. ");
 	}
@@ -398,6 +411,12 @@ public class sigIRC{
 			modules.add(new RabiRaceModule(
 					new Rectangle(rabiracemodule_X,rabiracemodule_Y,rabiracemodule_width,rabiracemodule_height),
 					"Rabi-Race"
+					));
+		}
+		if (bandorimodule_enabled) {
+			modules.add(new BandoriModule(
+					new Rectangle(bandorimodule_X,bandorimodule_Y,bandorimodule_width,bandorimodule_height),
+					"Bandori"
 					));
 		}
 	}

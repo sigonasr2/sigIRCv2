@@ -30,6 +30,7 @@ import javax.swing.JMenuItem;
 import javax.swing.JPanel;
 import javax.swing.JPopupMenu;
 
+import sig.modules.BandoriModule;
 import sig.modules.ChatLogModule;
 import sig.modules.ChatLog.ChatLogMessage;
 import sig.utils.FileUtils;
@@ -120,6 +121,9 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
     	TextRow row = TextRow.PickRandomTextRow(text.getUsername());
     	sigIRC.textobj.add(text);
     	row.updateRow(text);
+    	if (sigIRC.bandorimodule_enabled) {
+    		BandoriModule.checkForStamp(text.getUsername(), text.getMessage());
+    	}
     	//ChatLogMessage.importMessages(message);
     }
 
