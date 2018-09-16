@@ -95,16 +95,16 @@ public class BandoriModule extends Module{
 		stamp_map.put("arisa_doki",Arrays.asList("doki"));
 		stamp_map.put("ran_same",Arrays.asList("sameasalways","alwayssame","alwaysthesame"));
 		stamp_map.put("moca_youdidit",Arrays.asList("youdidit","congratulations","buns","mocatastic"));
-		stamp_map.put("himari_heyheyhoh",Arrays.asList("heyo","heyheyhoh","heyhey","hihi"));
+		stamp_map.put("himari_heyheyhoh",Arrays.asList("heyo","heyhey","hihi","hiyo"));
 		stamp_map.put("tomoe_letsdothis",Arrays.asList("letsdothis","letsdoit"));
 		stamp_map.put("tsugumi_wecandoit",Arrays.asList("wegotthis","wegotit","wecan"));
 		stamp_map.put("kokoro_happylucky",Arrays.asList("happy!","lucky"));
 		stamp_map.put("kaoru_fleeting",Arrays.asList("fleeting"));
 		stamp_map.put("hagumi_smileyay",Arrays.asList("smileyay","yay"));
-		stamp_map.put("kanon_fuee",Arrays.asList("fuee","waa","ree"));
+		stamp_map.put("kanon_fuee",Arrays.asList("fue","waa","reee"));
 		stamp_map.put("misaki_ready",Arrays.asList("amready","beenready","ready!"));
 		stamp_map.put("aya_fever",Arrays.asList("fever"));
-		stamp_map.put("hina_fullcombo",Arrays.asList("fc","fullcombo","nomiss","allperfect","notasinglemiss"));
+		stamp_map.put("hina_fullcombo",Arrays.asList("fcd","fullcombo","nomiss","allperfect","notasinglemiss","thefc","anfc","fullperfect"));
 		stamp_map.put("chisato_planned",Arrays.asList("justasplanned","allplanned","calculated","thatcoming"));
 		stamp_map.put("maya_huhehe",Arrays.asList("hehe","huehe","huehue"));
 		stamp_map.put("eve_bushido",Arrays.asList("bushido"));
@@ -116,7 +116,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("marina_yeahyeah",Arrays.asList("yeahyeah","letsgo"));
 		stamp_map.put("kokoro_moremore",Arrays.asList("moremore","iwantmore"));
 		stamp_map.put("arisa_huh",Arrays.asList("huh?","hh?","yy?","aat?","aa?","tt?","nani","nand"));
-		stamp_map.put("yukina_followmylead",Arrays.asList("followmylead","takethelead","guideyou"));
+		stamp_map.put("yukina_followmylead",Arrays.asList("followmylead","takethelead","guideyou","fullydevoted"));
 		stamp_map.put("kaoru_suchalovelyevening",Arrays.asList("goodevening","lovelyevening","beautifulnight","grandnight","wonderfulevening"));
 		stamp_map.put("rimi_congrats",Arrays.asList("grats"));
 		stamp_map.put("ran_somethingbigiscoming",Arrays.asList("somethingbig","iscoming"));
@@ -126,7 +126,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("saya_illtry",Arrays.asList("illtry","itachance","itatry","atleastonce"));
 		stamp_map.put("lisa_imsohappy",Arrays.asList("ecstatic","sohappy","toohappy"));
 		stamp_map.put("sayo_ohwell",Arrays.asList("ohwell","ahwell","youtried"));
-		stamp_map.put("ako_areyouokay",Arrays.asList("youok","beok","daijou"));
+		stamp_map.put("ako_areyouokay",Arrays.asList("youok","beok","daijo"));
 		stamp_map.put("chisato_thisissomuchfun",Arrays.asList("muchfun","veryfun","reallyfun","extremelyfun","offun"));
 		stamp_map.put("rinko_theresnoway",Arrays.asList("noway"));
 		stamp_map.put("tae_thisisgreat",Arrays.asList("thisisgreat","thisisawesome","thisiswonderful"));
