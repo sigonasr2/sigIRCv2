@@ -93,7 +93,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("tae_letsplay",Arrays.asList("playtogether","wanttoplay","multilive","letsplay"));
 		stamp_map.put("rimi_choco",Arrays.asList("choco","cornet"));
 		stamp_map.put("saya_bread",Arrays.asList("bread"));
-		stamp_map.put("arisa_doki",Arrays.asList("doki"));
+		stamp_map.put("arisa_doki",Arrays.asList("doki","chomama"));
 		stamp_map.put("ran_same",Arrays.asList("sameasalways","alwayssame","alwaysthesame"));
 		stamp_map.put("moca_youdidit",Arrays.asList("youdidit","congratulations","buns","mocatastic"));
 		stamp_map.put("himari_heyheyhoh",Arrays.asList("heyo","heyhey","hihi","hiyo"));
@@ -107,7 +107,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("misaki_ready",Arrays.asList("amready","beenready","ready!"));
 		stamp_map.put("hina_fullcombo",Arrays.asList("fcd","fullcombo","nomiss","allperfect","notasinglemiss","thefc","anfc","fullperfect"));
 		stamp_map.put("chisato_planned",Arrays.asList("justasplanned","allplanned","calculated","thatcoming"));
-		stamp_map.put("maya_huhehe",Arrays.asList("hehe","huehe","huehue"));
+		stamp_map.put("maya_huhehe",Arrays.asList("hehe","huehe","huehue","shuwashuwa"));
 		stamp_map.put("eve_bushido",Arrays.asList("bushido"));
 		stamp_map.put("yukina_notbad",Arrays.asList("notbad","veryclose"));
 		stamp_map.put("sayo_goodwork",Arrays.asList("goodwork","goodjob","nicejob","welldone","greatwork","greatjob"));
@@ -135,7 +135,36 @@ public class BandoriModule extends Module{
 		stamp_map.put("kaoru_takemyhand",Arrays.asList("takemyhand","allowmeto","demonstrate","romeo"));
 		stamp_map.put("kokoro_letsmaketheworldsmile",Arrays.asList("hhw","happyworld","hellohappy","worldsmile"));
 		stamp_map.put("hina_nowwereboppin",Arrays.asList("bop","nowwere"));
+		
+		/*for (String s : image_map.keySet()) {
+			ImageScheme scheme = image_map.get(s);
+			try {
+				BufferedImage img = crop(scheme.base,scheme.stamp_index%6*270+4, scheme.stamp_index/6*223+3, 258, 214);
+				ImageIO.write(img, "png", new File(sigIRC.BASEDIR + "sigIRC/stamps/"+s+".png"));
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}*/
 	}
+	
+	public BufferedImage crop(BufferedImage img, int x, int y, int targetWidth, int targetHeight) throws IOException {
+        int height = img.getHeight();
+        int width = img.getWidth();
+
+        // Coordinates of the image's middle
+        int xc = (width - targetWidth) / 2;
+        int yc = (height - targetHeight) / 2;
+
+        // Crop
+        BufferedImage croppedImage = img.getSubimage(x, y, targetWidth, targetHeight);
+        /*BufferedImage croppedImage = img.getSubimage(
+                        xc, 
+                        yc,
+                        targetWidth, // widht
+                        targetHeight // height
+        );*/
+        return croppedImage;
+    }
 	
 	public void run() {
 		for (int i=0;i<active_stamps.size();i++) {
@@ -149,6 +178,9 @@ public class BandoriModule extends Module{
 	public static void checkForStamp(String user,String message) {
 		boolean foundmatch = false;
 		message = message.toLowerCase().replaceAll("[ ]", "");
+		if (message.length()>480) {
+			return;
+		}
 		for (String key : image_map.keySet()) {
 			for (String message_search : stamp_map.get(key)) {
 				String filteredmessage = message;
