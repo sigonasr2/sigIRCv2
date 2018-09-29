@@ -102,7 +102,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("kokoro_happylucky",Arrays.asList("happy!","lucky"));
 		stamp_map.put("kaoru_fleeting",Arrays.asList("fleeting"));
 		stamp_map.put("aya_fever",Arrays.asList("fever","ayay"));
-		stamp_map.put("hagumi_smileyay",Arrays.asList("smileyay","yay"));
+		stamp_map.put("hagumi_smileyay",Arrays.asList("smileyay","yay!"));
 		stamp_map.put("kanon_fuee",Arrays.asList("fue","waa","reee"));
 		stamp_map.put("misaki_ready",Arrays.asList("amready","beenready","ready!"));
 		stamp_map.put("hina_fullcombo",Arrays.asList("fcd","fullcombo","nomiss","allperfect","notasinglemiss","thefc","anfc","fullperfect"));
