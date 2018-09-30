@@ -20,7 +20,7 @@ import sig.utils.SoundUtils;
 
 public class BandoriModule extends Module{
 	public static BandoriModule bandori_module;
-	public BufferedImage stamp_collection1,stamp_collection2;
+	public BufferedImage stamp_collection1,stamp_collection2,stamp_what_a_great_idea;
 	public static HashMap<String,ImageScheme> image_map = new HashMap<String,ImageScheme>();
 	public static HashMap<String,List<String>> stamp_map = new HashMap<String,List<String>>();
 	static List<Stamp> active_stamps = new ArrayList<Stamp>();
@@ -39,6 +39,7 @@ public class BandoriModule extends Module{
 		try {
 			stamp_collection1 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamps1.png"));
 			stamp_collection2 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamps2.png"));
+			stamp_what_a_great_idea = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamp_what_a_great_idea.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -88,6 +89,7 @@ public class BandoriModule extends Module{
 		image_map.put("kaoru_takemyhand", new ImageScheme(stamp_collection2,20));
 		image_map.put("kokoro_letsmaketheworldsmile", new ImageScheme(stamp_collection2,21));
 		image_map.put("hina_nowwereboppin", new ImageScheme(stamp_collection2,22));
+		image_map.put("kokoro_what_a_great_idea", new ImageScheme(stamp_what_a_great_idea,1));
 		
 		stamp_map.put("kasumi_gogo",Arrays.asList("gogo"));
 		stamp_map.put("tae_letsplay",Arrays.asList("playtogether","wanttoplay","multilive","letsplay"));
@@ -135,6 +137,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("kaoru_takemyhand",Arrays.asList("takemyhand","allowmeto","demonstrate","romeo"));
 		stamp_map.put("kokoro_letsmaketheworldsmile",Arrays.asList("hhw","happyworld","hellohappy","worldsmile"));
 		stamp_map.put("hina_nowwereboppin",Arrays.asList("bop","nowwere","zap"));
+		stamp_map.put("kokoro_what_a_great_idea",Arrays.asList("greatidea","goodidea","greatthinking","goodthinking"));
 		
 		/*for (String s : image_map.keySet()) {
 			ImageScheme scheme = image_map.get(s);
