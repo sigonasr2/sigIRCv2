@@ -89,7 +89,7 @@ public class BandoriModule extends Module{
 		image_map.put("kaoru_takemyhand", new ImageScheme(stamp_collection2,20));
 		image_map.put("kokoro_letsmaketheworldsmile", new ImageScheme(stamp_collection2,21));
 		image_map.put("hina_nowwereboppin", new ImageScheme(stamp_collection2,22));
-		image_map.put("kokoro_what_a_great_idea", new ImageScheme(stamp_what_a_great_idea,1));
+		image_map.put("kokoro_what_a_great_idea", new ImageScheme(stamp_what_a_great_idea,0));
 		
 		stamp_map.put("kasumi_gogo",Arrays.asList("gogo"));
 		stamp_map.put("tae_letsplay",Arrays.asList("playtogether","wanttoplay","multilive","letsplay"));
