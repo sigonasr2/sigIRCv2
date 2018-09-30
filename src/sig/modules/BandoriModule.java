@@ -25,6 +25,7 @@ public class BandoriModule extends Module{
 	public static HashMap<String,List<String>> stamp_map = new HashMap<String,List<String>>();
 	static List<Stamp> active_stamps = new ArrayList<Stamp>();
 	
+	
 	public BandoriModule(Rectangle2D bounds, String moduleName) {
 		this(bounds,moduleName,true);
 	}

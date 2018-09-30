@@ -177,7 +177,7 @@ public class sigIRC{
 	
 	static int lastWindowX = 0;
 	static int lastWindowY = 0;
-
+	public static String longString = "10988989d";
 	public static Twitch manager = new Twitch();
 	
 	public static void main(String[] args) {
