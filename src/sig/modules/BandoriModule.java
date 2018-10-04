@@ -95,7 +95,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("tae_letsplay",Arrays.asList("playtogether","wanttoplay","multilive","letsplay"));
 		stamp_map.put("rimi_choco",Arrays.asList("choco","cornet"));
 		stamp_map.put("saya_bread",Arrays.asList("bread"));
-		stamp_map.put("arisa_doki",Arrays.asList("doki","chomama"));
+		stamp_map.put("arisa_doki",Arrays.asList("doki","chomama","baka"));
 		stamp_map.put("ran_same",Arrays.asList("sameasalways","alwayssame","alwaysthesame"));
 		stamp_map.put("moca_youdidit",Arrays.asList("youdidit","congratulations","buns","mocatastic"));
 		stamp_map.put("himari_heyheyhoh",Arrays.asList("heyo","heyhey","hihi","hiyo"));
