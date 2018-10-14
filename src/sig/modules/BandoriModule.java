@@ -39,7 +39,7 @@ public class BandoriModule extends Module{
 		BandoriModule.bandori_module = this;
 		try {
 			stamp_collection1 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamps1.png"));
-			stamp_collection2 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamps2.png"));
+			stamp_collection2 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamps2_1.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -90,6 +90,7 @@ public class BandoriModule extends Module{
 		image_map.put("kokoro_letsmaketheworldsmile", new ImageScheme(stamp_collection2,21));
 		image_map.put("hina_nowwereboppin", new ImageScheme(stamp_collection2,22));
 		image_map.put("kokoro_what_a_great_idea", new ImageScheme(stamp_collection2,23));
+		image_map.put("sayo_im_sorry", new ImageScheme(stamp_collection2,24));
 		
 		stamp_map.put("kasumi_gogo",Arrays.asList("gogo"));
 		stamp_map.put("tae_letsplay",Arrays.asList("playtogether","wanttoplay","multilive","letsplay"));
@@ -114,7 +115,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("yukina_notbad",Arrays.asList("notbad","veryclose"));
 		stamp_map.put("sayo_goodwork",Arrays.asList("goodwork","goodjob","nicejob","welldone","greatwork","greatjob"));
 		stamp_map.put("lisa_nextonelastone",Arrays.asList("lastone","mylast"));
-		stamp_map.put("ako_onemoretime",Arrays.asList("onemore","goagain","keepgoing","dontstop"));
+		stamp_map.put("ako_onemoretime",Arrays.asList("onemore","goagain","keepgoing","dontstop","runit"));
 		stamp_map.put("rinko_jam",Arrays.asList("lovethissong","jam"));
 		stamp_map.put("marina_yeahyeah",Arrays.asList("yeahyeah","letsgo"));
 		stamp_map.put("kokoro_moremore",Arrays.asList("moremore","iwantmore"));
@@ -138,6 +139,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("kokoro_letsmaketheworldsmile",Arrays.asList("hhw","happyworld","hellohappy","worldsmile"));
 		stamp_map.put("hina_nowwereboppin",Arrays.asList("bop","nowwere","zap"));
 		stamp_map.put("kokoro_what_a_great_idea",Arrays.asList("greatidea","goodidea","greatthinking","goodthinking"));
+		stamp_map.put("sayo_im_sorry",Arrays.asList("sorry","gomen","apologize","somethingwrong","forgive"));
 		
 		/*for (String s : image_map.keySet()) {
 			ImageScheme scheme = image_map.get(s);

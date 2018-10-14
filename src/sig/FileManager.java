@@ -14,13 +14,13 @@ public class FileManager {
 	
 	public FileManager(String location) {
 		this.fileloc=location;
-		if (fileloc.contains(" ")) {
+		/*if (fileloc.contains(" ")) {
 			System.out.println("!!!!!!!!!!!!!!!!!!");
 			System.out.println("!!!!!WARNING!!!!!!");
 			System.out.println("There is a space in the global file location "+fileloc+". This is going to cause huge errors!");
 			System.out.println("!!!!!!!!!!!!!!!!!!");
 			DebugUtils.showStackTrace();
-		}
+		}*/
 		this.folder=false;
 	}
 	

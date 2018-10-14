@@ -339,7 +339,7 @@ public class sigIRC{
 		manager = new FileManager("backcolor.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("drag_bar.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/stamps1.png"); manager.verifyAndFetchFileFromServer();
-		manager = new FileManager("sigIRC/stamps2.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/stamps2_1.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/stamp_what_a_great_idea.png"); manager.verifyAndFetchFileFromServer();
 		DownloadProgramUpdate();
 		System.out.println("Downloaded Dependencies. ");
@@ -522,17 +522,17 @@ public class sigIRC{
 				emoticons.add(new Emoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0")));
 				System.out.println("Emote "+id+" with name "+name);
 			}
-					//System.out.println("Subscriber object: "+subemotes);
-					String[] channel_names = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/subscribers.txt");
-					subchannelCount = channel_names.length;
-					//System.out.println("Expecting "+subchannelCount+" Channel IDs.");
-					for (String s : channel_names) {
-						if (s.length()>0) {
-							s=s.trim();
-							//System.out.println("Got sub emote info for "+s);
-							getSubChannels(s);
-						}
-					}
+			//System.out.println("Subscriber object: "+subemotes);
+			String[] channel_names = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/subscribers.txt");
+			subchannelCount = channel_names.length;
+			//System.out.println("Expecting "+subchannelCount+" Channel IDs.");
+			for (String s : channel_names) {
+				if (s.length()>0) {
+					s=s.trim();
+					//System.out.println("Got sub emote info for "+s);
+					getSubChannels(s);
+				}
+			}
 			/*JSONObject emotelist = twitchemotes.getJSONObject("emotes");
 			JSONObject templatelist = twitchemotes.getJSONObject("template");
 			String templateurl = templatelist.getString("small");
