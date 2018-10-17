@@ -74,9 +74,11 @@ public class ControllerModule extends Module{
 	final static int RESIZE_BORDER = 5;
 	final static double MINIMUM_ELEMENT_SIZE=8;
 	boolean proportionalResize=false;
+	public static ControllerModule controller_module;
 
 	public ControllerModule(Rectangle2D bounds, String moduleName) {
 		super(bounds, moduleName);
+		ControllerModule.controller_module = this;
 		if (!GLFW.glfwInit()) {
 			System.out.println("Failed to initialize GLFW!");
 		} else {

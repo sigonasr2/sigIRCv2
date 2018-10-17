@@ -25,6 +25,7 @@ import com.sun.jna.platform.win32.WinNT.HANDLEByReference;
 import sig.modules.BandoriModule;
 import sig.modules.ChatLogModule;
 import sig.modules.ControllerModule;
+import sig.modules.DDRStepModule;
 import sig.modules.RabiRaceModule;
 import sig.modules.RabiRibiModule;
 import sig.modules.TouhouMotherModule;
@@ -79,7 +80,7 @@ public class sigIRC{
 	public static List<CustomSound> customsounds = new ArrayList<CustomSound>();
 	public static List<Module> modules = new ArrayList<Module>();
 	static UpdateEvent updater = new UpdateEvent();
-	static Timer programClock = new Timer(32,updater);
+	static Timer programClock = new Timer(10,updater);
 	final public static int BASESCROLLSPD = 4;
 	final public static int ROWSEPARATION = 64;
 	final public static String BASEDIR = "./"; 
@@ -140,6 +141,11 @@ public class sigIRC{
 	public static int bandorimodule_height=312;
 	public static int bandorimodule_X=0;
 	public static int bandorimodule_Y=312;
+	public static int ddrstepmodule_width=320;
+	public static int ddrstepmodule_height=312;
+	public static int ddrstepmodule_X=0;
+	public static int ddrstepmodule_Y=312;
+	public static boolean ddrstepmodule_enabled=false;
 	public static boolean bandorimodule_enabled=false;
 	public static boolean rabiribimodule_enabled=false;
 	public static int rabiracemodule_width=320;
@@ -231,6 +237,11 @@ public class sigIRC{
 		bandorimodule_width = config.getInteger("BANDORI_module_width", 640);
 		bandorimodule_height = config.getInteger("BANDORI_module_height", 120);
 		bandorimodule_enabled = config.getBoolean("Module_bandori_Enabled", false);
+		ddrstepmodule_X = config.getInteger("ddrstep_module_X", 240);
+		ddrstepmodule_Y = config.getInteger("ddrstep_module_Y", 0);
+		ddrstepmodule_width = config.getInteger("ddrstep_module_width", 640);
+		ddrstepmodule_height = config.getInteger("ddrstep_module_height", 120);
+		ddrstepmodule_enabled = config.getBoolean("Module_ddrstep_Enabled", false);
 		rabiracemodule_X = config.getInteger("RABIRACE_module_X",0);
 		rabiracemodule_Y = config.getInteger("RABIRACE_module_Y",312);
 		rabiracemodule_width = config.getInteger("RABIRACE_module_width",320);
@@ -418,6 +429,12 @@ public class sigIRC{
 			modules.add(new BandoriModule(
 					new Rectangle(bandorimodule_X,bandorimodule_Y,bandorimodule_width,bandorimodule_height),
 					"Bandori"
+					));
+		}
+		if (ddrstepmodule_enabled) {
+			modules.add(new DDRStepModule(
+					new Rectangle(ddrstepmodule_X,ddrstepmodule_Y,ddrstepmodule_width,ddrstepmodule_height),
+					"DDR Step"
 					));
 		}
 	}
