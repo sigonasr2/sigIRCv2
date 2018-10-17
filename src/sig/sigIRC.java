@@ -80,7 +80,7 @@ public class sigIRC{
 	public static List<CustomSound> customsounds = new ArrayList<CustomSound>();
 	public static List<Module> modules = new ArrayList<Module>();
 	static UpdateEvent updater = new UpdateEvent();
-	static Timer programClock = new Timer(10,updater);
+	static Timer programClock = new Timer(33,updater);
 	final public static int BASESCROLLSPD = 4;
 	final public static int ROWSEPARATION = 64;
 	final public static String BASEDIR = "./"; 
