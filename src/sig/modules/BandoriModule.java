@@ -92,6 +92,7 @@ public class BandoriModule extends Module{
 		image_map.put("kokoro_what_a_great_idea", new ImageScheme(stamp_collection2,23));
 		image_map.put("sayo_im_sorry", new ImageScheme(stamp_collection2,24));
 		image_map.put("hagumi_hooray", new ImageScheme(stamp_collection2,25));
+		image_map.put("tsugumi_amazing", new ImageScheme(stamp_collection2,26));
 		
 		stamp_map.put("kasumi_gogo",Arrays.asList("gogo"));
 		stamp_map.put("tae_letsplay",Arrays.asList("playtogether","wanttoplay","multilive","letsplay"));
@@ -125,7 +126,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("kaoru_suchalovelyevening",Arrays.asList("goodevening","lovelyevening","beautifulnight","grandnight","wonderfulevening"));
 		stamp_map.put("rimi_congrats",Arrays.asList("grats"));
 		stamp_map.put("ran_somethingbigiscoming",Arrays.asList("somethingbig","iscoming","thatishowiroll","truecolor"));
-		stamp_map.put("tsugumi_comeon",Arrays.asList("comeon","dontbeafraid","dontbeshy","tsugurific"));
+		stamp_map.put("tsugumi_comeon",Arrays.asList("comeon","dontbeafraid","dontbeshy"));
 		stamp_map.put("tae_fufusocute",Arrays.asList("socute","kawaii","fufu","adorable","cute"));
 		stamp_map.put("eve_marchintobattle",Arrays.asList("marchintobattle","chargeintobattle"));
 		stamp_map.put("saya_illtry",Arrays.asList("illtry","itachance","itatry","atleastonce"));
@@ -142,6 +143,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("kokoro_what_a_great_idea",Arrays.asList("greatidea","goodidea","greatthinking","goodthinking"));
 		stamp_map.put("sayo_im_sorry",Arrays.asList("sorry","gomen","apologize","somethingwrong","forgive"));
 		stamp_map.put("hagumi_hooray",Arrays.asList("hooray","hiphip","whoo","yahoo"));
+		stamp_map.put("tsugumi_amazing",Arrays.asList("amazing","wow","sugoi","wooo","cool!","tsugurific"));
 		
 		/*for (String s : image_map.keySet()) {
 			ImageScheme scheme = image_map.get(s);
