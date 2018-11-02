@@ -111,6 +111,9 @@ public class sigIRC{
 	static String messageFont="Gill Sans Ultra Bold Condensed";
 	static String usernameFont="GillSansMTStd-Book";
 	static String touhoumotherConsoleFont="Agency FB Bold";
+	static Integer messageFontSize = 24;
+	static Integer usernameFontSize = 16;
+	static Integer touhoumotherConsoleFontSize = 12;
 	static boolean touhoumothermodule_enabled=false;
 	static boolean twitchmodule_enabled=true;
 	public static boolean chatlogmodule_enabled=true;
@@ -206,6 +209,9 @@ public class sigIRC{
 		messageFont = config.getProperty("messageFont","Gill Sans Ultra Bold Condensed");
 		usernameFont = config.getProperty("usernameFont","Segoe UI Semibold");
 		touhoumotherConsoleFont = config.getProperty("touhoumotherConsoleFont","Agency FB Bold");
+		messageFontSize = config.getInteger("messageFontSize",24);
+		usernameFontSize = config.getInteger("usernameFontSize",16);
+		touhoumotherConsoleFontSize = config.getInteger("touhouMotherConsoleFontSize",12);
 		touhoumothermodule_enabled = config.getBoolean("Module_touhoumother_Enabled",false);
 		controllermodule_enabled = config.getBoolean("Module_controller_Enabled",false);
 		twitchmodule_enabled = config.getBoolean("Module_twitch_Enabled",true);
@@ -616,8 +622,10 @@ public class sigIRC{
 		    		authenticated=true;
 		    	} else
 		    	if (MessageIsAllowed(line)) {
+		    		line = new String(line.getBytes(),"UTF-8");
 		    		String filteredMessage = FilterMessage(line);
 		    		panel.addMessage(filteredMessage);
+		    		
 		    	}
 		    }
 		}
@@ -625,13 +633,17 @@ public class sigIRC{
 	
     private static String FilterMessage(String line) {
     	final String hostcutoff_str = "sigonitori :";
-    	System.out.println("Original Message: "+line);
 		String username = line.substring(1, line.indexOf("!"));
 		String cutstring = channel+" :";
 		String message = line.substring(line.indexOf(cutstring)+cutstring.length(), line.length());
 		if (username.equalsIgnoreCase("jtv")) {
 			message = line.substring(line.indexOf(hostcutoff_str)+hostcutoff_str.length(), line.length());
 		}
+		/*if (message.length()>0) {
+			//message = "\uac00\uac01\uac02\u1100\u1101\u1102\u1117 1234567890 ";
+			System.out.println(message);
+		}*/
+    	System.out.println(username+": "+ message);
 		return username+": "+ message;
 	}
 

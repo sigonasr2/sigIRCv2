@@ -175,7 +175,7 @@ public class ScrollingText {
 		if (isAlive && WithinBounds(x,y,Math.max(TextUtils.calculateStringBoundsFont(username, MyPanel.userFont).getWidth(), TextUtils.calculateStringBoundsFont(message, MyPanel.programFont).getWidth()),Math.max(TextUtils.calculateStringBoundsFont(username, MyPanel.userFont).getHeight(), TextUtils.calculateStringBoundsFont(message, MyPanel.programFont).getHeight()))) {
 			//DrawUtils.drawTextFont(g, MyPanel.userFont, x+8, y+stringHeight-20, Color.GREEN, username);
 			DrawUtils.drawOutlineText(g, MyPanel.userFont, x+8, y+stringHeight-20, 2, userColor, Color.BLACK, username);
-			DrawUtils.drawOutlineText(g, MyPanel.programFont, x, y+stringHeight, 2, Color.WHITE, Color.BLACK, message);
+			DrawUtils.drawOutlineText(g, MyPanel.programFont, x, y+stringHeight+5, 1, 3, Color.WHITE, Color.BLACK, message);
 		}
 	}
 

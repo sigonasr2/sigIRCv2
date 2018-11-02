@@ -21,37 +21,41 @@ import sig.MyPanel;
 
 public class DrawUtils {
 	public static void drawOutlineText(Graphics g, Font font, double x, double y, int outline_size, Color text_color, Color shadow_color, String message) {
-		drawOutlineText(g,font,x,y,0,0,outline_size,text_color,shadow_color,message);
+		drawOutlineText(g,font,x,y,0,0,1,outline_size,text_color,shadow_color,message);
 	}
-	static void drawOutlineText(Graphics g, Font font, double x, double y, double xoffset, double yoffset, int outline_size, Color text_color, Color shadow_color, String message) {
+	public static void drawOutlineText(Graphics g, Font font, double x, double y, int font_thickness, int outline_thickness, Color text_color, Color shadow_color, String message) {
+		drawOutlineText(g,font,x,y,0,0,font_thickness,outline_thickness,text_color,shadow_color,message);
+	}
+	static void drawOutlineText(Graphics g, Font font, double x, double y, double xoffset, double yoffset, int font_thickness, int outline_thickness, Color text_color, Color shadow_color, String message) {
 		AttributedString as = new AttributedString(message);
 		as.addAttribute(TextAttribute.FONT, font);
 		g.setColor(shadow_color);
 		Graphics2D g2 = (Graphics2D) g;
-		if (message.length()>200) {
-			g2.setColor(shadow_color);
-			g2.drawString(as.getIterator(),(int)(x+outline_size+xoffset),(int)(y+outline_size+yoffset));
-		} else {
-			FontRenderContext frc = g2.getFontMetrics(font).getFontRenderContext();
-			GlyphVector gv = font.createGlyphVector(frc, message);
-			Rectangle2D box = gv.getVisualBounds();
-	        Shape shape = gv.getOutline((int)(x+xoffset),(int)(y+yoffset));
-			g2.setClip(shape);
-			g2.drawString(as.getIterator(),(int)(x+xoffset),(int)(y+yoffset));
-			g2.setClip(null);
-			g2.setStroke(new BasicStroke(outline_size*2));
-			g2.setColor(shadow_color);
-	        g2.setRenderingHint(
-	                RenderingHints.KEY_ANTIALIASING,
-	                RenderingHints.VALUE_ANTIALIAS_ON);
-			g2.draw(shape);
-		}
+		FontRenderContext frc = g2.getFontMetrics(font).getFontRenderContext();
+		GlyphVector gv = font.createGlyphVector(frc, message);
+        Shape shape = gv.getOutline((int)(x+xoffset),(int)(y+yoffset));
+		g2.setClip(null);
+		g2.setStroke(new BasicStroke(font_thickness + outline_thickness*2));
+		g2.setColor(shadow_color);
+        g2.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.draw(shape);
+		GlyphVector gv2 = font.createGlyphVector(frc, message);
+        Shape shape2 = gv2.getOutline((int)(x+xoffset),(int)(y+yoffset));
+        g2.setClip(null);
+        g2.setStroke(new BasicStroke(font_thickness));
+		g2.setColor(text_color);
+        g2.setRenderingHint(
+                RenderingHints.KEY_ANTIALIASING,
+                RenderingHints.VALUE_ANTIALIAS_ON);
+		g2.draw(shape2);
 		g2.setColor(text_color);
 		g2.drawString(as.getIterator(),(int)(x+xoffset),(int)(y+yoffset));
 	}
 	public static void drawCenteredOutlineText(Graphics g, Font font, double x, double y, int outline_size, Color text_color, Color shadow_color, String message) {
 		Rectangle2D textBounds = TextUtils.calculateStringBoundsFont(message, font);
-		drawOutlineText(g,font,x,y,-textBounds.getWidth()/2,-textBounds.getHeight()/2,outline_size,text_color,shadow_color,message);
+		drawOutlineText(g,font,x,y,-textBounds.getWidth()/2,-textBounds.getHeight()/2,1,outline_size,text_color,shadow_color,message);
 	}
 	public static void drawText(Graphics g, double x, double y, Color color, String message) {
 		if (message.length()>0) {

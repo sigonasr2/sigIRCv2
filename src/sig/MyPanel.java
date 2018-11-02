@@ -37,15 +37,18 @@ import sig.utils.FileUtils;
 
 public class MyPanel extends JPanel implements MouseListener, ActionListener, MouseWheelListener, KeyListener, ComponentListener, WindowListener{
 	//List<String> messages = new ArrayList<String>();
-	final public static Font programFont = new Font(sigIRC.messageFont,0,24);
-	final public static Font userFont = new Font(sigIRC.usernameFont,0,16);
-	final public static Font smallFont = new Font(sigIRC.touhoumotherConsoleFont,0,12);
+	public static Font programFont = new Font(sigIRC.messageFont,Font.BOLD,32);
+	public static Font userFont = new Font(sigIRC.usernameFont,Font.BOLD,16);
+	public static Font smallFont = new Font(sigIRC.touhoumotherConsoleFont,0,12);
 	final public static Font rabiRibiMoneyDisplayFont = new Font("CP Font",0,16);
 	final public static Font rabiRibiTinyDisplayFont = new Font("CP Font",0,12);
 	public int lastMouseX = 0;
 	public int lastMouseY = 0;
 
     public MyPanel() {
+    	programFont = programFont.deriveFont(sigIRC.messageFontSize);
+    	userFont = userFont.deriveFont(sigIRC.usernameFontSize);
+    	smallFont = smallFont.deriveFont(sigIRC.touhoumotherConsoleFontSize);
         //setBorder(BorderFactory.createLineBorder(Color.black));
     	addMouseListener(this);
     	addMouseWheelListener(this);
