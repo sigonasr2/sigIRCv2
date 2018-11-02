@@ -284,7 +284,7 @@ public class ScrollingText {
 		String cutstring = basemsg.substring(0, pos);
 		double width = TextUtils.calculateStringBoundsFont(cutstring, sigIRC.panel.programFont).getWidth();
 		//System.out.println("Width of '"+cutstring+"' is "+width);
-		sigIRC.createEmoticon(e, this, (int)(width), 0);
+		sigIRC.createEmoticon(e, this, (int)(width), 8);
 		textMaxHeight = Math.max(textMaxHeight, e.getImage().getHeight());
 		//textMaxWidth = (int)(width + e.getImage().getWidth()+1);
 	}
