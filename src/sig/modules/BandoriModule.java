@@ -93,6 +93,7 @@ public class BandoriModule extends Module{
 		image_map.put("sayo_im_sorry", new ImageScheme(stamp_collection2,24));
 		image_map.put("hagumi_hooray", new ImageScheme(stamp_collection2,25));
 		image_map.put("tsugumi_amazing", new ImageScheme(stamp_collection2,26));
+		image_map.put("eve_thefruits", new ImageScheme(stamp_collection2,27));
 		
 		stamp_map.put("kasumi_gogo",Arrays.asList("gogo"));
 		stamp_map.put("tae_letsplay",Arrays.asList("playtogether","wanttoplay","multilive","letsplay"));
@@ -144,8 +145,9 @@ public class BandoriModule extends Module{
 		stamp_map.put("sayo_im_sorry",Arrays.asList("sorry","gomen","apologize","somethingwrong","forgive"));
 		stamp_map.put("hagumi_hooray",Arrays.asList("hooray","hiphip","whoo","yahoo"));
 		stamp_map.put("tsugumi_amazing",Arrays.asList("amazing","wow","sugoi","wooo","cool!","tsugurific"));
+		stamp_map.put("eve_thefruits",Arrays.asList("fruits","labor","hardwork","effort"));
 		
-		/*for (String s : image_map.keySet()) {
+		for (String s : image_map.keySet()) {
 			ImageScheme scheme = image_map.get(s);
 			try {
 				BufferedImage img = crop(scheme.base,scheme.stamp_index%6*270+4, scheme.stamp_index/6*223+3, 258, 214);
@@ -153,7 +155,7 @@ public class BandoriModule extends Module{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}*/
+		}
 	}
 	
 	public BufferedImage crop(BufferedImage img, int x, int y, int targetWidth, int targetHeight) throws IOException {
