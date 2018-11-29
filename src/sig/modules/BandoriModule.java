@@ -149,7 +149,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("eve_thefruits",Arrays.asList("fruits","labor","hardwork","effort"));
 		stamp_map.put("lisa_imnotready",Arrays.asList("notready","notprep","stopit","holdon","onemin","onemom","noread","wontberead","notrdy","nottime","notime","waitam","waitforme"));
 		
-		for (String s : image_map.keySet()) {
+		/*for (String s : image_map.keySet()) {
 			ImageScheme scheme = image_map.get(s);
 			try {
 				BufferedImage img = crop(scheme.base,scheme.stamp_index%6*270+4, scheme.stamp_index/6*223+3, 258, 214);
@@ -157,7 +157,7 @@ public class BandoriModule extends Module{
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-		}
+		}*/
 	}
 	
 	public BufferedImage crop(BufferedImage img, int x, int y, int targetWidth, int targetHeight) throws IOException {
