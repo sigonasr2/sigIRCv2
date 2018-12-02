@@ -1,21 +1,29 @@
 package sig.modules;
 
+import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
+import java.text.DecimalFormat;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Random;
 
 import javax.imageio.ImageIO;
+import javax.swing.JOptionPane;
 
+import javafx.geometry.Point2D;
 import sig.FileManager;
 import sig.Module;
 import sig.sigIRC;
+import sig.modules.Bandori.SongPart;
+import sig.utils.DrawUtils;
 import sig.utils.SoundUtils;
 
 public class BandoriModule extends Module{
@@ -24,6 +32,10 @@ public class BandoriModule extends Module{
 	public static HashMap<String,ImageScheme> image_map = new HashMap<String,ImageScheme>();
 	public static HashMap<String,List<String>> stamp_map = new HashMap<String,List<String>>();
 	static List<Stamp> active_stamps = new ArrayList<Stamp>();
+	String songtitle = "";
+	List<SongPart> parts = new ArrayList<SongPart>();
+	boolean holdControl = false, holdAlt = false;
+	JOptionPane pane = new JOptionPane();
 	
 	
 	public BandoriModule(Rectangle2D bounds, String moduleName) {
@@ -158,6 +170,9 @@ public class BandoriModule extends Module{
 				e.printStackTrace();
 			}
 		}*/
+		for (int i=0;i<4;i++) {
+			parts.add(new SongPart("Song Part "+i));
+		}
 	}
 	
 	public BufferedImage crop(BufferedImage img, int x, int y, int targetWidth, int targetHeight) throws IOException {
@@ -247,6 +262,96 @@ public class BandoriModule extends Module{
 			//Stamp is 130x107 pixels
 			g.drawImage(s.scheme.base, (int)(s.randX+position.getX()), (int)position.getY()+24, (int)(s.randX+130+position.getX()), (int)position.getY()+24+107,
 					s.scheme.stamp_index%6*270+4, s.scheme.stamp_index/6*223+3, s.scheme.stamp_index%6*270+260+4, s.scheme.stamp_index/6*223+214+3, sigIRC.panel);
+		}
+		Point2D basepos = new Point2D(this.getPosition().getX(),this.getPosition().getHeight()+this.getPosition().getY());
+		double successChance = 1;
+		DecimalFormat df = new DecimalFormat("0");
+		DecimalFormat df2 = new DecimalFormat("0.0");
+		for (int i=0;i<parts.size();i++) {
+			SongPart s = parts.get(i);
+			if (s.getTotal()!=0) {
+				double successRate = (double)s.getSuccesses()/s.getTotal();
+				successChance *= successRate;
+				DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, basepos.getX(), basepos.getY()+i*24, 2, Color.WHITE, Color.BLACK, s.getTitle()+" - "+s.getSuccesses()+"/"+s.getTotal()+" ("+df.format(successRate*100)+"%)");
+			}
+		}
+		DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, basepos.getX(), basepos.getY()+parts.size()*24+8, 2, Color.WHITE, Color.BLACK, "Expected Attempts: "+(df.format(1d/successChance))+"    Success Chance: "+df2.format((successChance)*100)+"%");
+	}
+	
+	public void keypressed(KeyEvent ev) {
+		super.keypressed(ev);
+		switch (ev.getKeyCode()) {
+			case KeyEvent.VK_CONTROL:{
+				holdControl=true;
+				System.out.println("Pressed Control");
+			}break;
+			case KeyEvent.VK_ALT:{
+				holdAlt=true;
+				System.out.println("Pressed Alt");
+			}break;
+			case KeyEvent.VK_HOME:{
+				String input = pane.showInputDialog(sigIRC.window, "Song Title:", songtitle);
+				this.songtitle = input;
+			}break;
+			case KeyEvent.VK_1:{
+				if (holdControl) {
+					SetupPart(0);
+				} else {
+					AddtoAllParts(0);
+				}
+			}break;
+			case KeyEvent.VK_2:{
+				if (holdControl) {
+					SetupPart(1);
+				} else {
+					AddtoAllParts(1);
+				}
+			}break;
+			case KeyEvent.VK_3:{
+				if (holdControl) {
+					SetupPart(2);
+				} else {
+					AddtoAllParts(2);
+				}
+			}break;
+			case KeyEvent.VK_4:{
+				if (holdControl) {
+					SetupPart(3);
+				} else {
+					AddtoAllParts(3);
+				}
+			}break;
+		}
+	}
+
+	private void AddtoAllParts(int partnumb) {
+		for (int i=0;i<=partnumb;i++) {
+			parts.get(i).AddtoTrials(holdAlt);
+		}
+	}
+
+	private void SetupPart(int partnumb) {
+		String input = pane.showInputDialog(sigIRC.window,"Name Part 1:",parts.get(partnumb).getTitle());
+		String input2 = pane.showInputDialog(sigIRC.window,"Provide Success/Total Count (X/Y Format)",parts.get(partnumb).getSuccesses()+"/"+parts.get(partnumb).getTotal());
+		if (input.length()>0) {
+			parts.get(partnumb).setTitle(input);
+			parts.get(partnumb).setSuccesses(Integer.parseInt(input2.split("/")[0]));
+			parts.get(partnumb).setTrials(Integer.parseInt(input2.split("/")[1]));
+		}
+		holdControl=holdAlt=false;
+	}
+	
+	public void keyreleased(KeyEvent ev) {
+		super.keyreleased(ev);
+		switch (ev.getKeyCode()) {
+			case KeyEvent.VK_CONTROL:{
+				holdControl=false;
+				System.out.println("Released Control");
+			}break;
+			case KeyEvent.VK_ALT:{
+				holdAlt=false;
+				System.out.println("Released Alt");
+			}break;
 		}
 	}
 }
