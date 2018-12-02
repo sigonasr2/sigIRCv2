@@ -263,10 +263,11 @@ public class BandoriModule extends Module{
 			g.drawImage(s.scheme.base, (int)(s.randX+position.getX()), (int)position.getY()+24, (int)(s.randX+130+position.getX()), (int)position.getY()+24+107,
 					s.scheme.stamp_index%6*270+4, s.scheme.stamp_index/6*223+3, s.scheme.stamp_index%6*270+260+4, s.scheme.stamp_index/6*223+214+3, sigIRC.panel);
 		}
-		Point2D basepos = new Point2D(this.getPosition().getX(),this.getPosition().getHeight()+this.getPosition().getY());
+		Point2D basepos = new Point2D(this.getPosition().getX(),this.getPosition().getHeight()+this.getPosition().getY()+24);
 		double successChance = 1;
 		DecimalFormat df = new DecimalFormat("0");
 		DecimalFormat df2 = new DecimalFormat("0.0");
+		DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, basepos.getX(), basepos.getY()-24, 2, Color.WHITE, Color.BLACK, songtitle);
 		for (int i=0;i<parts.size();i++) {
 			SongPart s = parts.get(i);
 			if (s.getTotal()!=0) {
