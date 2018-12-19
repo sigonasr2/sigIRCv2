@@ -361,7 +361,7 @@ public class sigIRC{
 		manager = new FileManager("backcolor.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("drag_bar.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/stamps1.png"); manager.verifyAndFetchFileFromServer();
-		manager = new FileManager("sigIRC/stamps2_1.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/stamps2_2.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/stamp_what_a_great_idea.png"); manager.verifyAndFetchFileFromServer();
 		DownloadProgramUpdate();
 		System.out.println("Downloaded Dependencies. ");

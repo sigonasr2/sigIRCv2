@@ -51,7 +51,7 @@ public class BandoriModule extends Module{
 		BandoriModule.bandori_module = this;
 		try {
 			stamp_collection1 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamps1.png"));
-			stamp_collection2 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamps2_1.png"));
+			stamp_collection2 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamps2_2.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -107,6 +107,8 @@ public class BandoriModule extends Module{
 		image_map.put("tsugumi_amazing", new ImageScheme(stamp_collection2,26));
 		image_map.put("eve_thefruits", new ImageScheme(stamp_collection2,27));
 		image_map.put("lisa_imnotready", new ImageScheme(stamp_collection2,28));
+		image_map.put("arisa_okayhereigo", new ImageScheme(stamp_collection2,29));
+		image_map.put("tomoe_giveityourall", new ImageScheme(stamp_collection2,30));
 		
 		stamp_map.put("kasumi_gogo",Arrays.asList("gogo"));
 		stamp_map.put("tae_letsplay",Arrays.asList("playtogether","wanttoplay","multilive","letsplay"));
@@ -160,6 +162,8 @@ public class BandoriModule extends Module{
 		stamp_map.put("tsugumi_amazing",Arrays.asList("amazing","wow","sugoi","wooo","cool!","tsugurific"));
 		stamp_map.put("eve_thefruits",Arrays.asList("fruits","labor","hardwork","effort"));
 		stamp_map.put("lisa_imnotready",Arrays.asList("notready","notprep","stopit","holdon","onemin","onemom","noread","wontberead","notrdy","nottime","notime","waitam","waitforme"));
+		stamp_map.put("arisa_okayhereigo",Arrays.asList("hereigo","okayilltry","alrightilltry","domybest","trymybest","alrighty","itashot","myturn","domybest"));
+		stamp_map.put("tomoe_giveityourall",Arrays.asList("giveiteverything","allyougot","everythingyougot","tryyourbest","giveityourall","youreverything","yourall"));
 		
 		/*for (String s : image_map.keySet()) {
 			ImageScheme scheme = image_map.get(s);
