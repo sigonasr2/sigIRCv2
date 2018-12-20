@@ -109,6 +109,7 @@ public class BandoriModule extends Module{
 		image_map.put("lisa_imnotready", new ImageScheme(stamp_collection2,28));
 		image_map.put("arisa_okayhereigo", new ImageScheme(stamp_collection2,29));
 		image_map.put("tomoe_giveityourall", new ImageScheme(stamp_collection2,30));
+		image_map.put("kanon_keepgoing", new ImageScheme(stamp_collection2,31));
 		
 		stamp_map.put("kasumi_gogo",Arrays.asList("gogo"));
 		stamp_map.put("tae_letsplay",Arrays.asList("playtogether","wanttoplay","multilive","letsplay"));
@@ -133,7 +134,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("yukina_notbad",Arrays.asList("notbad","veryclose"));
 		stamp_map.put("sayo_goodwork",Arrays.asList("goodwork","goodjob","nicejob","welldone","greatwork","greatjob"));
 		stamp_map.put("lisa_nextonelastone",Arrays.asList("lastone","mylast"));
-		stamp_map.put("ako_onemoretime",Arrays.asList("onemore","goagain","keepgoing","dontstop","runit"));
+		stamp_map.put("ako_onemoretime",Arrays.asList("onemore","goagain","keepplaying","dontstop","runit"));
 		stamp_map.put("rinko_jam",Arrays.asList("lovethissong","jam"/*,"happybirthday"*/));
 		stamp_map.put("marina_yeahyeah",Arrays.asList("yeahyeah","letsgo"));
 		stamp_map.put("kokoro_moremore",Arrays.asList("moremore","iwantmore"));
@@ -164,6 +165,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("lisa_imnotready",Arrays.asList("notready","notprep","stopit","holdon","onemin","onemom","noread","wontberead","notrdy","nottime","notime","waitam","waitforme"));
 		stamp_map.put("arisa_okayhereigo",Arrays.asList("hereigo","okayilltry","alrightilltry","domybest","trymybest","alrighty","itashot","myturn","domybest"));
 		stamp_map.put("tomoe_giveityourall",Arrays.asList("giveiteverything","allyougot","everythingyougot","tryyourbest","giveityourall","youreverything","yourall"));
+		stamp_map.put("kanon_keepgoing",Arrays.asList("keepgoing","dontstop","youcandoit","makeit","gaja","petan","pettan","pengu"));
 		
 		/*for (String s : image_map.keySet()) {
 			ImageScheme scheme = image_map.get(s);
