@@ -271,11 +271,11 @@ public class sigIRC{
 		//System.out.println(manager.auth().hasAccessToken());
 
 		DownloadAllRequiredDependencies();
-		try {
+		/*try {
 			org.apache.commons.io.FileUtils.copyURLToFile(new URL("https://bandori.party/api/"),new File("testing"));
 		} catch (IOException e) {
 			e.printStackTrace();
-		}
+		}*/
 		
 		String[] filedata = FileUtils.readFromFile(BASEDIR+"sigIRC/oauthToken.txt");
 		
