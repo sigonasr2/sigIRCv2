@@ -153,7 +153,7 @@ public class BandoriModule extends Module{
 		stamp_map.put("chisato_thisissomuchfun",Arrays.asList("muchfun","veryfun","reallyfun","extremelyfun","offun","楽しいわね","tanoshii"));
 		stamp_map.put("rinko_theresnoway",Arrays.asList("noway","絶対ムリ","無理よ"));
 		stamp_map.put("tae_thisisgreat",Arrays.asList("thisisgreat","thisisawesome","thisiswonderful","最高だね","saikou"));
-		stamp_map.put("moca_thisisgettinginteresting",Arrays.asList("gettinginteresting","thingsaregetting","thisisgetting","omoshiroi","面白くなってきた"));
+		stamp_map.put("moca_thisisgettinginteresting",Arrays.asList("gettinginteresting","thingsaregetting","thisisgetting","面白くなってきた"));
 		stamp_map.put("kaoru_takemyhand",Arrays.asList("takemyhand","allowmeto","demonstrate","romeo","手をとって"));
 		stamp_map.put("kokoro_letsmaketheworldsmile",Arrays.asList("hhw","happyworld","hellohappy","worldsmile","世界を笑顔に"));
 		stamp_map.put("hina_nowwereboppin",Arrays.asList("bop","nowwere","zap","run","るん","るんってきた"));
@@ -166,6 +166,42 @@ public class BandoriModule extends Module{
 		stamp_map.put("arisa_okayhereigo",Arrays.asList("hereigo","okayilltry","alrightilltry","domybest","trymybest","alrighty","itashot","myturn","domybest","yoshi","よし行くぞ"));
 		stamp_map.put("tomoe_giveityourall",Arrays.asList("giveiteverything","allyougot","everythingyougot","tryyourbest","giveityourall","youreverything","yourall","全力で行くぜ"));
 		stamp_map.put("kanon_keepgoing",Arrays.asList("keepgoing","dontstop","youcandoit","makeit","gaja","petan","pettan","pengu","susumou","nagaja","進もう","間に合って"));
+		stamp_map.put("kasumi_letshaveagreatshow",Arrays.asList("greatshow","letsparty","最高の演奏しよう","theperfectshow"));
+		stamp_map.put("rimi_imsureitwillbefine",Arrays.asList("befine","willbefine","imsure","imsureitsok","imsureitsfine","絶対うまくいくよね","doublerainbow"));
+		stamp_map.put("kasumi_vroom",Arrays.asList("vroom","broom","vrum","startthecar","gofast","ばびゅーん"));
+		stamp_map.put("arisa_somethinglikethis",Arrays.asList("likethis","somethinglikethis","こんな感じか"));
+		stamp_map.put("tae_singwithme",Arrays.asList("withme","playwithme","singwithme","一緒に歌おうよ","issyoniutaouyo"));
+		stamp_map.put("tae_hamburger",Arrays.asList("hamburger","getfood","wantfood","hungry","ハンバーグ"));
+		stamp_map.put("kasumi_ithasbegun",Arrays.asList("hasstarted","hasbegun","hajimatta","始まったね"));
+		stamp_map.put("ran_itonlygetsbetter",Arrays.asList("getsbetter","fromhereon","まだまだこれから","mada","korekara","getsevenbetter"));
+		stamp_map.put("himari_onthescene",Arrays.asList("reportingforduty","onthescene","hasappeared","ishere","参上"));
+		stamp_map.put("moca_letsgetstarted",Arrays.asList("started","letsgo","letsbegin","itbegins","letsgo","はじまり"));
+		stamp_map.put("ran_showtime",Arrays.asList("showtime","ショータイム","windwalker","ww"));
+		stamp_map.put("tomoe_ofcourse",Arrays.asList("ofcourse","mochiron","もちろん","ofc"));
+		stamp_map.put("moca_followme",Arrays.asList("followme","ついていくよ","comewithme"));
+		stamp_map.put("tsugumi_letsdothis",Arrays.asList("lesgo","letsdothis","dothis","そうしよう"));
+		stamp_map.put("kokoro_letshavefun",Arrays.asList("letshavefun","havefun","楽しみましょう"));
+		stamp_map.put("kaoru_imherewithyou",Arrays.asList("imhere","herewithyou","imwithyou","私がついているよ"));
+		stamp_map.put("hagumi_roar",Arrays.asList("roar","gao","ガオ","がお"));
+		stamp_map.put("kokoro_justlikethat",Arrays.asList("その調子よ","justlikethat","exactlylikethat"));
+		stamp_map.put("hagumi_sorry",Arrays.asList("sumimasen","すみません"));
+		stamp_map.put("kanon_amazing",Arrays.asList("すごいね","cool","thatssick","sugoine","kanonsugoi"));
+		stamp_map.put("hagumi_letsdothiswithoursmiliestsmiles",Arrays.asList("gowithasmile","花マル笑顔で行こう","withasmile"));
+		stamp_map.put("kokoro_whatanicesong",Arrays.asList("いい曲ね","nicesong","greatsong","songisadorable"));
+		stamp_map.put("maya_whoa",Arrays.asList("whoa","woa","awawa","あわわ","woah"));
+		stamp_map.put("hina_interesting",Arrays.asList("interesting","面白い","おもしろい","omoshiroi"));
+		stamp_map.put("aya_somuchpressure",Arrays.asList("pressure","feelpressure",">.<","圧を感じる"));
+		stamp_map.put("hina_ivebeenwaiting",Arrays.asList("待ってました","beenwaiting","welcome","welcomeback","wb","matteta"));
+		stamp_map.put("chisato_greaterthangreat",Arrays.asList("greater","saikouijyou","betterthan"));
+		stamp_map.put("aya_itsamiracle",Arrays.asList("miracle","miracles","kiseki","奇跡は起こるよ"));
+		stamp_map.put("maya_thanksforwaiting",Arrays.asList("お待たせしました","forwaiting","waiting","imback"));
+		stamp_map.put("ako_somethingcool",Arrays.asList("watchthis","thisiscool","showyou","kakkoii","カッコいいの見せるよ"));
+		stamp_map.put("yukina_mindifipetyou",Arrays.asList("pet","neko","cat","uwu","撫でてもいいかしら","nade","mindifi"));
+		stamp_map.put("rinko_wasthatgood",Arrays.asList("wasitgood","wasthatgood","howwasthat","いけたかな","thatok?"));
+		stamp_map.put("yukina_nexttime",Arrays.asList("次こそは","nexttime","alwaysanext","dontworry"));
+		stamp_map.put("arisa_waitasec",Arrays.asList("chottomatte","chotto","matte","chomatte","chomate","brb","wait","1sec","sec","ちょっと待ってね"));
+		stamp_map.put("ako_perfect",Arrays.asList("perfection","kanpeki","perfect","カンペキ","完璧"));
+		
 		
 		/*for (String s : image_map.keySet()) {
 			ImageScheme scheme = image_map.get(s);
