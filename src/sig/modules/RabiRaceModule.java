@@ -61,8 +61,8 @@ public class RabiRaceModule extends Module{
 	public static HashMap<String,Image> image_map = new HashMap<String,Image>();
 	public static Image UNKNOWN_ITEM;
 	public static ColorCycler rainbowcycler = new ColorCycler(new Color(255,0,0,96),16);
-	public Profile myProfile = new Profile(this,false);
 	public static RabiRaceModule module;
+	public Profile myProfile = new Profile(this,false);
 	public static SessionListWindow window;
 	public static SessionCreateWindow createwindow;
 	public static AvatarSelectionWindow avatarwindow;
@@ -72,6 +72,8 @@ public class RabiRaceModule extends Module{
 	public static int lastScrollX = 0;
 	boolean firstUpdate=true;
 	boolean mouseoverAvatar=false;
+	public static boolean avatarRetrieved=false;
+	public static int CLIENT_SERVER_READTIME = -1;
 	
 	public SessionListData session_listing = new SessionListData();
 	
@@ -96,6 +98,8 @@ public class RabiRaceModule extends Module{
 
 	private void Initialize() {
 		CheckRabiRibiClient();
+		
+		VerifyClientIsValid(); //If the client is not allowed to send data, we need to know that.
 
 		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleWithFixedDelay(()->{
@@ -107,19 +111,13 @@ public class RabiRaceModule extends Module{
 				//trimeadProfile.downloadProfile();
 				firstCheck=true;
 				if (mySession!=null) {
-					File file = new File(sigIRC.BASEDIR+"sigIRC/tmp.data");
-					try {
-						org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=keepalivesession&session="+mySession.getID()),file);
-					} catch (MalformedURLException e) {
-						e.printStackTrace();
-					} catch (IOException e) {
-						e.printStackTrace();
-					}
+					RequestData("tmp.data","key=keepalivesession&session="+mySession.getID());
 				}
 			}
 		}, 5000, 5000, TimeUnit.MILLISECONDS);
 		
 		myProfile.downloadProfile(); //Synchronize our profile at the beginning.
+		//System.out.println(myProfile.avatar.displayName);
 		
 		ScheduledExecutorService scheduler2 = Executors.newScheduledThreadPool(1);
 		scheduler2.scheduleWithFixedDelay(()->{
@@ -168,6 +166,32 @@ public class RabiRaceModule extends Module{
 		create_button = new CreateButton(new Rectangle(122,(int)(position.getHeight()-18),120,18),"Create Session",this);
 	}
 
+	private void VerifyClientIsValid() {
+		String[] data = RequestAndStoreData("tmptimer.dat","key=timestamp");
+		int time = -1;
+		if (data.length>0) {
+			time = Integer.parseInt(data[0]);
+		}
+		CLIENT_SERVER_READTIME = time;
+	}
+
+	private void RequestData(String filename,String requestString) {
+		File file = new File(sigIRC.BASEDIR+"sigIRC/"+filename);
+		try {
+			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?"+requestString),file);
+		} catch (MalformedURLException e) {
+			e.printStackTrace();
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
+	
+	String[] RequestAndStoreData(String filename,String requestString) {
+		RequestData(filename,requestString);
+		String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/"+filename);
+		return data;
+	}
+
 	private void AddImagesToImageMap(File dir, String DIRECTORY) {
 		String[] images = dir.list();
 		List<String> filtered_images = new ArrayList<String>();
@@ -191,7 +215,7 @@ public class RabiRaceModule extends Module{
 	private void getMessageUpdates() {
 		File file = new File(sigIRC.BASEDIR+"sigIRC/messages");
 		try {
-			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=getupdates&name="+myProfile.username),file);
+			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=getupdates&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+myProfile.username),file);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -313,7 +337,6 @@ public class RabiRaceModule extends Module{
 				myProfile.packUps = readItemCountFromMemory(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END);
 				myProfile.itempct = itempct;
 				myProfile.mappct = readFloatFromMemory(MemoryOffset.MAP_PERCENT);
-				myProfile.playtime = readIntFromMemory(MemoryOffset.PLAYTIME);
 				myProfile.difficulty = readIntFromMemory(MemoryOffset.GAME_DIFFICULTY);
 				myProfile.loop = readIntFromMemory(MemoryOffset.GAME_LOOP);
 				myProfile.updateClientValues();
@@ -326,6 +349,7 @@ public class RabiRaceModule extends Module{
 				myProfile.stat_update_required=true;
 				firstUpdate=false;
 			}
+			myProfile.playtime = readIntFromMemory(MemoryOffset.PLAYTIME);
 			if (mySession!=null) {
 				for (Profile p : mySession.getPlayers()) {
 					if (!p.username.equalsIgnoreCase(myProfile.username)) {

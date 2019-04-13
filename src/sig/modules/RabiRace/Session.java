@@ -43,26 +43,14 @@ public class Session {
 					p.username=s;
 					p.avatar = Profile.GetSeededAvatar(p.username);
 					//System.out.println("Player "+p.username);
-					if (p.downloadProfile()) {
-						if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
-							RabiRaceModule.mySession = this;
-						}
-						//System.out.println("Adding Player "+p);
-						players.add(p);
-					}
+					DownloadAndAddPlayer(p);
 				}
 			} else {
 				Profile p = new Profile(RabiRaceModule.module,true);
 				p.username=val;
 				p.avatar = Profile.GetSeededAvatar(p.username);
 				//System.out.println("Player "+p.username);
-				if (p.downloadProfile()) {
-					if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
-						RabiRaceModule.mySession = this;
-					}
-					//System.out.println("Adding Player "+p);
-					players.add(p);
-				}
+				DownloadAndAddPlayer(p);
 			}
 		}
 		if (split.length>=8) {	
@@ -80,7 +68,18 @@ public class Session {
 			}
 		}
 	}
-	
+
+	private void DownloadAndAddPlayer(Profile p) {
+		if (p.downloadProfile()) {
+			if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
+				RabiRaceModule.mySession = this;
+				//RetrieveClientAvatar(p);
+			}
+			//System.out.println("Adding Player "+p);
+			players.add(p);
+		}
+	}
+
 	public int getID() {
 		return id;
 	}

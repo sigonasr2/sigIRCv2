@@ -30,6 +30,9 @@ public class DrawUtils {
 		if (message.length()>0) {
 			AttributedString as = new AttributedString(message);
 			as.addAttribute(TextAttribute.FONT, font);
+			as.addAttribute(TextAttribute.KERNING,TextAttribute.KERNING_ON);
+			as.addAttribute(TextAttribute.WIDTH,TextAttribute.WIDTH_EXTENDED);
+			as.addAttribute(TextAttribute.TRACKING,0.5);
 			g.setColor(shadow_color);
 			Graphics2D g2 = (Graphics2D) g;
 			FontRenderContext frc = g2.getFontMetrics(font).getFontRenderContext();
@@ -55,9 +58,12 @@ public class DrawUtils {
 			g2.drawString(as.getIterator(),(int)(x+xoffset),(int)(y+yoffset));
 		}
 	}
-	public static void drawCenteredOutlineText(Graphics g, Font font, double x, double y, int outline_size, Color text_color, Color shadow_color, String message) {
+	public static void drawCenteredOutlineText(Graphics g, Font font, double x, double y, int font_size, int outline_size, Color text_color, Color shadow_color, String message) {
 		Rectangle2D textBounds = TextUtils.calculateStringBoundsFont(message, font);
-		drawOutlineText(g,font,x,y,-textBounds.getWidth()/2,-textBounds.getHeight()/2,1,outline_size,text_color,shadow_color,message);
+		drawOutlineText(g,font,x,y,-textBounds.getWidth()/2,-textBounds.getHeight()/2,font_size,outline_size,text_color,shadow_color,message);
+	}
+	public static void drawCenteredOutlineText(Graphics g, Font font, double x, double y, int outline_size, Color text_color, Color shadow_color, String message) {
+		drawCenteredOutlineText(g,font,x,y,1,outline_size,text_color,shadow_color,message);
 	}
 	public static void drawText(Graphics g, double x, double y, Color color, String message) {
 		if (message.length()>0) {

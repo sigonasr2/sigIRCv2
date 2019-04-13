@@ -56,6 +56,7 @@ public class Profile {
 	public Image imageDisplayUpdateImage;
 	public boolean stat_update_required = true;
 	public boolean image_display_update_required = true;
+	public int timeKey = -1;
 	
 	public Profile(RabiRaceModule module) {
 		this(module,true);
@@ -220,12 +221,15 @@ public class Profile {
 		if (sigIRC.authenticated) {
 			File file = new File(sigIRC.BASEDIR+"tmp");
 			try {
-				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=playerdata&name="+sigIRC.nickname.toLowerCase()+"&data="+getDataString()),file);
+				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=playerdata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+sigIRC.nickname.toLowerCase()+"&data="+getDataString()),file);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			System.out.println(getDataString());
+			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp");
+			System.out.println(Arrays.toString(data));
 		}
 	}
 	
@@ -233,7 +237,7 @@ public class Profile {
 		if (sigIRC.authenticated) {
 			File file = new File(sigIRC.BASEDIR+"tmp_profile");
 			try {
-				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=retrievedata&name="+username.toLowerCase()),file);
+				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=retrievedata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+username.toLowerCase()),file);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -246,6 +250,7 @@ public class Profile {
 				displayName = data[i++];
 				avatar = Avatar.getAvatarFromID(Integer.parseInt(data[i++]));
 				//System.out.println("Updated Avatar for Player "+displayName+" with Avatar "+avatar.displayName);
+				timeKey = Integer.parseInt(data[i++]);
 				playtime = Integer.parseInt(data[i++]);
 				healthUps = Integer.parseInt(data[i++]);
 				manaUps = Integer.parseInt(data[i++]);
@@ -290,6 +295,7 @@ public class Profile {
 		StringBuilder sb = new StringBuilder();
 		appendData(sigIRC.nickname,sb);
 		appendData(avatar.value,sb);
+		appendData(RabiRaceModule.CLIENT_SERVER_READTIME,sb);
 		appendData(playtime,sb);
 		appendData(healthUps,sb);
 		appendData(manaUps,sb);
@@ -325,6 +331,7 @@ public class Profile {
 	}
 
 	public static Avatar GetSeededAvatar(String username) {
+		//System.out.println(RabiRaceModule.mySession.getPlayers());
 		Random r = new Random();
 		r.setSeed(username.toLowerCase().hashCode());
 		int randomnumb = r.nextInt(28);
@@ -341,18 +348,18 @@ public class Profile {
 			//g2.fillRect(1, 1, 32, 32);
 			g2.drawImage(avatar.getAvatarImage(), 1, 1, sigIRC.panel);
 			g2.setColor(ScrollingText.GetUserNameColor(displayName));
-			DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, 54, 26, 1, g2.getColor(), Color.BLACK, displayName);
-			DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.2), 50, 1, GetDifficultyColor(), Color.BLACK, GetDifficultyName());
+			DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, 54, 26, 0, 1, g2.getColor(), Color.BLACK, displayName);
+			DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.2), 50, 0, 1, GetDifficultyColor(), Color.BLACK, GetDifficultyName());
 			String text = TextUtils.convertSecondsToTimeFormat(playtime/60);
 			if (isPaused) {
 				g2.setColor(new Color(128,96,0));
 			} else {
 				g2.setColor(Color.BLACK);
 			}
-			DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, (int)(tmp.getWidth() - TextUtils.calculateStringBoundsFont(text, sigIRC.panel.rabiRibiMoneyDisplayFont).getWidth()) - 2, 16, 1, g2.getColor(), Color.GRAY, text);
+			DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, (int)(tmp.getWidth() - TextUtils.calculateStringBoundsFont(text, sigIRC.panel.rabiRibiMoneyDisplayFont).getWidth()) - 2, 16, 0, 1, g2.getColor(), Color.GRAY, text);
 			text = "Map "+df.format(mappct)+"%  Item "+df.format(itempct)+"%";
 			//DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, (int)(parent.position.getWidth() - TextUtils.calculateStringBoundsFont(text, sigIRC.panel.rabiRibiMoneyDisplayFont).getWidth()) - 2, 16, 1, g2.getColor(), Color.GRAY, text);
-			DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.6), 50, 2, Color.WHITE, Color.BLACK, text);
+			DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.6), 50, 0, 2, Color.WHITE, Color.BLACK, text);
 			
 			statUpdateCacheImage = tmp.getScaledInstance(w, -1, Image.SCALE_AREA_AVERAGING);
 			//stat_update_required = false;
@@ -525,7 +532,7 @@ public class Profile {
 					} else {
 						g2.drawImage(img,(int)(+border+((i)*(spacing))-icon_size/2),(int)(+96+56)+shiftyval, (int)icon_size, (int)icon_size, sigIRC.panel);
 					}
-					DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.programFont, (int)((+border+((i)*(spacing))-icon_size/2)+(spacing/2)+4), (int)(+96+56+icon_size+12)+shiftyval, 1, Color.WHITE, Color.BLUE, Integer.toString(amts[i++]));
+					DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, (int)((+border+((i)*(spacing))-icon_size/2)+(spacing/2)+4), (int)(+96+56+icon_size)+shiftyval, 0, 1, Color.WHITE, Color.BLUE, Integer.toString(amts[i++]));
 				}
 			} catch (ConcurrentModificationException e) {
 				
