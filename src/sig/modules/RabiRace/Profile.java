@@ -256,7 +256,7 @@ public class Profile {
 				healthUps = Integer.parseInt(data[i++]);
 				manaUps = Integer.parseInt(data[i++]);
 				regenUps = Integer.parseInt(data[i++]);
-				packUps = Integer.parseInt(data[i++]);
+				packUps = Integer.parseInt(data[i++]); 
 				attackUps = Integer.parseInt(data[i++]);
 				rainbowEggCount = Integer.parseInt(data[i++]);
 				isPaused = Boolean.parseBoolean(data[i++]);
