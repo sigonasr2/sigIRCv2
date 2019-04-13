@@ -53,7 +53,7 @@ public class Module {
 	}
 	
 	private void enableWindowDrag(int mouseX, int mouseY) {
-		if (!sigIRC.overlayMode && !dragging && inDragBounds(mouseX,mouseY) && !DRAGGING) {
+		if (sigIRC.showWindowControls && !dragging && inDragBounds(mouseX,mouseY) && !DRAGGING) {
 			//Enable dragging.
 			dragOffset = new Point((int)position.getX() - mouseX,(int)position.getY()-mouseY);
 			dragging=DRAGGING=true;
@@ -104,21 +104,23 @@ public class Module {
 	}
 
 	private void dragWindow() {
-		if (dragging) {
-			//sigIRC.panel.repaint(getDrawBounds().getBounds());
-			int mouseX = sigIRC.panel.lastMouseX+(int)dragOffset.getX();
-			int mouseY = sigIRC.panel.lastMouseY+(int)dragOffset.getY();
-			int oldX = (int)position.getX();
-			int oldY = (int)position.getY();
-			position = new Rectangle((int)Math.min(Math.max(0,mouseX),sigIRC.window.getWidth()-position.getWidth()), (int)Math.min(Math.max(titleHeight,mouseY),sigIRC.window.getHeight()-position.getHeight()-titleHeight*2),(int)position.getWidth(),(int)position.getHeight());
-			//System.out.println(sigIRC.panel.lastMouseX+","+sigIRC.panel.lastMouseY);
-			ModuleDragEvent(oldX,oldY,mouseX,mouseY);
-		}
-		if (inDragBounds(sigIRC.panel.lastMouseX,sigIRC.panel.lastMouseY)) {
-			inDragZone=true;
-			//System.out.println("In Drag Zone for Module "+name);
-			//sigIRC.panel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
-		} /*else
+		if (sigIRC.showWindowControls) {
+			if (dragging) {
+				//sigIRC.panel.repaint(getDrawBounds().getBounds());
+				int mouseX = sigIRC.panel.lastMouseX+(int)dragOffset.getX();
+				int mouseY = sigIRC.panel.lastMouseY+(int)dragOffset.getY();
+				int oldX = (int)position.getX();
+				int oldY = (int)position.getY();
+				position = new Rectangle((int)Math.min(Math.max(0,mouseX),sigIRC.window.getWidth()-position.getWidth()), (int)Math.min(Math.max(titleHeight,mouseY),sigIRC.window.getHeight()-position.getHeight()-titleHeight*2),(int)position.getWidth(),(int)position.getHeight());
+				//System.out.println(sigIRC.panel.lastMouseX+","+sigIRC.panel.lastMouseY);
+				ModuleDragEvent(oldX,oldY,mouseX,mouseY);
+			}
+			if (inDragBounds(sigIRC.panel.lastMouseX,sigIRC.panel.lastMouseY)) {
+				inDragZone=true;
+				//System.out.println("In Drag Zone for Module "+name);
+				//sigIRC.panel.setCursor(new Cursor(Cursor.MOVE_CURSOR));
+			} 
+		}/*else
 		if (sigIRC.panel.getCursor().getType()==Cursor.MOVE_CURSOR) {
 			sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 		}*/
@@ -141,7 +143,7 @@ public class Module {
 	}
 
 	private void drawModuleHeader(Graphics g) {
-		if (!sigIRC.overlayMode) {
+		if (sigIRC.showWindowControls) {
 			g.drawImage(Module.IMG_DRAGBAR, 
 				(int)position.getX()+2, 
 				(int)position.getY()-Module.IMG_DRAGBAR.getHeight(),

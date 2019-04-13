@@ -100,7 +100,7 @@ public class sigIRC{
 	public static BackgroundColorButton button;
 	public static JFrame window;
 	static boolean overlayMode=false;
-	static boolean showWindowControls=false;
+	public static boolean showWindowControls=false;
 	static int windowX=0;
 	static int windowY=0;
 	static int windowWidth=0;

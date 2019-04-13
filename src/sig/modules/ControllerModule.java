@@ -103,8 +103,11 @@ public class ControllerModule extends Module{
 		}
 		//buttons.add(new Button(0.1,0.05,0.1,0.05,controllers.get(0),Identifier.Button._3,Color.RED,this));
 		LoadButtonAndAxisData();
-		click_buttons.add(new AddClickableButton(new Rectangle(
-				0,(int)position.getHeight()-21,96,20),"Add Button",this));
+
+		if (sigIRC.showWindowControls) {
+			click_buttons.add(new AddClickableButton(new Rectangle(
+					0,(int)position.getHeight()-21,96,20),"Add Button",this));
+		}
 	}
 	
 	public List<Controller> getControllers() {
@@ -382,106 +385,108 @@ public class ControllerModule extends Module{
 
 	public void run() {
 		Point mouse_position = new Point((int)(sigIRC.panel.lastMouseX-getPosition().getX()),(int)(sigIRC.panel.lastMouseY-getPosition().getY()));
-		if (resizing) {
-			PerformResize(mouse_position);
-			setConstraints();
-		}
-		if (dragging) {
-			selectedElement.setBounds(new Rectangle2D.Double((mouse_position.getX()+xoffset)/controller_img.getWidth(sigIRC.panel), 
-					(mouse_position.getY()+yoffset)/controller_img.getHeight(sigIRC.panel), 
-					selectedElement.getBounds().getWidth(), 
-					selectedElement.getBounds().getHeight()));
-			setConstraints();
-		}
-		if (!inDragZone && selectedElement==null) {
-			if (findMouseoverElement(mouse_position)!=null) {
-				int cursortype = sigIRC.panel.getCursor().getType();
-				if (cursortype!=Cursor.HAND_CURSOR) {
-					sigIRC.panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
-				}
-			} else {
-				int cursortype = sigIRC.panel.getCursor().getType();
-				if (cursortype!=Cursor.DEFAULT_CURSOR && 
-						!inDragZone) {
-					sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
-				}
+		if (sigIRC.showWindowControls) {
+			if (resizing) {
+				PerformResize(mouse_position);
+				setConstraints();
 			}
-		}
-		if (selectedElement!=null && extendBoundaries(selectedElement.getPixelBounds(controller_img),3).contains(mouse_position)) {
-			if (!resizing) {
-				resizing_direction=0;
-				if (mouse_position.getY()-selectedElement.getPixelBounds(controller_img).getY()<=RESIZE_BORDER &&
-						mouse_position.getY()-selectedElement.getPixelBounds(controller_img).getY()>=-RESIZE_BORDER) {
-					resizing_direction+=1;
-				} else
-				if (mouse_position.getY()-(selectedElement.getPixelBounds(controller_img).getY()+selectedElement.getPixelBounds(controller_img).getHeight())<=RESIZE_BORDER &&
-					mouse_position.getY()-(selectedElement.getPixelBounds(controller_img).getY()+selectedElement.getPixelBounds(controller_img).getHeight())>=-RESIZE_BORDER) {
-						resizing_direction+=4;
-				}
-				if (mouse_position.getX()-selectedElement.getPixelBounds(controller_img).getX()<=RESIZE_BORDER &&
-						mouse_position.getX()-selectedElement.getPixelBounds(controller_img).getX()>=-RESIZE_BORDER) {
-					resizing_direction+=8;
-				} else
-				if (mouse_position.getX()-(selectedElement.getPixelBounds(controller_img).getX()+selectedElement.getPixelBounds(controller_img).getWidth())<=RESIZE_BORDER &&
-					mouse_position.getX()-(selectedElement.getPixelBounds(controller_img).getX()+selectedElement.getPixelBounds(controller_img).getWidth())>=-RESIZE_BORDER) {
-						resizing_direction+=2;
-				}
+			if (dragging) {
+				selectedElement.setBounds(new Rectangle2D.Double((mouse_position.getX()+xoffset)/controller_img.getWidth(sigIRC.panel), 
+						(mouse_position.getY()+yoffset)/controller_img.getHeight(sigIRC.panel), 
+						selectedElement.getBounds().getWidth(), 
+						selectedElement.getBounds().getHeight()));
+				setConstraints();
 			}
-			switch (resizing_direction) {
-				case 1:{
+			if (!inDragZone && selectedElement==null) {
+				if (findMouseoverElement(mouse_position)!=null) {
 					int cursortype = sigIRC.panel.getCursor().getType();
-					if (cursortype!=Cursor.N_RESIZE_CURSOR) {
-						sigIRC.panel.setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
+					if (cursortype!=Cursor.HAND_CURSOR) {
+						sigIRC.panel.setCursor(new Cursor(Cursor.HAND_CURSOR));
 					}
-				}break;
-				case 2:{
+				} else {
 					int cursortype = sigIRC.panel.getCursor().getType();
-					if (cursortype!=Cursor.E_RESIZE_CURSOR) {
-						sigIRC.panel.setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
-					}
-				}break;
-				case 3:{
-					int cursortype = sigIRC.panel.getCursor().getType();
-					if (cursortype!=Cursor.NE_RESIZE_CURSOR) {
-						sigIRC.panel.setCursor(new Cursor(Cursor.NE_RESIZE_CURSOR));
-					}
-				}break;
-				case 6:{
-					int cursortype = sigIRC.panel.getCursor().getType();
-					if (cursortype!=Cursor.SE_RESIZE_CURSOR) {
-						sigIRC.panel.setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
-					}
-				}break;
-				case 4:{
-					int cursortype = sigIRC.panel.getCursor().getType();
-					if (cursortype!=Cursor.S_RESIZE_CURSOR) {
-						sigIRC.panel.setCursor(new Cursor(Cursor.S_RESIZE_CURSOR));
-					}
-				}break;
-				case 12:{
-					int cursortype = sigIRC.panel.getCursor().getType();
-					if (cursortype!=Cursor.SW_RESIZE_CURSOR) {
-						sigIRC.panel.setCursor(new Cursor(Cursor.SW_RESIZE_CURSOR));
-					}
-				}break;
-				case 8:{
-					int cursortype = sigIRC.panel.getCursor().getType();
-					if (cursortype!=Cursor.W_RESIZE_CURSOR) {
-						sigIRC.panel.setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
-					}
-				}break;
-				case 9:{
-					int cursortype = sigIRC.panel.getCursor().getType();
-					if (cursortype!=Cursor.NW_RESIZE_CURSOR) {
-						sigIRC.panel.setCursor(new Cursor(Cursor.NW_RESIZE_CURSOR));
-					}
-				}break;
-				default:
-					int cursortype = sigIRC.panel.getCursor().getType();
-					if (cursortype!=Cursor.DEFAULT_CURSOR &&
+					if (cursortype!=Cursor.DEFAULT_CURSOR && 
 							!inDragZone) {
 						sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
 					}
+				}
+			}
+			if (selectedElement!=null && extendBoundaries(selectedElement.getPixelBounds(controller_img),3).contains(mouse_position)) {
+				if (!resizing) {
+					resizing_direction=0;
+					if (mouse_position.getY()-selectedElement.getPixelBounds(controller_img).getY()<=RESIZE_BORDER &&
+							mouse_position.getY()-selectedElement.getPixelBounds(controller_img).getY()>=-RESIZE_BORDER) {
+						resizing_direction+=1;
+					} else
+					if (mouse_position.getY()-(selectedElement.getPixelBounds(controller_img).getY()+selectedElement.getPixelBounds(controller_img).getHeight())<=RESIZE_BORDER &&
+						mouse_position.getY()-(selectedElement.getPixelBounds(controller_img).getY()+selectedElement.getPixelBounds(controller_img).getHeight())>=-RESIZE_BORDER) {
+							resizing_direction+=4;
+					}
+					if (mouse_position.getX()-selectedElement.getPixelBounds(controller_img).getX()<=RESIZE_BORDER &&
+							mouse_position.getX()-selectedElement.getPixelBounds(controller_img).getX()>=-RESIZE_BORDER) {
+						resizing_direction+=8;
+					} else
+					if (mouse_position.getX()-(selectedElement.getPixelBounds(controller_img).getX()+selectedElement.getPixelBounds(controller_img).getWidth())<=RESIZE_BORDER &&
+						mouse_position.getX()-(selectedElement.getPixelBounds(controller_img).getX()+selectedElement.getPixelBounds(controller_img).getWidth())>=-RESIZE_BORDER) {
+							resizing_direction+=2;
+					}
+				}
+				switch (resizing_direction) {
+					case 1:{
+						int cursortype = sigIRC.panel.getCursor().getType();
+						if (cursortype!=Cursor.N_RESIZE_CURSOR) {
+							sigIRC.panel.setCursor(new Cursor(Cursor.N_RESIZE_CURSOR));
+						}
+					}break;
+					case 2:{
+						int cursortype = sigIRC.panel.getCursor().getType();
+						if (cursortype!=Cursor.E_RESIZE_CURSOR) {
+							sigIRC.panel.setCursor(new Cursor(Cursor.E_RESIZE_CURSOR));
+						}
+					}break;
+					case 3:{
+						int cursortype = sigIRC.panel.getCursor().getType();
+						if (cursortype!=Cursor.NE_RESIZE_CURSOR) {
+							sigIRC.panel.setCursor(new Cursor(Cursor.NE_RESIZE_CURSOR));
+						}
+					}break;
+					case 6:{
+						int cursortype = sigIRC.panel.getCursor().getType();
+						if (cursortype!=Cursor.SE_RESIZE_CURSOR) {
+							sigIRC.panel.setCursor(new Cursor(Cursor.SE_RESIZE_CURSOR));
+						}
+					}break;
+					case 4:{
+						int cursortype = sigIRC.panel.getCursor().getType();
+						if (cursortype!=Cursor.S_RESIZE_CURSOR) {
+							sigIRC.panel.setCursor(new Cursor(Cursor.S_RESIZE_CURSOR));
+						}
+					}break;
+					case 12:{
+						int cursortype = sigIRC.panel.getCursor().getType();
+						if (cursortype!=Cursor.SW_RESIZE_CURSOR) {
+							sigIRC.panel.setCursor(new Cursor(Cursor.SW_RESIZE_CURSOR));
+						}
+					}break;
+					case 8:{
+						int cursortype = sigIRC.panel.getCursor().getType();
+						if (cursortype!=Cursor.W_RESIZE_CURSOR) {
+							sigIRC.panel.setCursor(new Cursor(Cursor.W_RESIZE_CURSOR));
+						}
+					}break;
+					case 9:{
+						int cursortype = sigIRC.panel.getCursor().getType();
+						if (cursortype!=Cursor.NW_RESIZE_CURSOR) {
+							sigIRC.panel.setCursor(new Cursor(Cursor.NW_RESIZE_CURSOR));
+						}
+					}break;
+					default:
+						int cursortype = sigIRC.panel.getCursor().getType();
+						if (cursortype!=Cursor.DEFAULT_CURSOR &&
+								!inDragZone) {
+							sigIRC.panel.setCursor(new Cursor(Cursor.DEFAULT_CURSOR));
+						}
+				}
 			}
 		}
 		for (Controller c : controllers) {
