@@ -237,7 +237,7 @@ public class Profile {
 		if (sigIRC.authenticated) {
 			File file = new File(sigIRC.BASEDIR+"tmp_profile");
 			try {
-				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=retrievedata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&retrievename="+username.toLowerCase()+"&name="+RabiRaceModule.module.myProfile.username),file);
+				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=retrievedata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&retrievename="+username.toLowerCase()+"&name="+sigIRC.nickname.toLowerCase()),file);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
