@@ -227,9 +227,9 @@ public class Profile {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			System.out.println(getDataString());
-			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp");
-			System.out.println(Arrays.toString(data));
+			//System.out.println(getDataString());
+			//String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp");
+			//System.out.println(Arrays.toString(data));
 		}
 	}
 	
@@ -245,9 +245,10 @@ public class Profile {
 			}
 			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp_profile");
 			//System.out.println(Arrays.toString(data));
-			if (data.length>=18) {
+			if (data.length>=19) {
 				int i=0;
 				displayName = data[i++];
+				try {
 				avatar = Avatar.getAvatarFromID(Integer.parseInt(data[i++]));
 				//System.out.println("Updated Avatar for Player "+displayName+" with Avatar "+avatar.displayName);
 				timeKey = Integer.parseInt(data[i++]);
@@ -263,6 +264,9 @@ public class Profile {
 				loop = Integer.parseInt(data[i++]);
 				itempct = Float.parseFloat(data[i++]);
 				mappct = Float.parseFloat(data[i++]);
+				} catch (NumberFormatException e) {
+					return false;
+				}
 				i+=2;
 				String nextval = data[i++];
 				if (!nextval.equalsIgnoreCase("BADGES:")) {
