@@ -29,7 +29,7 @@ import sig.utils.SoundUtils;
 public class BandoriModule extends Module{
 	public static BandoriModule bandori_module;
 	public BufferedImage stamp_collection1,stamp_collection2,stamp_collection3
-	,stamp_collection4,stamp_collection5,stamp_collection6,stamp_collection7,stamp_collection8,stamp_collection9,stamp_collection10;
+	,stamp_collection4,stamp_collection5,stamp_collection6,stamp_collection7,stamp_collection8,stamp_collection9,stamp_collection10,stamp_collection11;
 	public static HashMap<String,ImageScheme> image_map = new HashMap<String,ImageScheme>();
 	public static HashMap<String,List<String>> stamp_map = new HashMap<String,List<String>>();
 	static List<Stamp> active_stamps = new ArrayList<Stamp>();
@@ -55,12 +55,13 @@ public class BandoriModule extends Module{
 			stamp_collection2 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamps2_2.png"));
 			stamp_collection3 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamp_018003.png"));
 			stamp_collection4 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamp_003003.png"));
-			stamp_collection5 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamp_0007003.png"));
+			stamp_collection5 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamp_007003.png"));
 			stamp_collection6 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamp_011005.png"));
 			stamp_collection7 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamp_013003.png"));
 			stamp_collection8 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamp_016002.png"));
 			stamp_collection9 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamp_017004.png"));
 			stamp_collection10 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamp_021004.png"));
+			stamp_collection11 = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/stamp_006004.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -90,6 +91,7 @@ public class BandoriModule extends Module{
 		image_map.put("ako_onemoretime", new ImageScheme(stamp_collection1,23));
 		image_map.put("rinko_jam", new ImageScheme(stamp_collection2,0));
 		image_map.put("marina_yeahyeah", new ImageScheme(stamp_collection2,1)); //Skip 2.
+		image_map.put("cookie_cookie", new ImageScheme(stamp_collection2,2)); //Skip 2.
 		image_map.put("kokoro_moremore", new ImageScheme(stamp_collection2,3));
 		image_map.put("arisa_huh", new ImageScheme(stamp_collection2,4));
 		image_map.put("yukina_followmylead", new ImageScheme(stamp_collection2,5));
@@ -137,15 +139,17 @@ public class BandoriModule extends Module{
 		image_map.put("aya_somuchpressure", new SingleImageScheme(stamp_collection8));
 		image_map.put("hina_ivebeenwaiting", new SingleImageScheme(stamp_collection9));
 		image_map.put("yukina_nexttime", new SingleImageScheme(stamp_collection10));
+		image_map.put("ran_showtime", new SingleImageScheme(stamp_collection11));
 		
 		stamp_map.put("kasumi_gogo",Arrays.asList("gogo"));
+		stamp_map.put("cookie_cookie",Arrays.asList("0.o","o.0",":3","fat","michellecookie"));
 		stamp_map.put("tae_letsplay",Arrays.asList("playtogether","wanttoplay","multilive","letsplay"));
 		stamp_map.put("rimi_choco",Arrays.asList("choco","cornet"));
 		stamp_map.put("saya_bread",Arrays.asList("bread"));
 		stamp_map.put("arisa_doki",Arrays.asList("doki","chomama","baka"));
 		stamp_map.put("ran_same",Arrays.asList("sameasalways","alwayssame","alwaysthesame","itsum"));
 		stamp_map.put("moca_youdidit",Arrays.asList("youdidit","congratulations","buns","mocatastic"));
-		stamp_map.put("himari_heyheyhoh",Arrays.asList("heyo","heyhey","hihi","hiyo"));
+		stamp_map.put("himari_heyheyhoh",Arrays.asList("heyo","heyhey","hihi","hiyo","aao"));
 		stamp_map.put("tomoe_letsdothis",Arrays.asList("letsdothis","letsdoit"));
 		stamp_map.put("tsugumi_wecandoit",Arrays.asList("wegotthis","wegotit","wecan"));
 		stamp_map.put("kokoro_happylucky",Arrays.asList("happy!","lucky"));
@@ -153,8 +157,8 @@ public class BandoriModule extends Module{
 		stamp_map.put("aya_fever",Arrays.asList("fever","ayay"));
 		stamp_map.put("hagumi_smileyay",Arrays.asList("smileyay","yay!"));
 		stamp_map.put("kanon_fuee",Arrays.asList("fuu","fue","waa","reee"));
-		stamp_map.put("misaki_ready",Arrays.asList("amready","beenready","ready!"));
-		stamp_map.put("hina_fullcombo",Arrays.asList("fcd","fullcombo","nomiss","allperfect","notasinglemiss","thefc","anfc","fullperfect","easyfc","ezfc"));
+		stamp_map.put("misaki_ready",Arrays.asList("ready"));
+		stamp_map.put("hina_fullcombo",Arrays.asList("fc","fcd","fullcombo","nomiss","allperfect","notasinglemiss","thefc","anfc","fullperfect","easyfc","ezfc"));
 		stamp_map.put("chisato_planned",Arrays.asList("justasplanned","allplanned","calculated","thatcoming"));
 		stamp_map.put("maya_huhehe",Arrays.asList("hehe","huehe","huehue","shuwashuwa"));
 		stamp_map.put("eve_bushido",Arrays.asList("bushido"));
@@ -195,22 +199,23 @@ public class BandoriModule extends Module{
 		stamp_map.put("kanon_keepgoing",Arrays.asList("keepgoing","dontstop","youcandoit","makeit","gaja","petan","pettan","pengu"));
 		stamp_map.put("kokoro_letshavefun",Arrays.asList("havefun","timeforfun"));
 		stamp_map.put("kasumi_letshaveagreatshow",Arrays.asList("greatshow"));
-		stamp_map.put("ako_illshowyousomethingcool",Arrays.asList("havefun","timeforfun"));
-		stamp_map.put("yukina_mindifipetyou",Arrays.asList("havefun","timeforfun"));
-		stamp_map.put("maya_whoa",Arrays.asList("havefun","timeforfun"));
-		stamp_map.put("hina_interesting",Arrays.asList("rururu","interesting"));
+		stamp_map.put("ako_illshowyousomethingcool",Arrays.asList("cool","havefun","timeforfun"));
+		stamp_map.put("yukina_mindifipetyou",Arrays.asList("petyou"));
+		stamp_map.put("maya_whoa",Arrays.asList("waaa","whoa")); //It's Showtime~!
+		stamp_map.put("hina_interesting",Arrays.asList("rururu","interesting","ding"));
 		stamp_map.put("kaoru_imherewithyou",Arrays.asList("herewithyou","hereforyou"));
 		stamp_map.put("ran_itonlygetsbetter",Arrays.asList("getsbetter","onlygets"));
 		stamp_map.put("rinko_wasthatgood",Arrays.asList("wasthatgood","wasitgood"));
 		stamp_map.put("himari_onthescene",Arrays.asList("thescene"));
-		stamp_map.put("chisato_greaterthangreat",Arrays.asList("great"));
-		stamp_map.put("rimi_imsureitllbefine",Arrays.asList("itwillbefine","itllbefine","itsfine","thatsokay","bealright"));
+		stamp_map.put("chisato_greaterthangreat",Arrays.asList("greater"));
+		stamp_map.put("rimi_imsureitllbefine",Arrays.asList("isfine","itwillbefine","itllbefine","itsfine","thatsokay","bealright"));
 		stamp_map.put("moca_letsgetstarted",Arrays.asList("started"));
 		stamp_map.put("kokoro_justlikethat",Arrays.asList("likethat"));
 		stamp_map.put("hagumi_roar",Arrays.asList("roar","rawr","meow"));
-		stamp_map.put("aya_somuchpressure",Arrays.asList("pressure","tough"));
+		stamp_map.put("aya_somuchpressure",Arrays.asList("pressure","tough","thisalright","itsalright"));
 		stamp_map.put("hina_ivebeenwaiting",Arrays.asList("waiting"));
 		stamp_map.put("yukina_nexttime",Arrays.asList("nexttime"));
+		stamp_map.put("ran_showtime",Arrays.asList("showtime"));
 		
 		/*for (String s : image_map.keySet()) {
 			ImageScheme scheme = image_map.get(s);
@@ -264,8 +269,18 @@ public class BandoriModule extends Module{
 			for (String message_search : stamp_map.get(key)) {
 				String filteredmessage = message;
 				filteredmessage = filteredmessage.replaceAll("[^A-Za-z0-9]","");
+				
+				if (filteredmessage.contains("gettinginteresting") &&
+						message_search.equalsIgnoreCase("interesting")) {
+					break;
+				}
+				if (filteredmessage.contains("notready") &&
+						message_search.equalsIgnoreCase("ready")) {
+					break;
+				}
 				//System.out.println(filteredmessage);
-				if (message_search.contains("?") || message_search.contains("!")) {
+				if (message_search.contains("?") || message_search.contains("!")
+						 || message_search.contains(".") || message_search.contains(":")) {
 					if (message.contains(message_search)) {
 						foundmatch = true;
 						CreateStamp(key);
@@ -309,30 +324,32 @@ public class BandoriModule extends Module{
 	
 	public void draw(Graphics g) {
 		super.draw(g);
-		for (Stamp s : active_stamps) {
-			//Stamp is 130x107 pixels
-			if (s.scheme instanceof SingleImageScheme) {
-				g.drawImage(s.scheme.base,(int)(s.randX+position.getX()),(int)position.getY()+24, (int)(s.randX+130+position.getX()), (int)position.getY()+24+107,0,0,
-						s.scheme.base.getWidth(),s.scheme.base.getHeight(),sigIRC.panel);
-			} else {
-				g.drawImage(s.scheme.base, (int)(s.randX+position.getX()), (int)position.getY()+24, (int)(s.randX+130+position.getX()), (int)position.getY()+24+107,
-					s.scheme.stamp_index%6*270+4, s.scheme.stamp_index/6*223+3, s.scheme.stamp_index%6*270+260+4, s.scheme.stamp_index/6*223+214+3, sigIRC.panel);
+		if (sigIRC.panel!=null) {
+			for (Stamp s : active_stamps) {
+				//Stamp is 130x107 pixels
+				if (s.scheme instanceof SingleImageScheme) {
+					g.drawImage(s.scheme.base,(int)(s.randX+position.getX()),(int)position.getY()+24, (int)(s.randX+130+position.getX()), (int)position.getY()+24+107,0,0,
+							s.scheme.base.getWidth(),s.scheme.base.getHeight(),sigIRC.panel);
+				} else {
+					g.drawImage(s.scheme.base, (int)(s.randX+position.getX()), (int)position.getY()+24, (int)(s.randX+130+position.getX()), (int)position.getY()+24+107,
+						s.scheme.stamp_index%6*270+4, s.scheme.stamp_index/6*223+3, s.scheme.stamp_index%6*270+260+4, s.scheme.stamp_index/6*223+214+3, sigIRC.panel);
+				}
 			}
-		}
-		Point2D basepos = new Point2D(this.getPosition().getX(),this.getPosition().getHeight()+this.getPosition().getY()+24);
-		double successChance = 1;
-		DecimalFormat df = new DecimalFormat("0");
-		DecimalFormat df2 = new DecimalFormat("0.0");
-		DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, basepos.getX(), basepos.getY()-24, 2, Color.WHITE, Color.BLACK, songtitle);
-		for (int i=0;i<parts.size();i++) {
-			SongPart s = parts.get(i);
-			if (s.getTotal()!=0) {
-				double successRate = (double)s.getSuccesses()/s.getTotal();
-				successChance *= successRate;
-				DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, basepos.getX(), basepos.getY()+i*24, 2, Color.WHITE, Color.BLACK, s.getTitle()+" - "+s.getSuccesses()+"/"+s.getTotal()+" ("+df.format(successRate*100)+"%)");
+			Point2D basepos = new Point2D(this.getPosition().getX(),this.getPosition().getHeight()+this.getPosition().getY()+24);
+			double successChance = 1;
+			DecimalFormat df = new DecimalFormat("0");
+			DecimalFormat df2 = new DecimalFormat("0.0");
+			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, basepos.getX(), basepos.getY()-24, 2, Color.WHITE, Color.BLACK, songtitle);
+			for (int i=0;i<parts.size();i++) {
+				SongPart s = parts.get(i);
+				if (s.getTotal()!=0) {
+					double successRate = (double)s.getSuccesses()/s.getTotal();
+					successChance *= successRate;
+					DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, basepos.getX(), basepos.getY()+i*24, 2, Color.WHITE, Color.BLACK, s.getTitle()+" - "+s.getSuccesses()+"/"+s.getTotal()+" ("+df.format(successRate*100)+"%)");
+				}
 			}
+			DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, basepos.getX(), basepos.getY()+parts.size()*24+8, 2, Color.WHITE, Color.BLACK, "Expected Attempts: "+(df.format(1d/successChance))+"    Success Chance: "+df2.format((successChance)*100)+"%");
 		}
-		DrawUtils.drawOutlineText(g, sigIRC.panel.programFont, basepos.getX(), basepos.getY()+parts.size()*24+8, 2, Color.WHITE, Color.BLACK, "Expected Attempts: "+(df.format(1d/successChance))+"    Success Chance: "+df2.format((successChance)*100)+"%");
 	}
 	
 	public void keypressed(KeyEvent ev) {
