@@ -239,7 +239,7 @@ public class RabiRaceModule extends Module{
 	
 	public void SyncItemsWithOtherPlayers() {
 		for (Profile p : mySession.getPlayers()) {
-			if (p!=myProfile) {
+			if (p!=myProfile && !p.isPaused) {
 				for (MemoryData m : p.key_items.keySet()) {
 					if (p.key_items.get(m)!=0 && (!myProfile.key_items.containsKey(m) ||  myProfile.key_items.get(m)==0)) {
 						System.out.println("You do not have a "+m.name+". Syncing from "+p.displayName+".");
@@ -385,10 +385,10 @@ public class RabiRaceModule extends Module{
 	private void UpdateMyProfile() {
 		if (foundRabiRibi) {
 			//System.out.println("Called.");
-			int paused = readIntFromMemory(MemoryOffset.PAUSED);
+			int paused = readIntFromMemory(MemoryOffset.PAUSED) + readIntFromMemory(MemoryOffset.TITLE_SCREEN);
 			//int paused = 0; //TODO FORCE UNPAUSE FOR NOW.
 			float itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
-			myProfile.isPaused = paused==1;
+			myProfile.isPaused = paused>=1;
 			//System.out.println(itempct+","+paused);
 			if (paused==0 && itempct>=0) {
 				myProfile.archiveAllValues();
