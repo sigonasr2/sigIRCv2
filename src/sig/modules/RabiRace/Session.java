@@ -15,6 +15,7 @@ public class Session {
 	int maxPlayers = 0;
 	String password = "";
 	float difficulty = -1;
+	boolean coop = false;
 	int gamemode = 0; //0 = Egg Mode, 1 = Item Hunt Mode
 	String[] itemHuntData;
 	int eggCount = 0;
@@ -67,6 +68,9 @@ public class Session {
 				}break;
 			}
 		}
+		if (split.length>=11) {
+			coop = Boolean.parseBoolean(split[i++]);
+		}
 	}
 
 	private void DownloadAndAddPlayer(Profile p) {
@@ -86,6 +90,10 @@ public class Session {
 	
 	public List<Profile> getPlayers() {
 		return players;
+	}
+	
+	public boolean isCoop() {
+		return coop;
 	}
 	
 	public String toString() {

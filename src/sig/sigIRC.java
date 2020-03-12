@@ -6,12 +6,6 @@ import javax.swing.Timer;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
-
-import com.mb3364.twitch.api.Twitch;
-import com.mb3364.twitch.api.handlers.ChannelResponseHandler;
-import com.mb3364.twitch.api.handlers.StreamResponseHandler;
-import com.mb3364.twitch.api.models.Channel;
-import com.mb3364.twitch.api.models.Stream;
 import com.sun.jna.Memory;
 import com.sun.jna.Native;
 import com.sun.jna.Pointer;
@@ -175,6 +169,7 @@ public class sigIRC{
 	public static boolean autoUpdateProgram = true;
 	public static Image programIcon;
 	final public static int MAX_CONNECTION_RETRIES = 100; 
+	public final static String CLIENTID = "b5d94i1pu4pq6egyc43xil4p3ujh8t";
 	public static int retryCounter = 0;
 	
 	public static int subchannelCount = 0;
@@ -187,7 +182,6 @@ public class sigIRC{
 	static int lastWindowX = 0;
 	static int lastWindowY = 0;
 	public static String longString = "10988989d";
-	public static Twitch manager = new Twitch();
 	
 	public static void main(String[] args) {
 		config = InitializeConfigurationFile();
@@ -267,7 +261,7 @@ public class sigIRC{
 		autoUpdateProgram = config.getBoolean("Automatically_Update_Program", true);
 		disableChatMessages = config.getBoolean("Disable_Chat_Messages", false);
 		lastSubEmoteUpdate = config.getInteger("lastSubEmote_APIUpdate",Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
-		manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
+		//manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
 		//System.out.println(manager.auth().hasAccessToken());
 
 		DownloadAllRequiredDependencies();
@@ -327,6 +321,7 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/Emotes/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/subscribers.txt"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/logs/",true); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/sub_emotes/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/sounds/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/rabi-ribi/",true); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/rabi-ribi/unknown.png"); manager.verifyAndFetchFileFromServer();
@@ -354,6 +349,7 @@ public class sigIRC{
 		manager = new FileManager("sigIRC/controller/controller_overlay.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/controller/controller_template.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/CP_Font.ttf"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("sigIRC/collect_item.wav"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("kill.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("memory"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();
@@ -496,8 +492,23 @@ public class sigIRC{
 			FileUtils.logToFile("\n---------------------------\n", BASEDIR+"logs/log_"+(cal.get(Calendar.MONTH)+1)+"_"+cal.get(Calendar.DAY_OF_MONTH)+"_"+cal.get(Calendar.YEAR)+".txt");
 		}
 	}
+	
+	
+	private static void getSubChannels(String s) {
+		try {
+			FileUtils.downloadFileFromUrl("https://api.twitch.tv/kraken/users?login="+s, "temp_connect");
+			JSONObject j = FileUtils.readJsonFromFile("temp_connect");
+			JSONArray a = j.getJSONArray("users");
+			Long id = Long.parseLong(a.getJSONObject(0).getString("_id"));
+			subchannelIds.put(id, s);
+			//System.out.println("Got ID "+id+" for channel "+s);
+		} catch (JSONException | IOException e) {
+			e.printStackTrace();
+		}
+		//TwitchModule.streamOnline=true;
+	}
 
-	private static void getSubChannels(String channelName) {
+	/*private static void getSubChannels(String channelName) {
 		manager.channels().get(channelName, new ChannelResponseHandler() {
 			@Override
 			public void onFailure(Throwable arg0) {
@@ -516,23 +527,29 @@ public class sigIRC{
 		});
 		//TwitchModule.streamOnline=true;
 		//return true;
-	}
+	}*/
 
-	public static void downloadSubEmotes(JSONObject data) {
+	public static void downloadSubEmotes() {
 		for (Long l : subchannelIds.keySet()) {
-			JSONObject channel = data.getJSONObject(Long.toString(l));
-			JSONArray arr = channel.getJSONArray("emotes");
-			//System.out.println("Channel: "+channel);
-			for (int i=0;i<arr.length();i++) {
-				JSONObject emote = arr.getJSONObject(i);
-				int id = emote.getInt("id");
-				String name = emote.getString("code");
-				//System.out.println("Emote "+(i+1)+" has id "+id+" and code "+name+".");
-				try {
-					emoticon_queue.add(new SubEmoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0"), subchannelIds.get(l)));
-				} catch (MalformedURLException e) {
-					e.printStackTrace();
+			JSONObject channel;
+			try {
+				channel = FileUtils.readJsonFromUrl("https://api.twitchemotes.com/api/v4/channels/"+l);
+				//String channel = subchannelIds.get(l);
+				JSONArray arr = channel.getJSONArray("emotes");
+				//System.out.println("Channel: "+channel);
+				for (int i=0;i<arr.length();i++) {
+					JSONObject emote = arr.getJSONObject(i);
+					int id = emote.getInt("id");
+					String name = emote.getString("code");
+					System.out.println("Emote "+(i+1)+" has id "+id+" and code "+name+".");
+					try {
+						emoticon_queue.add(new SubEmoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0"), subchannelIds.get(l)));
+					} catch (MalformedURLException e) {
+						e.printStackTrace();
+					}
 				}
+			} catch (JSONException | IOException e1) {
+				e1.printStackTrace();
 			}
 		}
 		//TwitchModule.streamOnline=true;
@@ -541,14 +558,17 @@ public class sigIRC{
 
 	private static void performTwitchEmoteUpdate() {
 		try {
-			JSONObject twitchemotes = FileUtils.readJsonFromUrl("https://twitchemotes.com/api_cache/v3/global.json");
+			JSONObject twitchemotes = FileUtils.readJsonFromUrl("https://api.twitchemotes.com/api/v4/channels/0"); //Channel 0 is global emotes.
 			System.out.println("Twitch emote Json read.");
-			for (String emotes : twitchemotes.keySet()) {
-				JSONObject emote = twitchemotes.getJSONObject(emotes);
+			JSONArray emotes = twitchemotes.getJSONArray("emotes");
+			for (int i=0;i<emotes.length();i++) {
+				JSONObject emote = emotes.getJSONObject(i);
 				int id = emote.getInt("id");
-				String name = emote.getString("code");
-				emoticons.add(new Emoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0")));
-				System.out.println("Emote "+id+" with name "+name);
+				if (id>14) {
+					String name = emote.getString("code");
+					emoticons.add(new Emoticon(name, new URL(TWITCHEMOTEURL+id+"/1.0")));
+					System.out.println("Emote "+id+" with name "+name);
+				}
 			}
 			//System.out.println("Subscriber object: "+subemotes);
 			String[] channel_names = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/subscribers.txt");
@@ -558,6 +578,7 @@ public class sigIRC{
 				if (s.length()>0) {
 					s=s.trim();
 					//System.out.println("Got sub emote info for "+s);
+					//TODO Rewrite.
 					getSubChannels(s);
 				}
 			}

@@ -9,37 +9,38 @@ import sig.modules.TwitchModule;
 import sig.utils.FileUtils;
 
 public class Announcement {
-	User userData;
+	Follower userData;
 	long twitchID;
 	public Announcement(long twitchID) {
 		String userFilePath = TwitchModule.USERDIR+twitchID;
 		File userFile = new File(userFilePath);
 		if (userFile.exists()) {
+			int i=0;
 			String[] contents = FileUtils.readFromFile(userFilePath);
-			userData = new User();
-			int i=1;
-			userData.setId(twitchID);
-			userData.setBio(contents[i++]);
-			userData.setDisplayName(contents[i++]);
-			userData.setLogo(contents[i++]);
-			userData.setName(contents[i++]);
-			userData.setType(contents[i++]);
+			userData = new Follower(twitchID,
+					contents[i++],
+					"",
+					contents[i++],
+					contents[i++],
+					contents[i++],
+					contents[i++],
+					"");
 		} else {
 			System.out.println("WARNING! Could not find user with ID "+twitchID+"!");
 		}
 		this.twitchID=twitchID;
 	}
 	
-	public Announcement(User data) {
+	public Announcement(Follower data) {
 		this.userData=data;
-		this.twitchID=data.getId();
+		this.twitchID=data.id;
 	}
 	
 	public String toString() {
 		return userData.toString();
 	}
 	
-	public User getUser() {
+	public Follower getUser() {
 		return userData;
 	}
 }

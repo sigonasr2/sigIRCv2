@@ -48,12 +48,13 @@ import sig.modules.RabiRibi.MemoryType;
 import sig.modules.utils.PsapiTools;
 import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
+import sig.utils.SoundUtils;
 import sig.utils.TextUtils;
 
 public class RabiRaceModule extends Module{
 	final static String ITEMS_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/items/";
 	final static String AVATAR_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/characters/";
-	final int PROCESS_PERMISSIONS = WinNT.PROCESS_QUERY_INFORMATION | WinNT.PROCESS_VM_READ;
+	final int PROCESS_PERMISSIONS = WinNT.PROCESS_QUERY_INFORMATION | WinNT.PROCESS_VM_READ | WinNT.PROCESS_VM_WRITE;
 	boolean foundRabiRibi = false;
 	int rabiRibiPID = -1;
 	long rabiRibiMemOffset = 0;
@@ -222,10 +223,63 @@ public class RabiRaceModule extends Module{
 			e.printStackTrace();
 		}
 		String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/messages");
+		boolean message_played=false;
 		for (String s : data) {
 			if (s.length()>0) {
 				messages.add(new ScrollingText(s,(int)(lastScrollX+position.getWidth()+24),(int)(position.getHeight()-28)));
+				message_played=true;
+				System.out.println("Perform item sync with other players.");
+				SyncItemsWithOtherPlayers();
 			}
+		}
+		if (message_played && mySession.isCoop()) {
+			SoundUtils.playSound(sigIRC.BASEDIR+"sigIRC/collect_item.wav");
+		}
+	}
+	
+	public void SyncItemsWithOtherPlayers() {
+		for (Profile p : mySession.getPlayers()) {
+			if (p!=myProfile) {
+				for (MemoryData m : p.key_items.keySet()) {
+					if (p.key_items.get(m)!=0 && myProfile.key_items.get(m)==0) {
+						System.out.println("You do not have a "+m.name+". Syncing from "+p.displayName+".");
+						writeIntToMemory(m.mem.getOffset(),Math.abs(p.key_items.get(m)));
+					}
+				}
+				for (MemoryData m : p.badges.keySet()) {
+					if (p.badges.get(m)!=0 && myProfile.badges.get(m)==0) {
+						System.out.println("You do not have a "+m.name+". Syncing from "+p.displayName+".");
+						writeIntToMemory(m.mem.getOffset(),Math.abs(p.key_items.get(m)));
+					}
+				}
+				if (p.healthUps>myProfile.healthUps) {
+					System.out.println("You do not have the correct amount of health ups. Syncing to ("+p.healthUps+") from "+p.displayName+".");
+					UpdateRange(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END,p.healthUps-myProfile.healthUps);
+				}
+				if (p.manaUps>myProfile.manaUps) {
+					System.out.println("You do not have the correct amount of mana ups. Syncing to ("+p.manaUps+") from "+p.displayName+".");
+					UpdateRange(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END,p.manaUps-myProfile.manaUps);
+				}
+				if (p.regenUps>myProfile.regenUps) {
+					System.out.println("You do not have the correct amount of regen ups. Syncing to ("+p.regenUps+") from "+p.displayName+".");
+					UpdateRange(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END,p.regenUps-myProfile.regenUps);
+				}
+				if (p.packUps>myProfile.packUps) {
+					System.out.println("You do not have the correct amount of pack ups. Syncing to ("+p.packUps+") from "+p.displayName+".");
+					UpdateRange(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END,p.packUps-myProfile.packUps);
+				}
+			}
+		}
+	}
+
+	private void UpdateRange(MemoryOffset start, MemoryOffset end, int i) {
+		int f=63;
+		while (i>0 && f>0) {
+			if (readIntFromMemory(start.getOffset())==0) {
+				writeIntToMemory(start.getOffset()+(f*4),1);
+				i--;
+			}
+			f--;
 		}
 	}
 
@@ -306,6 +360,10 @@ public class RabiRaceModule extends Module{
 	public void run() {
 		if (foundRabiRibi) {
 			rainbowcycler.run();
+			/*System.out.println("Value: ("+Integer.toHexString((int)(rabiRibiMemOffset+0x1679EF0))+"): "+readIntFromMemory(0x1679EF0));
+			System.out.println("Write...");
+			writeIntToMemory(0x1679EF0,0);
+			System.out.println("Value: ("+Integer.toHexString((int)(rabiRibiMemOffset+0x1679EF0))+"): "+readIntFromMemory(0x1679EF0));*/
 			if (window!=null) {
 				window.run();
 			} 
@@ -324,6 +382,7 @@ public class RabiRaceModule extends Module{
 		if (foundRabiRibi) {
 			//System.out.println("Called.");
 			int paused = readIntFromMemory(MemoryOffset.PAUSED);
+			//int paused = 0; //TODO FORCE UNPAUSE FOR NOW.
 			float itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
 			myProfile.isPaused = paused==1;
 			//System.out.println(itempct+","+paused);
@@ -387,6 +446,26 @@ public class RabiRaceModule extends Module{
 		Memory mem = new Memory(4);
 		Kernel32.INSTANCE.ReadProcessMemory(rabiribiProcess, new Pointer(rabiRibiMemOffset+offset), mem, 4, null);
 		return mem.getFloat(0);
+	}
+	
+	public void writeIntToMemory(long offset,int value) {
+		//Pointer valueptr = new Pointer();
+		Memory valueptr = new Memory(8);
+		valueptr.setInt(0, value);
+		//new Pointer(rabiRibiMemOffset+offset).setMemory((long)0, (long)4, (byte)value);
+		Kernel32.INSTANCE.WriteProcessMemory(rabiribiProcess, 
+				new Pointer(rabiRibiMemOffset+offset),valueptr,4,null);
+		//Kernel32.INSTANCE.ReadProcessMemory(rabiribiProcess, new Pointer(rabiRibiMemOffset+offset), mem, 4, null);
+		//return mem.getInt(0);
+	}
+	
+	public void writeFloatToMemory(long offset,float value) {
+		Memory mem = new Memory(4);
+		//Pointer valueptr = new Pointer();
+		new Pointer(rabiRibiMemOffset+offset).setMemory((long)0, (long)4, (byte)value);
+		//Kernel32.INSTANCE.WriteProcessMemory(rabiribiProcess, , value,4,null);
+		//Kernel32.INSTANCE.ReadProcessMemory(rabiribiProcess, new Pointer(rabiRibiMemOffset+offset), mem, 4, null);
+		//return mem.getInt(0);
 	}
 	
 	public float readFloatFromMemoryOffset(MemoryOffset val, long pointer) {

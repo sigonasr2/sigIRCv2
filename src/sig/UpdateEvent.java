@@ -38,8 +38,8 @@ public class UpdateEvent implements ActionListener{
 				sigIRC.subchannelCount==sigIRC.subchannelIds.size()) {
 			Thread downloadThread = new Thread(){
 				public void run() {
-						JSONObject data = GetSubEmoteJson();
-						sigIRC.downloadSubEmotes(data);
+						//JSONObject data = GetSubEmoteJson();
+						sigIRC.downloadSubEmotes();
 						sigIRC.subEmotesCompleted=true;
 					}
 				};
@@ -48,8 +48,8 @@ public class UpdateEvent implements ActionListener{
 		}
 	}
 
-	private JSONObject GetSubEmoteJson() {
-		JSONObject subemotes = null;
+	private boolean GetSubEmotesNeedChecking() {
+		/*JSONObject subemotes = null;
 		try {
 			File filer = new File(sigIRC.SUBEMOTELISTFILE);
 			if (!filer.exists()) {
@@ -77,10 +77,11 @@ public class UpdateEvent implements ActionListener{
 			}
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
-		}
+		}*/
+		boolean needsUpdate = sigIRC.lastSubEmoteUpdate != Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
 		sigIRC.lastSubEmoteUpdate = Calendar.getInstance().get(Calendar.DAY_OF_YEAR);
 		sigIRC.config.setInteger("lastSubEmote_APIUpdate", sigIRC.lastSubEmoteUpdate);
-		return subemotes;
+		return needsUpdate;
 	}
 
 	private void UpdateWindowPosition() {

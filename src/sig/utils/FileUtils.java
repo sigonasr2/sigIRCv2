@@ -10,8 +10,12 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.net.ConnectException;
+import java.net.HttpURLConnection;
 import java.net.URL;
+import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
+import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -301,5 +305,30 @@ public class FileUtils {
 		  if (file.exists()) {
 			  file.delete();
 		  }
+	  }
+	  
+
+	  
+	  public static void downloadFileFromUrl(String url, String file) throws IOException, JSONException {
+		  File filer = new File(file);
+		  filer.createNewFile();
+		  
+		  URL website = new URL(url);
+		  HttpURLConnection connection = (HttpURLConnection) website.openConnection();
+		    /*for (String s : connection.getHeaderFields().keySet()) {
+		    	System.out.println(s+": "+connection.getHeaderFields().get(s));
+		    }*/
+		    connection.setRequestMethod("GET");
+		    //connection.setRequestProperty("Content-Type", "application/json");
+		    connection.setRequestProperty("Accept", "application/vnd.twitchtv.v5+json");
+		    connection.setRequestProperty("Client-ID", sigIRC.CLIENTID);
+		    try {
+			  ReadableByteChannel rbc = Channels.newChannel(connection.getInputStream());
+			  FileOutputStream fos = new FileOutputStream(file);
+			  fos.getChannel().transferFrom(rbc, 0, Long.MAX_VALUE);
+			  fos.close();
+		    } catch (ConnectException e) {
+		    	System.out.println("Failed to connect, moving on...");
+		    }
 	  }
 }

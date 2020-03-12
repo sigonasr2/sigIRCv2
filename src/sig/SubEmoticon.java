@@ -2,13 +2,6 @@ package sig;
 
 import java.net.URL;
 
-import com.mb3364.twitch.api.handlers.ChannelResponseHandler;
-import com.mb3364.twitch.api.handlers.ChannelSubscriptionResponseHandler;
-import com.mb3364.twitch.api.handlers.UserSubscriptionResponseHandler;
-import com.mb3364.twitch.api.models.Channel;
-import com.mb3364.twitch.api.models.ChannelSubscription;
-import com.mb3364.twitch.api.models.UserSubscription;
-
 public class SubEmoticon extends Emoticon{
 	String channelName = "";
 	static boolean userCanUseEmoticon=false;

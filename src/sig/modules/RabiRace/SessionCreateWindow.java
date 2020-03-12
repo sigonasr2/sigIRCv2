@@ -18,6 +18,7 @@ import javax.swing.Box;
 import javax.swing.BoxLayout;
 import javax.swing.ImageIcon;
 import javax.swing.JButton;
+import javax.swing.JCheckBox;
 import javax.swing.JComboBox;
 import javax.swing.JFrame;
 import javax.swing.JLabel;
@@ -55,12 +56,13 @@ public class SessionCreateWindow extends JFrame{
 		JPanel namepanel = new JPanel();
 		JPanel playerpanel = new JPanel();
 		JPanel passwordpanel = new JPanel();
+		JPanel cooppanel = new JPanel();
 		JPanel difficultypanel = new JPanel();
 		JPanel modepanel = new JPanel();
 		JPanel eggpropertiespanel = new JPanel();
 		
 		JPanel[] panel_list = new JPanel[]{
-			namepanel,playerpanel,passwordpanel,difficultypanel,modepanel,eggpropertiespanel,itempropertiespanel
+				namepanel,playerpanel,passwordpanel,cooppanel,difficultypanel,modepanel,eggpropertiespanel,itempropertiespanel
 		};
 		
 		for (JPanel panel : panel_list) {
@@ -90,8 +92,18 @@ public class SessionCreateWindow extends JFrame{
 		
 		playerpanel.add(passwordLabel);
 		playerpanel.add(pass);
+
+		JLabel cooplabel = new JLabel("MultiBun (Coop)  ");
+		JCheckBox coop = new JCheckBox();
+		coop.setPreferredSize(new Dimension(60,24));
+		coop.setSelected(false);
+
+		cooppanel.add(Box.createHorizontalStrut(60));
+		cooppanel.add(cooplabel);
+		cooppanel.add(coop);
+		cooppanel.add(Box.createHorizontalStrut(60));
 		
-		JLabel difficultyLabel = new JLabel("Race Difficulty (0.00~10.00):  ");
+		JLabel difficultyLabel = new JLabel("Race Difficulty:  ");
 		difficulty.setPreferredSize(new Dimension(60,24));
 		difficulty.setText("5.00");
 
@@ -208,7 +220,7 @@ public class SessionCreateWindow extends JFrame{
 				File file = new File(sigIRC.BASEDIR+"sigIRC/tmp.data");
 				try {
 					//System.out.println("Write to "+"http://45.33.13.215/rabirace/send.php?key=sessioncreate&name="+sessionText+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")+"&difficulty="+((difficulty.getText().length()>0)?difficulty.getText():"-1")+"&mode="+GetModeIndex()+"&extradata="+GetModeData());
-					org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=sessioncreate&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+RabiRaceModule.module.myProfile.username+"&roomname="+sessionText+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")+"&difficulty="+((difficulty.getText().length()>0)?difficulty.getText():"-1")+"&mode="+GetModeIndex()+"&extradata="+GetModeData()),file);
+					org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=sessioncreate&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+RabiRaceModule.module.myProfile.username+"&roomname="+sessionText+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")+"&difficulty="+((difficulty.getText().length()>0)?difficulty.getText():"-1")+"&mode="+GetModeIndex()+"&extradata="+GetModeData()+"&coop="+GetCoopValue()),file);
 					//org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=sessioncreate&name="+session_name.getText()+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")),file);
 					String[] contents = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/tmp.data");
 					int sessionID=-1;
@@ -231,6 +243,10 @@ public class SessionCreateWindow extends JFrame{
 				}
 			}
 
+			private Boolean GetCoopValue() {
+				return coop.isSelected();
+			}
+			
 			private String GetModeIndex() {
 				switch (((String)gametype.getSelectedItem())) {
 					case "Egg Mode":{
@@ -278,13 +294,16 @@ public class SessionCreateWindow extends JFrame{
 		container.setLayout(new BoxLayout(container,BoxLayout.PAGE_AXIS));
 
 		container.add(Box.createRigidArea(new Dimension(24,24)));
-		container.add(namepanel);
+		/*(container.add(namepanel);
 		container.add(playerpanel);
 		container.add(passwordpanel);
 		container.add(difficultypanel);
 		container.add(modepanel);
 		container.add(eggpropertiespanel);
-		container.add(itempropertiespanel);
+		container.add(itempropertiespanel);*/
+		for (JPanel panel : panel_list) {
+			container.add(panel);
+		}
 		for (int i=0;i<10;i++) {
 			ItemDisplayBox<MemoryData> box = new ItemDisplayBox<MemoryData>(this);
 			box.myPanel.setVisible(false);
@@ -295,9 +314,9 @@ public class SessionCreateWindow extends JFrame{
 		container.add(Box.createRigidArea(new Dimension(24,24)));
 		
 		this.add(container);
-		this.setSize(400, 240);
-		this.setMinimumSize(new Dimension(400, 240));
-		this.setMaximumSize(new Dimension(400, 240));
+		this.setSize(400, 280);
+		this.setMinimumSize(new Dimension(400, 280));
+		this.setMaximumSize(new Dimension(400, 280));
 		this.setResizable(false);
 	}
 	

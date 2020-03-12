@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Component;
 import java.awt.Dimension;
 import java.awt.Font;
+import java.awt.FontFormatException;
 import java.awt.Graphics;
 import java.awt.GraphicsEnvironment;
 import java.awt.MouseInfo;
@@ -49,6 +50,13 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
     	programFont = programFont.deriveFont(sigIRC.messageFontSize);
     	userFont = userFont.deriveFont(sigIRC.usernameFontSize);
     	smallFont = smallFont.deriveFont(sigIRC.touhoumotherConsoleFontSize);
+    	     GraphicsEnvironment ge = 
+    	         GraphicsEnvironment.getLocalGraphicsEnvironment();
+    	     try {
+				ge.registerFont(Font.createFont(Font.TRUETYPE_FONT, new File(sigIRC.BASEDIR+"sigIRC/CP_Font.ttf")));
+			} catch (FontFormatException | IOException e) {
+				e.printStackTrace();
+			}
         //setBorder(BorderFactory.createLineBorder(Color.black));
     	addMouseListener(this);
     	addMouseWheelListener(this);
