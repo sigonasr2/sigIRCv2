@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.List;
 
+import sig.sigIRC;
 import sig.modules.RabiRaceModule;
 import sig.utils.ReflectUtils;
 
@@ -52,6 +53,9 @@ public class Session {
 				p.avatar = Profile.GetSeededAvatar(p.username);
 				//System.out.println("Player "+p.username);
 				DownloadAndAddPlayer(p);
+			}
+			if (RabiRaceModule.syncItems) {
+				RabiRaceModule.module.SyncItemsWithOtherPlayers();
 			}
 		}
 		if (split.length>=8) {	

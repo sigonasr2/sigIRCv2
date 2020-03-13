@@ -75,6 +75,7 @@ public class RabiRaceModule extends Module{
 	boolean mouseoverAvatar=false;
 	public static boolean avatarRetrieved=false;
 	public static int CLIENT_SERVER_READTIME = -1;
+	public static boolean syncItems = false;
 	
 	public SessionListData session_listing = new SessionListData();
 	
@@ -223,54 +224,72 @@ public class RabiRaceModule extends Module{
 			e.printStackTrace();
 		}
 		String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/messages");
-		boolean message_played=false;
+		//boolean message_played=false;
 		for (String s : data) {
 			if (s.length()>0) {
 				messages.add(new ScrollingText(s,(int)(lastScrollX+position.getWidth()+24),(int)(position.getHeight()-28)));
-				message_played=true;
+				/*message_played=true;
 				System.out.println("Perform item sync with other players.");
-				SyncItemsWithOtherPlayers();
+				SyncItemsWithOtherPlayers();*/
+				syncItems=true;
 			}
 		}
-		if (message_played && mySession.isCoop()) {
+		/*if (message_played && mySession.isCoop()) {
 			SoundUtils.playSound(sigIRC.BASEDIR+"sigIRC/collect_item.wav");
-		}
+		}*/
 	}
 	
 	public void SyncItemsWithOtherPlayers() {
+		boolean soundPlayed=false;
 		for (Profile p : mySession.getPlayers()) {
 			if (p!=myProfile && !p.isPaused) {
+				boolean updateRequired=false;
 				for (MemoryData m : p.key_items.keySet()) {
 					if (p.key_items.get(m)!=0 && (!myProfile.key_items.containsKey(m) ||  myProfile.key_items.get(m)==0)) {
 						System.out.println("You do not have a "+m.name+". Syncing from "+p.displayName+".");
 						writeIntToMemory(m.mem.getOffset(),Math.abs(p.key_items.get(m)));
+						updateRequired=true;
 					}
 				}
 				for (MemoryData m : p.badges.keySet()) {
 					if (p.badges.get(m)!=0 && (!myProfile.badges.containsKey(m) ||  myProfile.badges.get(m)==0)) {
 						System.out.println("You do not have a "+m.name+". Syncing from "+p.displayName+".");
 						writeIntToMemory(m.mem.getOffset(),Math.abs(p.badges.get(m)));
+						updateRequired=true;
 					}
 				}
 				if (p.healthUps>myProfile.healthUps) {
 					System.out.println("You do not have the correct amount of health ups. Syncing to ("+p.healthUps+") from "+p.displayName+".");
 					UpdateRange(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END,p.healthUps-myProfile.healthUps);
+					updateRequired=true;
 				}
 				if (p.manaUps>myProfile.manaUps) {
 					System.out.println("You do not have the correct amount of mana ups. Syncing to ("+p.manaUps+") from "+p.displayName+".");
 					UpdateRange(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END,p.manaUps-myProfile.manaUps);
+					updateRequired=true;
 				}
 				if (p.regenUps>myProfile.regenUps) {
 					System.out.println("You do not have the correct amount of regen ups. Syncing to ("+p.regenUps+") from "+p.displayName+".");
 					UpdateRange(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END,p.regenUps-myProfile.regenUps);
+					updateRequired=true;
 				}
 				if (p.packUps>myProfile.packUps) {
 					System.out.println("You do not have the correct amount of pack ups. Syncing to ("+p.packUps+") from "+p.displayName+".");
 					UpdateRange(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END,p.packUps-myProfile.packUps);
+					updateRequired=true;
 				}
 				if (p.attackUps>myProfile.attackUps) {
 					System.out.println("You do not have the correct amount of attack ups. Syncing to ("+p.attackUps+") from "+p.displayName+".");
 					UpdateRange(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END,p.attackUps-myProfile.attackUps);
+					updateRequired=true;
+				}
+				
+				if (updateRequired && mySession.isCoop()) {
+					if (!soundPlayed) {
+						SoundUtils.playSound(sigIRC.BASEDIR+"sigIRC/collect_item.wav");
+						soundPlayed=true;
+					}
+					updateRequired=false;
 				}
 			}
 		}

@@ -289,6 +289,7 @@ public class Profile {
 					while (!nextval.equalsIgnoreCase("UPDATES:"));
 				}
 				lastWebUpdate = System.currentTimeMillis();
+				
 				return true;
 			}
 		}
