@@ -231,7 +231,9 @@ public class RabiRaceModule extends Module{
 				/*message_played=true;
 				System.out.println("Perform item sync with other players.");
 				SyncItemsWithOtherPlayers();*/
-				syncItems=true;
+				if (mySession!=null && mySession.isCoop()) {
+					syncItems=true;
+				}
 			}
 		}
 		/*if (message_played && mySession.isCoop()) {
