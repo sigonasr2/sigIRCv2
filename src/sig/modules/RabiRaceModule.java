@@ -241,55 +241,57 @@ public class RabiRaceModule extends Module{
 	
 	public void SyncItemsWithOtherPlayers() {
 		boolean soundPlayed=false;
-		for (Profile p : mySession.getPlayers()) {
-			if (p!=myProfile && !p.isPaused) {
-				boolean updateRequired=false;
-				for (MemoryData m : p.key_items.keySet()) {
-					if (p.key_items.get(m)!=0 && (!myProfile.key_items.containsKey(m) ||  myProfile.key_items.get(m)==0)) {
-						System.out.println("You do not have a "+m.name+". Syncing from "+p.displayName+".");
-						writeIntToMemory(m.mem.getOffset(),Math.abs(p.key_items.get(m)));
+		if (mySession!=null) {
+			for (Profile p : mySession.getPlayers()) {
+				if (p!=myProfile && !p.isPaused) {
+					boolean updateRequired=false;
+					for (MemoryData m : p.key_items.keySet()) {
+						if (p.key_items.get(m)!=0 && (!myProfile.key_items.containsKey(m) ||  myProfile.key_items.get(m)==0)) {
+							System.out.println("You do not have a "+m.name+". Syncing from "+p.displayName+".");
+							writeIntToMemory(m.mem.getOffset(),Math.abs(p.key_items.get(m)));
+							updateRequired=true;
+						}
+					}
+					for (MemoryData m : p.badges.keySet()) {
+						if (p.badges.get(m)!=0 && (!myProfile.badges.containsKey(m) ||  myProfile.badges.get(m)==0)) {
+							System.out.println("You do not have a "+m.name+". Syncing from "+p.displayName+".");
+							writeIntToMemory(m.mem.getOffset(),Math.abs(p.badges.get(m)));
+							updateRequired=true;
+						}
+					}
+					if (Profile.GetHealthUpCount(p)>Profile.GetHealthUpCount(myProfile)) {
+						System.out.println("You do not have the correct amount of health ups. Syncing to ("+p.healthUps+") from "+p.displayName+".");
+						UpdateRange(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END,p.healthUps);
 						updateRequired=true;
 					}
-				}
-				for (MemoryData m : p.badges.keySet()) {
-					if (p.badges.get(m)!=0 && (!myProfile.badges.containsKey(m) ||  myProfile.badges.get(m)==0)) {
-						System.out.println("You do not have a "+m.name+". Syncing from "+p.displayName+".");
-						writeIntToMemory(m.mem.getOffset(),Math.abs(p.badges.get(m)));
+					if (Profile.GetManaUpCount(p)>Profile.GetManaUpCount(myProfile)) {
+						System.out.println("You do not have the correct amount of mana ups. Syncing to ("+p.manaUps+") from "+p.displayName+".");
+						UpdateRange(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END,p.manaUps);
 						updateRequired=true;
 					}
-				}
-				if (Profile.GetHealthUpCount(p)>Profile.GetHealthUpCount(myProfile)) {
-					System.out.println("You do not have the correct amount of health ups. Syncing to ("+p.healthUps+") from "+p.displayName+".");
-					UpdateRange(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END,p.healthUps);
-					updateRequired=true;
-				}
-				if (Profile.GetManaUpCount(p)>Profile.GetManaUpCount(myProfile)) {
-					System.out.println("You do not have the correct amount of mana ups. Syncing to ("+p.manaUps+") from "+p.displayName+".");
-					UpdateRange(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END,p.manaUps);
-					updateRequired=true;
-				}
-				if (Profile.GetRegenUpCount(p)>Profile.GetRegenUpCount(myProfile)) {
-					System.out.println("You do not have the correct amount of regen ups. Syncing to ("+p.regenUps+") from "+p.displayName+".");
-					UpdateRange(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END,p.regenUps);
-					updateRequired=true;
-				}
-				if (Profile.GetPackUpCount(p)>Profile.GetPackUpCount(myProfile)) {
-					System.out.println("You do not have the correct amount of pack ups. Syncing to ("+p.packUps+") from "+p.displayName+".");
-					UpdateRange(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END,p.packUps);
-					updateRequired=true;
-				}
-				if (Profile.GetAttackUpCount(p)>Profile.GetAttackUpCount(myProfile)) {
-					System.out.println("You do not have the correct amount of attack ups. Syncing to ("+p.attackUps+") from "+p.displayName+".");
-					UpdateRange(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END,p.attackUps);
-					updateRequired=true;
-				}
-				
-				if (updateRequired && mySession.isCoop()) {
-					if (!soundPlayed) {
-						SoundUtils.playSound(sigIRC.BASEDIR+"sigIRC/collect_item.wav");
-						soundPlayed=true;
+					if (Profile.GetRegenUpCount(p)>Profile.GetRegenUpCount(myProfile)) {
+						System.out.println("You do not have the correct amount of regen ups. Syncing to ("+p.regenUps+") from "+p.displayName+".");
+						UpdateRange(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END,p.regenUps);
+						updateRequired=true;
 					}
-					updateRequired=false;
+					if (Profile.GetPackUpCount(p)>Profile.GetPackUpCount(myProfile)) {
+						System.out.println("You do not have the correct amount of pack ups. Syncing to ("+p.packUps+") from "+p.displayName+".");
+						UpdateRange(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END,p.packUps);
+						updateRequired=true;
+					}
+					if (Profile.GetAttackUpCount(p)>Profile.GetAttackUpCount(myProfile)) {
+						System.out.println("You do not have the correct amount of attack ups. Syncing to ("+p.attackUps+") from "+p.displayName+".");
+						UpdateRange(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END,p.attackUps);
+						updateRequired=true;
+					}
+					
+					if (updateRequired && mySession.isCoop()) {
+						if (!soundPlayed) {
+							SoundUtils.playSound(sigIRC.BASEDIR+"sigIRC/collect_item.wav");
+							soundPlayed=true;
+						}
+						updateRequired=false;
+					}
 				}
 			}
 		}
