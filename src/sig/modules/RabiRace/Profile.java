@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Graphics2D;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
 import java.io.IOException;
@@ -32,12 +33,12 @@ public class Profile {
 	public String displayName = sigIRC.nickname;
 	public Avatar avatar;
 	public int playtime = 0;
-	public int healthUps = 0;
-	public int attackUps = 0;
-	public int manaUps = 0;
-	public int regenUps = 0;
-	public int packUps = 0;
-	public int rainbowEggCount = 0;
+	public String healthUps = "0000000000000000000000000000000000000000000000000000000000000000";
+	public String attackUps = "0000000000000000000000000000000000000000000000000000000000000000";
+	public String manaUps = "0000000000000000000000000000000000000000000000000000000000000000";
+	public String regenUps = "0000000000000000000000000000000000000000000000000000000000000000";
+	public String packUps = "0000000000000000000000000000000000000000000000000000000000000000";
+	public int rainbowEggs = 0;
 	public boolean isPaused = false;
 	public int difficulty = 0;
 	public int loop = 0;
@@ -80,7 +81,7 @@ public class Profile {
 		oldProfile.manaUps = manaUps;
 		oldProfile.regenUps = regenUps;
 		oldProfile.packUps = packUps;
-		oldProfile.rainbowEggCount = rainbowEggCount;
+		oldProfile.rainbowEggs = rainbowEggs;
 		oldProfile.key_items = (LinkedHashMap<MemoryData, Integer>)key_items.clone();
 		oldProfile.badges = (LinkedHashMap<MemoryData, Integer>)badges.clone();
 		oldProfile.playtime = playtime;
@@ -103,7 +104,7 @@ public class Profile {
 		if (oldProfile.packUps!=packUps) {
 			count++;
 		}
-		if (oldProfile.rainbowEggCount!=rainbowEggCount) {
+		if (oldProfile.rainbowEggs!=rainbowEggs) {
 			count++;
 		}
 		for (MemoryData md : key_items.keySet()) {
@@ -129,6 +130,60 @@ public class Profile {
 		return count;
 	}
 	
+	public static int GetHealthUpCount(Profile p) {
+		int numb = 0;
+		for (int i=0;i<p.healthUps.length();i++) {
+			if (p.healthUps.charAt(i)=='1') {
+				numb++;
+			}
+		}
+		return numb;
+	}
+	
+	public static int GetManaUpCount(Profile p) {
+		int numb = 0;
+		for (int i=0;i<p.manaUps.length();i++) {
+			if (p.manaUps.charAt(i)=='1') {
+				numb++;
+			}
+		}
+		return numb;
+	}
+	
+	public static int GetRegenUpCount(Profile p) {
+		int numb = 0;
+		for (int i=0;i<p.regenUps.length();i++) {
+			if (p.regenUps.charAt(i)=='1') {
+				numb++;
+			}
+		}
+		return numb;
+	}
+	
+	public static int GetPackUpCount(Profile p) {
+		int numb = 0;
+		for (int i=0;i<p.packUps.length();i++) {
+			if (p.packUps.charAt(i)=='1') {
+				numb++;
+			}
+		}
+		return numb;
+	}
+	
+	public static int GetAttackUpCount(Profile p) {
+		int numb = 0;
+		for (int i=0;i<p.attackUps.length();i++) {
+			if (p.attackUps.charAt(i)=='1') {
+				numb++;
+			}
+		}
+		return numb;
+	}
+	
+	public static int GetRainbowEggCount(Profile p) {
+		return p.rainbowEggs;
+	}
+	
 	public void compareAndAnnounceAllChangedValues() {
 		//System.out.println(oldProfile.key_items.get(MemoryData.HAMMER)+","+key_items.get(MemoryData.HAMMER));
 		int changedValueCount = compareAllChangedValues();
@@ -136,33 +191,33 @@ public class Profile {
 			return;
 		}
 		String announcement = "";
-		if (oldProfile.healthUps==healthUps-1) {
+		if (GetHealthUpCount(oldProfile)==GetHealthUpCount(this)-1) {
 			announcement = "has obtained a Health Up! ("+healthUps+" total)";
 		}
-		if (oldProfile.attackUps==attackUps-1) {
+		if (GetAttackUpCount(oldProfile)==GetAttackUpCount(this)-1) {
 			announcement = "has obtained an Attack Up! ("+attackUps+" total)";
 		}
-		if (oldProfile.manaUps==manaUps-1) {
+		if (GetManaUpCount(oldProfile)==GetManaUpCount(this)-1) {
 			announcement = "has obtained a Mana Up! ("+manaUps+" total)";
 		}
-		if (oldProfile.regenUps==regenUps-1) {
+		if (GetRegenUpCount(oldProfile)==GetRegenUpCount(this)-1) {
 			announcement = "has obtained a Regen Up! ("+regenUps+" total)";
 		}
-		if (oldProfile.packUps==packUps-1) {
+		if (GetPackUpCount(oldProfile)==GetPackUpCount(this)-1) {
 			announcement = "has obtained a Pack Up! ("+packUps+" total)";
 		}
-		if (oldProfile.rainbowEggCount==rainbowEggCount-1) {
+		if (GetRainbowEggCount(oldProfile)==GetRainbowEggCount(this)-1) {
 			if (RabiRaceModule.mySession!=null &&
 					RabiRaceModule.mySession.gamemode==0 &&
-					RabiRaceModule.mySession.eggCount>0) {
-				if (RabiRaceModule.mySession.eggCount-rainbowEggCount==0) {
-					announcement = "has obtained "+RabiRaceModule.mySession.eggCount+" Rainbow Eggs! (NAME) has completed the race!";
-				} else if (RabiRaceModule.mySession.eggCount-rainbowEggCount>0)
+					RabiRaceModule.mySession.rainbowEggGoal>0) {
+				if (RabiRaceModule.mySession.rainbowEggGoal-GetRainbowEggCount(this)==0) {
+					announcement = "has obtained "+RabiRaceModule.mySession.rainbowEggGoal+" Rainbow Eggs! (NAME) has completed the race!";
+				} else if (RabiRaceModule.mySession.rainbowEggGoal-GetRainbowEggCount(this)>0)
 				{
-					announcement = "has obtained a Rainbow Egg! ("+Math.max(RabiRaceModule.mySession.eggCount-rainbowEggCount, 0)+" to go!)";
+					announcement = "has obtained a Rainbow Egg! ("+Math.max(RabiRaceModule.mySession.rainbowEggGoal-GetRainbowEggCount(this), 0)+" to go!)";
 				}
 			} else {
-				announcement = "has obtained a Rainbow Egg! ("+rainbowEggCount+" total)";
+				announcement = "has obtained a Rainbow Egg! ("+rainbowEggs+" total)";
 			}
 		}
 		for (MemoryData md : key_items.keySet()) {
@@ -253,12 +308,12 @@ public class Profile {
 				//System.out.println("Updated Avatar for Player "+displayName+" with Avatar "+avatar.displayName);
 				timeKey = Integer.parseInt(data[i++]);
 				playtime = Integer.parseInt(data[i++]);
-				healthUps = Integer.parseInt(data[i++]);
-				manaUps = Integer.parseInt(data[i++]);
-				regenUps = Integer.parseInt(data[i++]);
-				packUps = Integer.parseInt(data[i++]); 
-				attackUps = Integer.parseInt(data[i++]);
-				rainbowEggCount = Integer.parseInt(data[i++]);
+				healthUps = data[i++];
+				manaUps = data[i++];
+				regenUps = data[i++];
+				packUps = data[i++]; 
+				attackUps = data[i++];
+				rainbowEggs = Integer.parseInt(data[i++]);
 				isPaused = Boolean.parseBoolean(data[i++]);
 				difficulty = Integer.parseInt(data[i++]);
 				loop = Integer.parseInt(data[i++]);
@@ -307,7 +362,7 @@ public class Profile {
 		appendData(regenUps,sb);
 		appendData(packUps,sb);
 		appendData(attackUps,sb);
-		appendData(rainbowEggCount,sb);
+		appendData(rainbowEggs,sb);
 		appendData(isPaused,sb);
 		appendData(difficulty,sb);
 		appendData(loop,sb);
@@ -433,17 +488,25 @@ public class Profile {
 			if (gamemode!=-1) {
 				switch (gamemode) {
 					case 0:{ //Egg Hunt.
-						if (session.eggCount>0) {
-							spacing = width/session.eggCount;
-							rainbowEggLimit = session.eggCount;
+						if (session.rainbowEggGoal>0) {
+							spacing = width/session.rainbowEggGoal;
+							rainbowEggLimit = session.rainbowEggGoal;
 						} else {
 							spacing = width/5;
-							rainbowEggLimit = session.eggCount;
+							rainbowEggLimit = session.rainbowEggGoal;
 						}
 						Image img = RabiRaceModule.image_map.get("easter_egg.png");
-						for (int i=0;i<session.eggCount;i++) {
-							Color col = (rainbowEggCount>i)?RabiRaceModule.rainbowcycler.getCycleColor():new Color(0,0,0,192);
-							DrawUtils.drawImage(g2, img, (int)(border+i*spacing-img.getWidth(sigIRC.panel)/4),(int)(36),col,sigIRC.panel);
+						if (rainbowEggLimit>10) {
+							Color col = RabiRaceModule.rainbowcycler.getCycleColor();
+							Rectangle2D siz = TextUtils.calculateStringBoundsFont("x "+GetRainbowEggCount(this)+" / "+session.rainbowEggGoal, sigIRC.panel.rabiRibiMoneyDisplayFont);
+							DrawUtils.drawImage(g2, img, (int)(border+spacing*3-siz.getX()),(int)(36),col,sigIRC.panel);
+							DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont,  (border+spacing*3+img.getWidth(sigIRC.panel)*1.25), (36+img.getHeight(sigIRC.panel)/2),
+									1,Color.WHITE,Color.BLACK,"x "+GetRainbowEggCount(this)+" / "+session.rainbowEggGoal);
+						} else {
+							for (int i=0;i<session.rainbowEggGoal;i++) {
+								Color col = (GetRainbowEggCount(this)>i)?RabiRaceModule.rainbowcycler.getCycleColor():new Color(0,0,0,192);
+								DrawUtils.drawImage(g2, img, (int)(border+i*spacing-img.getWidth(sigIRC.panel)/4),(int)(36),col,sigIRC.panel);
+							}
 						}
 					}break;
 					case 1:{ //Item Hunt.
@@ -516,17 +579,18 @@ public class Profile {
 						RabiRaceModule.image_map.get("pack_up.png"),
 						RabiRaceModule.image_map.get("attack_up.png")};
 				int[] amts = new int[]{
-						healthUps,
-						manaUps,
-						regenUps,
-						packUps,
-						attackUps,
+						GetHealthUpCount(this),
+						GetManaUpCount(this),
+						GetRegenUpCount(this),
+						GetPackUpCount(this),
+						GetAttackUpCount(this),
 				};
-				if (rainbowEggCount>rainbowEggLimit) {
+				spacing=width/6;
+				if (GetRainbowEggCount(this)>rainbowEggLimit) {
 					imgs = Arrays.copyOf(imgs, imgs.length+1);
 					imgs[imgs.length-1] = RabiRaceModule.image_map.get("easter_egg.png");
 					amts = Arrays.copyOf(amts, amts.length+1);
-					amts[amts.length-1] = rainbowEggCount;
+					amts[amts.length-1] = GetRainbowEggCount(this);
 					spacing = width/6;
 				}
 				//g2.drawImage(RabiRaceModule.image_map.get("bunny_strike.png"),(int)(+border+(i++)*(spacing)-img2.getWidth(sigIRC.panel)/4),(int)(+96+56), (int)icon_size, (int)icon_size, sigIRC.panel);

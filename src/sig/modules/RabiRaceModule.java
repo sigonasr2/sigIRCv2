@@ -258,29 +258,29 @@ public class RabiRaceModule extends Module{
 						updateRequired=true;
 					}
 				}
-				if (p.healthUps>myProfile.healthUps) {
+				if (Profile.GetHealthUpCount(p)>Profile.GetHealthUpCount(myProfile)) {
 					System.out.println("You do not have the correct amount of health ups. Syncing to ("+p.healthUps+") from "+p.displayName+".");
-					UpdateRange(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END,p.healthUps-myProfile.healthUps);
+					UpdateRange(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END,p.healthUps);
 					updateRequired=true;
 				}
-				if (p.manaUps>myProfile.manaUps) {
+				if (Profile.GetManaUpCount(p)>Profile.GetManaUpCount(myProfile)) {
 					System.out.println("You do not have the correct amount of mana ups. Syncing to ("+p.manaUps+") from "+p.displayName+".");
-					UpdateRange(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END,p.manaUps-myProfile.manaUps);
+					UpdateRange(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END,p.manaUps);
 					updateRequired=true;
 				}
-				if (p.regenUps>myProfile.regenUps) {
+				if (Profile.GetRegenUpCount(p)>Profile.GetRegenUpCount(myProfile)) {
 					System.out.println("You do not have the correct amount of regen ups. Syncing to ("+p.regenUps+") from "+p.displayName+".");
-					UpdateRange(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END,p.regenUps-myProfile.regenUps);
+					UpdateRange(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END,p.regenUps);
 					updateRequired=true;
 				}
-				if (p.packUps>myProfile.packUps) {
+				if (Profile.GetPackUpCount(p)>Profile.GetPackUpCount(myProfile)) {
 					System.out.println("You do not have the correct amount of pack ups. Syncing to ("+p.packUps+") from "+p.displayName+".");
-					UpdateRange(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END,p.packUps-myProfile.packUps);
+					UpdateRange(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END,p.packUps);
 					updateRequired=true;
 				}
-				if (p.attackUps>myProfile.attackUps) {
+				if (Profile.GetAttackUpCount(p)>Profile.GetAttackUpCount(myProfile)) {
 					System.out.println("You do not have the correct amount of attack ups. Syncing to ("+p.attackUps+") from "+p.displayName+".");
-					UpdateRange(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END,p.attackUps-myProfile.attackUps);
+					UpdateRange(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END,p.attackUps);
 					updateRequired=true;
 				}
 				
@@ -295,14 +295,19 @@ public class RabiRaceModule extends Module{
 		}
 	}
 
-	private void UpdateRange(MemoryOffset start, MemoryOffset end, int i) {
-		int f=63;
+	private void UpdateRange(MemoryOffset start, MemoryOffset end, String i) {
+		/*int f=63;
 		while (i>0 && f>0) {
 			if (readIntFromMemory(start.getOffset())==0) {
 				writeIntToMemory(start.getOffset()+(f*4),1);
 				i--;
 			}
 			f--;
+		}*/
+		for (int l=0;l<i.length();l++) {
+			if (i.charAt(l)=='1') {
+				writeIntToMemory(start.getOffset()+(l*4),1);
+			}
 		}
 	}
 
@@ -411,7 +416,7 @@ public class RabiRaceModule extends Module{
 			//System.out.println(itempct+","+paused);
 			if (paused==0 && itempct>=0) {
 				myProfile.archiveAllValues();
-				myProfile.rainbowEggCount = readIntFromMemory(MemoryOffset.RAINBOW_EGG_COUNT);
+				myProfile.rainbowEggs = readIntFromMemory(MemoryOffset.RAINBOW_EGG_COUNT);
 				myProfile.attackUps = readItemCountFromMemory(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END);
 				myProfile.healthUps = readItemCountFromMemory(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END);
 				myProfile.manaUps = readItemCountFromMemory(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END);
@@ -549,15 +554,13 @@ public class RabiRaceModule extends Module{
 		}
 	}
 	
-	int readItemCountFromMemory(MemoryOffset start_range,
+	String readItemCountFromMemory(MemoryOffset start_range,
 			MemoryOffset end_range) {
-		int count=0;
-		for (long i=start_range.getOffset();i<=end_range.getOffset();i++) {
-			if (readIntFromMemory(i)==1) {
-				count++;
-			}
+		StringBuilder sb = new StringBuilder();
+		for (long i=start_range.getOffset();i<=end_range.getOffset();i+=4) {
+			sb.append(readIntFromMemory(i));
 		}
-		return count;
+		return sb.toString();
 	}
 	
 	public void draw(Graphics g) {

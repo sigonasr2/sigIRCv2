@@ -199,8 +199,8 @@ public class SessionCreateWindow extends JFrame{
 					JOptionPane.showMessageDialog(RabiRaceModule.createwindow, "Your egg count is invalid!", "Error!", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
-				if (((String)gametype.getSelectedItem()).equalsIgnoreCase("Egg Mode") && (Integer.parseInt(eggcount.getText())>48 || Integer.parseInt(eggcount.getText())<2)) {
-					JOptionPane.showMessageDialog(RabiRaceModule.createwindow, "Your egg count needs to be between 2-48!", "Error!", JOptionPane.WARNING_MESSAGE);
+				if (((String)gametype.getSelectedItem()).equalsIgnoreCase("Egg Mode") && (Integer.parseInt(eggcount.getText())>80 || Integer.parseInt(eggcount.getText())<2)) {
+					JOptionPane.showMessageDialog(RabiRaceModule.createwindow, "Your egg count needs to be between 2-80!", "Error!", JOptionPane.WARNING_MESSAGE);
 					return;
 				}
 				if (!TextUtils.isNumeric(difficulty.getText()) && difficulty.getText().length()>0) {
@@ -388,7 +388,7 @@ public class SessionCreateWindow extends JFrame{
 				return true;
 			}
 			int val = Integer.parseInt(getText());
-			if (val>48 || val<2) {
+			if (val>80 || val<2) {
 				return true;
 			}
 			return false;

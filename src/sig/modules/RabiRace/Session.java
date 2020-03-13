@@ -19,7 +19,7 @@ public class Session {
 	boolean coop = false;
 	int gamemode = 0; //0 = Egg Mode, 1 = Item Hunt Mode
 	String[] itemHuntData;
-	int eggCount = 0;
+	int rainbowEggGoal = 0;
 	int id = 0;
 	List<Profile> players = new ArrayList<Profile>();
 	
@@ -65,7 +65,7 @@ public class Session {
 			gamemode = Integer.parseInt(split[i++]);
 			switch (gamemode) {
 				case 0:{
-					eggCount = Integer.parseInt(split[i++]);
+					rainbowEggGoal = Integer.parseInt(split[i++]);
 				}break;
 				case 1:{
 					itemHuntData = split[i++].split(";");
