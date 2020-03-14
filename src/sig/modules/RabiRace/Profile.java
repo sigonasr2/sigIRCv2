@@ -24,11 +24,13 @@ import java.util.Random;
 import sig.ScrollingText;
 import sig.sigIRC;
 import sig.modules.RabiRaceModule;
+import sig.modules.RabiRibi.MemoryOffset;
 import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
 import sig.utils.TextUtils;
 
 public class Profile {
+	public static final int EVENT_COUNT = 265;
 	public String username = sigIRC.nickname.toLowerCase();
 	public String displayName = sigIRC.nickname;
 	public Avatar avatar;
@@ -38,6 +40,7 @@ public class Profile {
 	public String manaUps = "0000000000000000000000000000000000000000000000000000000000000000";
 	public String regenUps = "0000000000000000000000000000000000000000000000000000000000000000";
 	public String packUps = "0000000000000000000000000000000000000000000000000000000000000000";
+	public String eventStruct = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
 	public int rainbowEggs = 0;
 	public boolean isPaused = false;
 	public int difficulty = 0;
@@ -192,19 +195,19 @@ public class Profile {
 		}
 		String announcement = "";
 		if (GetHealthUpCount(oldProfile)==GetHealthUpCount(this)-1) {
-			announcement = "has obtained a Health Up! ("+healthUps+" total)";
+			announcement = "has obtained a Health Up! ("+GetHealthUpCount(this)+" total)";
 		}
 		if (GetAttackUpCount(oldProfile)==GetAttackUpCount(this)-1) {
-			announcement = "has obtained an Attack Up! ("+attackUps+" total)";
+			announcement = "has obtained an Attack Up! ("+GetAttackUpCount(this)+" total)";
 		}
 		if (GetManaUpCount(oldProfile)==GetManaUpCount(this)-1) {
-			announcement = "has obtained a Mana Up! ("+manaUps+" total)";
+			announcement = "has obtained a Mana Up! ("+GetManaUpCount(this)+" total)";
 		}
 		if (GetRegenUpCount(oldProfile)==GetRegenUpCount(this)-1) {
-			announcement = "has obtained a Regen Up! ("+regenUps+" total)";
+			announcement = "has obtained a Regen Up! ("+GetRegenUpCount(this)+" total)";
 		}
 		if (GetPackUpCount(oldProfile)==GetPackUpCount(this)-1) {
-			announcement = "has obtained a Pack Up! ("+packUps+" total)";
+			announcement = "has obtained a Pack Up! ("+GetPackUpCount(this)+" total)";
 		}
 		if (GetRainbowEggCount(oldProfile)==GetRainbowEggCount(this)-1) {
 			if (RabiRaceModule.mySession!=null &&
@@ -270,6 +273,17 @@ public class Profile {
 				badges.remove(md);
 			}
 		}
+		StringBuilder events = new StringBuilder();
+		for (int i=0;i<EVENT_COUNT;i++) {
+			int val = parent.readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4);
+			if (val>9 || val<0) {
+				System.out.println("WARNING! Event "+(256+i)+" has a value greater than 9 or negative number! Truncating to 1 value.");
+				events.append(Integer.toString(val).charAt(0));
+			} else {
+				events.append(val);
+			}
+		}
+		eventStruct = events.toString();
 	}
 	
 	public void uploadProfile() {
@@ -300,7 +314,7 @@ public class Profile {
 			}
 			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp_profile");
 			//System.out.println(Arrays.toString(data));
-			if (data.length>=19) {
+			if (data.length>=21) {
 				int i=0;
 				displayName = data[i++];
 				try {
@@ -343,6 +357,14 @@ public class Profile {
 					}
 					while (!nextval.equalsIgnoreCase("UPDATES:"));
 				}
+				nextval = data[i++];
+				if (!nextval.equalsIgnoreCase("END")) {
+					do {
+						eventStruct = nextval;
+						nextval = data[i++];
+					}
+					while (!nextval.equalsIgnoreCase("END"));
+				}
 				lastWebUpdate = System.currentTimeMillis();
 				
 				return true;
@@ -380,6 +402,8 @@ public class Profile {
 			appendData(data.name()+";"+val,sb);
 		}
 		appendData("UPDATES:",sb);
+		appendData(eventStruct,sb); 
+		appendData("END",sb);
 		return sb.toString();
 	}
 	

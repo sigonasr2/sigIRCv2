@@ -245,7 +245,7 @@ public class RabiRaceModule extends Module{
 		boolean soundPlayed=false;
 		if (mySession!=null) {
 			for (Profile p : mySession.getPlayers()) {
-				if (p!=myProfile && !p.isPaused) {
+				if (p!=myProfile && !p.isPaused && !myProfile.isPaused) {
 					boolean updateRequired=false;
 					for (MemoryData m : p.key_items.keySet()) {
 						if (p.key_items.get(m)!=0 && (!myProfile.key_items.containsKey(m) ||  myProfile.key_items.get(m)==0)) {
@@ -285,6 +285,13 @@ public class RabiRaceModule extends Module{
 						System.out.println("You do not have the correct amount of attack ups. Syncing to ("+p.attackUps+") from "+p.displayName+".");
 						UpdateRange(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END,p.attackUps);
 						updateRequired=true;
+					}
+					if (!p.eventStruct.equalsIgnoreCase(myProfile.eventStruct)) {
+						StringBuilder finalevents = new StringBuilder();
+						for (int i=0;i<Profile.EVENT_COUNT;i++) {
+							finalevents.append((Integer.compare(myProfile.eventStruct.charAt(i),p.eventStruct.charAt(i))<0)?p.eventStruct.charAt(i):myProfile.eventStruct.charAt(i));
+						}
+						UpdateRange(MemoryOffset.EVENT_START,MemoryOffset.EVENT_END,finalevents.toString());
 					}
 					
 					if (updateRequired && mySession.isCoop()) {
