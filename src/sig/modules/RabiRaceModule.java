@@ -295,7 +295,11 @@ public class RabiRaceModule extends Module{
 					if (!p.eventStruct.equalsIgnoreCase(myProfile.eventStruct)) {
 						StringBuilder finalevents = new StringBuilder();
 						for (int i=0;i<Profile.EVENT_COUNT;i++) {
-							finalevents.append((Integer.compare(myProfile.eventStruct.charAt(i),p.eventStruct.charAt(i))<0)?p.eventStruct.charAt(i):myProfile.eventStruct.charAt(i));
+							if (i!=1) { //Ignore syncing ribbon event.
+								finalevents.append((Integer.compare(myProfile.eventStruct.charAt(i),p.eventStruct.charAt(i))<0)?p.eventStruct.charAt(i):myProfile.eventStruct.charAt(i));
+							} else {
+								finalevents.append(myProfile.eventStruct.charAt(i));
+							}
 						}
 						UpdateRange(MemoryOffset.EVENT_START,MemoryOffset.EVENT_END,finalevents.toString());
 					}
