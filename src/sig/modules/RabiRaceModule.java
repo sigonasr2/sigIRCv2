@@ -449,7 +449,7 @@ public class RabiRaceModule extends Module{
 	private void UpdateMyProfile() {
 		if (foundRabiRibi) {
 			//System.out.println("Called.");
-			int paused = readIntFromMemory(MemoryOffset.PAUSED) + Math.abs(readIntFromMemory(MemoryOffset.TITLE_SCREEN)-1);
+			int paused = readIntFromMemory(MemoryOffset.PAUSED) + readIntFromMemory(MemoryOffset.TITLE_SCREEN);
 			//int paused = 0; //TODO FORCE UNPAUSE FOR NOW.
 			float itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
 			myProfile.isPaused = paused>=1;
