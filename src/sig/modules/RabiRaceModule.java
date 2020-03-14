@@ -52,6 +52,10 @@ import sig.utils.SoundUtils;
 import sig.utils.TextUtils;
 
 public class RabiRaceModule extends Module{
+	final static int ERINA = 0;
+	final static int RIBBON = 1;
+	final static int CICINI = 2;
+	final static int MIRIAM = 3;
 	final static String ITEMS_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/items/";
 	final static String AVATAR_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/characters/";
 	final int PROCESS_PERMISSIONS = WinNT.PROCESS_QUERY_INFORMATION | WinNT.PROCESS_VM_READ | WinNT.PROCESS_VM_WRITE;
@@ -70,6 +74,7 @@ public class RabiRaceModule extends Module{
 	public static Session mySession;
 	boolean firstCheck=false;
 	public List<ScrollingText> messages = new ArrayList<ScrollingText>();
+	public List<String> messagequeue = new ArrayList<String>();
 	public static int lastScrollX = 0;
 	boolean firstUpdate=true;
 	boolean mouseoverAvatar=false;
@@ -231,6 +236,7 @@ public class RabiRaceModule extends Module{
 				/*message_played=true;
 				System.out.println("Perform item sync with other players.");
 				SyncItemsWithOtherPlayers();*/
+				messagequeue.add(s);
 				if (mySession!=null && mySession.isCoop()) {
 					syncItems=true;
 				}
@@ -411,16 +417,35 @@ public class RabiRaceModule extends Module{
 					messages.remove(i--);
 				}
 			}
+			
+			if (messagequeue.size()>0) {
+				if (NoMessageDisplayed()) {
+					int character=0;
+					character = messagequeue.get(0).contains(myProfile.displayName)?RabiRaceModule.ERINA:RabiRaceModule.RIBBON;
+					DisplayMessage(messagequeue.get(0).length()>255?messagequeue.remove(0).substring(0,255):messagequeue.remove(0),8,character);
+				}
+			}
+			
 			if (lastScrollX>0) {
 				lastScrollX-=ScrollingText.SCROLLSPD;
 			}
 		}
 	}
 	
+	private void DisplayMessage(String s, int seconds, int character) {
+		writeIntToMemory(MemoryOffset.MESSAGE_CHARACTER.getOffset(),character);
+		writeStringToMemory(MemoryOffset.MESSAGE_TEXT.getOffset(),s,256);
+		writeIntToMemory(MemoryOffset.MESSAGE_TEXTREF.getOffset(),27);
+	}
+
+	private boolean NoMessageDisplayed() {
+		return readIntFromMemory(MemoryOffset.MESSAGE_TIMER)==0;
+	}
+
 	private void UpdateMyProfile() {
 		if (foundRabiRibi) {
 			//System.out.println("Called.");
-			int paused = readIntFromMemory(MemoryOffset.PAUSED) + readIntFromMemory(MemoryOffset.TITLE_SCREEN);
+			int paused = readIntFromMemory(MemoryOffset.PAUSED) + Math.abs(readIntFromMemory(MemoryOffset.TITLE_SCREEN)-1);
 			//int paused = 0; //TODO FORCE UNPAUSE FOR NOW.
 			float itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
 			myProfile.isPaused = paused>=1;
@@ -494,6 +519,16 @@ public class RabiRaceModule extends Module{
 		//new Pointer(rabiRibiMemOffset+offset).setMemory((long)0, (long)4, (byte)value);
 		Kernel32.INSTANCE.WriteProcessMemory(rabiribiProcess, 
 				new Pointer(rabiRibiMemOffset+offset),valueptr,4,null);
+		//Kernel32.INSTANCE.ReadProcessMemory(rabiribiProcess, new Pointer(rabiRibiMemOffset+offset), mem, 4, null);
+		//return mem.getInt(0);
+	}
+	public void writeStringToMemory(long offset,String value, int size) {
+		//Pointer valueptr = new Pointer();
+		Memory valueptr = new Memory(size);
+		valueptr.setString(0, value);
+		//new Pointer(rabiRibiMemOffset+offset).setMemory((long)0, (long)4, (byte)value);
+		Kernel32.INSTANCE.WriteProcessMemory(rabiribiProcess, 
+				new Pointer(rabiRibiMemOffset+offset),valueptr,size,null);
 		//Kernel32.INSTANCE.ReadProcessMemory(rabiribiProcess, new Pointer(rabiRibiMemOffset+offset), mem, 4, null);
 		//return mem.getInt(0);
 	}
