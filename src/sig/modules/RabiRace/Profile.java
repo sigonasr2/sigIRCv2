@@ -322,6 +322,7 @@ public class Profile {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			FileUtils.logToFile("["+System.currentTimeMillis()+"]Upload profile. "+"http://45.33.13.215/rabirace/send.php?key=playerdata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+sigIRC.nickname.toLowerCase()+"&data="+getDataString(), "debug.log");
 			
 			//System.out.println(getDataString());
 			//String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp");

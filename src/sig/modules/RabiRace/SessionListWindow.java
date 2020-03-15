@@ -208,6 +208,8 @@ public class SessionListWindow extends JFrame{
 			}
 			count++;
 		}
+
+		FileUtils.logToFile("["+System.currentTimeMillis()+"]Updated sessions listing.", "debug.log");
 		//System.out.println("Selected is "+selected);
 		//Try to find ID in list.
 	}

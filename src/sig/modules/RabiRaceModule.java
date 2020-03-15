@@ -116,6 +116,10 @@ public class RabiRaceModule extends Module{
 	}
 
 	private void Initialize() {
+		
+		File f = new File("debug.log");
+		f.delete();
+		
 		CheckRabiRibiClient();
 		
 		VerifyClientIsValid(); //If the client is not allowed to send data, we need to know that.
@@ -124,6 +128,7 @@ public class RabiRaceModule extends Module{
 		scheduler.scheduleWithFixedDelay(()->{
 			CheckRabiRibiClient();
 			if (foundRabiRibi) {
+				FileUtils.logToFile("["+System.currentTimeMillis()+"]Start update cycle...", "debug.log");
 				myProfile.uploadProfile();
 				getSessionList();
 				getMessageUpdates();
@@ -131,6 +136,7 @@ public class RabiRaceModule extends Module{
 				firstCheck=true;
 				if (mySession!=null) {
 					RequestData("tmp.data","key=keepalivesession&session="+mySession.getID());
+					FileUtils.logToFile("["+System.currentTimeMillis()+"]Requested data"+"key=keepalivesession&session="+mySession.getID(), "debug.log");
 				}
 			}
 		}, 5000, 5000, TimeUnit.MILLISECONDS);
@@ -243,6 +249,7 @@ public class RabiRaceModule extends Module{
 			e.printStackTrace();
 		}
 		String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/messages");
+		FileUtils.logToFile("["+System.currentTimeMillis()+"]Message updates."+"http://45.33.13.215/rabirace/send.php?key=getupdates&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+myProfile.username+" Data: "+Arrays.deepToString(data), "debug.log");
 		//boolean message_played=false;
 		for (String s : data) {
 			if (s.length()>0) {
@@ -254,6 +261,7 @@ public class RabiRaceModule extends Module{
 				if (mySession!=null && mySession.isCoop()) {
 					syncItems=true;
 				}
+				FileUtils.logToFile("Add "+s+" to message queue.", "debug.log");
 			}
 		}
 		if (mySession!=null) {
@@ -284,6 +292,7 @@ public class RabiRaceModule extends Module{
 					lastreadmapdata=Math.max(i,lastreadmapdata);
 				}
 			}
+			FileUtils.logToFile("["+System.currentTimeMillis()+"]MapUpdates:"+MapUpdatesRequired+" - "+byWhom, "debug.log");
 			
 			if (MapUpdatesRequired>0) {
 				if (MapUpdatesRequired==1) {
@@ -422,6 +431,7 @@ public class RabiRaceModule extends Module{
 		} else {
 			join_button.setButtonLabel("Leave Session");
 		}
+		FileUtils.logToFile("["+System.currentTimeMillis()+"]Retrieve session list."+"http://45.33.13.215/rabirace/send.php?key=getsessions", "debug.log");
 		window.UpdateSessionList();
 	}
 
