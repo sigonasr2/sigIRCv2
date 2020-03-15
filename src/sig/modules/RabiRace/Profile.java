@@ -40,11 +40,12 @@ public class Profile {
 	public String manaUps = "0000000000000000000000000000000000000000000000000000000000000000";
 	public String regenUps = "0000000000000000000000000000000000000000000000000000000000000000";
 	public String packUps = "0000000000000000000000000000000000000000000000000000000000000000";
-	public String eventStruct = "000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000000";
+	public String eventStruct = "0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_0_";
 	public int rainbowEggs = 0;
 	public boolean isPaused = false;
 	public int difficulty = 0;
 	public int loop = 0;
+	public int map = 0; //Map color.
 	public float itempct = 0;
 	public float mappct = 0;
 	public LinkedHashMap<MemoryData,Integer> key_items = new LinkedHashMap<MemoryData,Integer>();
@@ -299,12 +300,14 @@ public class Profile {
 		StringBuilder events = new StringBuilder();
 		for (int i=0;i<EVENT_COUNT;i++) {
 			int val = parent.readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4);
-			if (val>9 || val<0) {
-				System.out.println("WARNING! Event "+(256+i)+" has a value greater than 9 or negative number! Truncating to 1 value.");
+			events.append(val);
+			events.append("_");
+			/*if (val>9 || val<0) {
+				//System.out.println("WARNING! Event "+(256+i)+" has a value greater than 9 or negative number! Truncating to 1 value.");
 				events.append(Integer.toString(val).charAt(0));
 			} else {
 				events.append(val);
-			}
+			}*/
 		}
 		eventStruct = events.toString();
 	}
@@ -338,7 +341,7 @@ public class Profile {
 			}
 			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp_profile");
 			//System.out.println(Arrays.toString(data));
-			if (data.length>=21) {
+			if (data.length>=23) {
 				int i=0;
 				displayName = data[i++];
 				try {
@@ -386,6 +389,8 @@ public class Profile {
 					do {
 						eventStruct = nextval;
 						nextval = data[i++];
+						map = Integer.parseInt(nextval);
+						nextval = data[i++];
 					}
 					while (!nextval.equalsIgnoreCase("END"));
 				}
@@ -427,6 +432,7 @@ public class Profile {
 		}
 		appendData("UPDATES:",sb);
 		appendData(eventStruct,sb); 
+		appendData(map,sb);
 		appendData("END",sb);
 		return sb.toString();
 	}
@@ -468,6 +474,9 @@ public class Profile {
 			text = "Map "+df.format(mappct)+"%  Item "+df.format(itempct)+"%";
 			//DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, (int)(parent.position.getWidth() - TextUtils.calculateStringBoundsFont(text, sigIRC.panel.rabiRibiMoneyDisplayFont).getWidth()) - 2, 16, 1, g2.getColor(), Color.GRAY, text);
 			DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.6), 50, 0, 2, Color.WHITE, Color.BLACK, text);
+			text = ColorLocation.getLocationName(map);
+			Rectangle2D siz = TextUtils.calculateStringBoundsFont(text, sigIRC.panel.rabiRibiTinyDisplayFont);
+			DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()-siz.getWidth()-6), 30, 0, 2, ColorLocation.getColor(map), Color.BLACK, text);
 			
 			statUpdateCacheImage = tmp.getScaledInstance(w, -1, Image.SCALE_AREA_AVERAGING);
 			//stat_update_required = false;

@@ -144,7 +144,7 @@ public enum MemoryOffset {
 	MAP_PERCENT(0x16E807C,0x13413E4,0x1342404+OffsetHelper.MEMORY_OFFSET_V188_TO_V1881,0x1366404,0x16E48FC,0), //Float
 	RAINBOW_EGG_COUNT(0xD65FD4,0xD65FD4+OffsetHelper.KEY_ITEM_OFFSET_V175_TO_V1851,0xD65FD4+OffsetHelper.MEMORY_OFFSET_V175_TO_V1881,0xD65FD4+OffsetHelper.MEMORY_OFFSET_V175_TO_V190,OffsetHelper.KEY_ITEM_OFFSET_V175_TO_V199,OffsetHelper.KEY_ITEM_OFFSET_V175_TO_V199T),
 	PAUSED(0x1038D88,0xC969A0,0xC979A0,0xCBB9AC,0x1036D88,0),
-	TITLE_SCREEN(0x16893F4,0,0,0,0,0), //State becomes 10 on the title screen.
+	TITLE_SCREEN(0xDA6EC8,0,0,0,0,0), //1 = Title Screen, 0 = Anywhere else
 	
 	EVENT_START(0x167A700,0,0,0,0,0),
 	EVENT_END(0x167AB24,0,0,0,0,0),
@@ -159,6 +159,8 @@ public enum MemoryOffset {
 	MESSAGE_CHARACTER(0x16EA47C,0,0,0,0,0),
 	MESSAGE_TEXT(0x17A8DE8,0,0,0,0,0), //This references the 27th location of text. Use 27 for TEXTREF value.
 	MESSAGE_TEXTREF(0x16EA4B0,0,0,0,0,0), //This should be 27 as this allows for MESSAGE_TEXT to be our "custom message" handler.
+	
+	MAP_AREA_COLOR(0x84C888,0,0,0,0,0), //See https://github.com/wcko87/rabiribi-map-editing/blob/master/docs/room_colors.md for colors.
 	
 	BOSS_FIGHT(0x16E7D9C,0,0,0,0,0), //Should be 1 when in a boss fight.
 	;

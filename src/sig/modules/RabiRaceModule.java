@@ -62,6 +62,8 @@ public class RabiRaceModule extends Module{
 	final static String AVATAR_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/characters/";
 	final int PROCESS_PERMISSIONS = WinNT.PROCESS_QUERY_INFORMATION | WinNT.PROCESS_VM_READ | WinNT.PROCESS_VM_WRITE;
 	boolean foundRabiRibi = false;
+	final static int WAITFRAMEMAX = 120;
+	int waitframes = WAITFRAMEMAX;
 	int rabiRibiPID = -1;
 	long rabiRibiMemOffset = 0;
 	public HANDLE rabiribiProcess = null;
@@ -364,12 +366,16 @@ public class RabiRaceModule extends Module{
 					}
 					if (!p.eventStruct.equalsIgnoreCase(myProfile.eventStruct)) {
 						StringBuilder finalevents = new StringBuilder();
+						String[] events = p.eventStruct.split("_");
+						String[] myevents = myProfile.eventStruct.split("_");
 						for (int i=0;i<Profile.EVENT_COUNT;i++) {
 							if (i!=1) { //Ignore syncing ribbon event.
-								finalevents.append((Integer.compare(myProfile.eventStruct.charAt(i),p.eventStruct.charAt(i))<0)?p.eventStruct.charAt(i):myProfile.eventStruct.charAt(i));
+								finalevents.append((events[i].compareTo(myevents[i])>0)?events[i]:myevents[i]);
+								//finalevents.append((Integer.compare(myProfile.eventStruct.charAt(i),p.eventStruct.charAt(i))<0)?p.eventStruct.charAt(i):myProfile.eventStruct.charAt(i));
 							} else {
-								finalevents.append(myProfile.eventStruct.charAt(i));
+								finalevents.append(myevents[i]);
 							}
+							finalevents.append("_");
 						}
 						UpdateRange(MemoryOffset.EVENT_START,MemoryOffset.EVENT_END,finalevents.toString());
 					}
@@ -395,10 +401,9 @@ public class RabiRaceModule extends Module{
 			}
 			f--;
 		}*/
-		for (int l=0;l<i.length();l++) {
-			if (i.charAt(l)=='1') {
-				writeIntToMemory(start.getOffset()+(l*4),1);
-			}
+		String[] split = i.split("_");
+		for (int l=0;l<split.length;l++) {
+			writeIntToMemory(start.getOffset()+(l*4),Integer.parseInt(split[l]));
 		}
 	}
 
@@ -534,6 +539,18 @@ public class RabiRaceModule extends Module{
 			myProfile.isPaused = paused>=1;
 			
 			if (mySession!=null && mySession.isCoop()) {
+
+				if (mySession!=null && mySession.isCoop()) {
+					if (readIntFromMemory(MemoryOffset.TITLE_SCREEN)>=1) {
+						if (waitframes--<=0) {
+							mapdata.clear();
+							newmapdata.clear();
+							lastreadmapdata=0;
+						}
+					} else {
+						waitframes = WAITFRAMEMAX;
+					}
+				}
 				
 				if (newmapdata.size()>0 && readIntFromMemory(MemoryOffset.PAUSED)>0) {
 					viewingupdatedMapIcons=true;
@@ -570,6 +587,7 @@ public class RabiRaceModule extends Module{
 				myProfile.mappct = readFloatFromMemory(MemoryOffset.MAP_PERCENT);
 				myProfile.difficulty = readIntFromMemory(MemoryOffset.GAME_DIFFICULTY);
 				myProfile.loop = readIntFromMemory(MemoryOffset.GAME_LOOP);
+				myProfile.map = readIntFromMemory(MemoryOffset.MAP_AREA_COLOR);
 				myProfile.updateClientValues();
 				if (mySession!=null && !firstUpdate) {
 					myProfile.compareAndAnnounceAllChangedValues();
@@ -811,16 +829,5 @@ public class RabiRaceModule extends Module{
 		/*for (int i=0;i<17;i++) {
 			AddMapPoint(0,i,0,i);
 		}*/
-	}
-
-	public void LeaveSession() {
-
-		if (mySession!=null && mySession.isCoop()) {
-			if (readIntFromMemory(MemoryOffset.TITLE_SCREEN)==10) {
-				mapdata.clear();
-				newmapdata.clear();
-				lastreadmapdata=0;
-			}
-		}
 	}
 }
