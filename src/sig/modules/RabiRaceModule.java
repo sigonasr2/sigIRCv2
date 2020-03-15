@@ -5,6 +5,7 @@ import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Rectangle;
 import java.awt.event.MouseEvent;
+import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Rectangle2D;
 import java.awt.image.BufferedImage;
 import java.io.File;
@@ -37,6 +38,7 @@ import sig.modules.RabiRace.ClickableButton;
 import sig.modules.RabiRace.ColorCycler;
 import sig.modules.RabiRace.CreateButton;
 import sig.modules.RabiRace.JoinButton;
+import sig.modules.RabiRace.MarkMapButton;
 import sig.modules.RabiRace.MemoryData;
 import sig.modules.RabiRace.Profile;
 import sig.modules.RabiRace.Session;
@@ -81,10 +83,18 @@ public class RabiRaceModule extends Module{
 	public static boolean avatarRetrieved=false;
 	public static int CLIENT_SERVER_READTIME = -1;
 	public static boolean syncItems = false;
+	public static int selectedMapIcon = 13;
+	public static int lastreadmapdata = 0;
+	public boolean viewingupdatedMapIcons=false;
+	public HashMap<Integer,Integer> mapdata = new HashMap<Integer,Integer>();
+	public HashMap<Integer,Integer> newmapdata = new HashMap<Integer,Integer>();
+	int frames=0;
 	
 	public SessionListData session_listing = new SessionListData();
 	
-	ClickableButton join_button,create_button;
+	ClickableButton join_button,create_button,markmap_button;
+	
+	public Image mapiconimg;
 	
 	public static List<MemoryData> key_items_list = new ArrayList<MemoryData>();  
 	public static List<MemoryData> badges_list = new ArrayList<MemoryData>(); 
@@ -163,6 +173,7 @@ public class RabiRaceModule extends Module{
 		
 		try {
 			UNKNOWN_ITEM = ImageIO.read(new File(sigIRC.BASEDIR+"sigIRC/rabi-ribi/unknown.png"));
+			mapiconimg = ImageIO.read(new File(sigIRC.BASEDIR+"map_icons.png"));
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
@@ -171,6 +182,7 @@ public class RabiRaceModule extends Module{
 		
 		join_button = new JoinButton(new Rectangle(2,(int)(position.getHeight()-18),120,18),"Join Session (0)",this);
 		create_button = new CreateButton(new Rectangle(122,(int)(position.getHeight()-18),120,18),"Create Session",this);
+		markmap_button = new MarkMapButton(new Rectangle(2,(int)(position.getHeight()-42),120,18),"Mark Map",this);
 	}
 
 	private void VerifyClientIsValid() {
@@ -242,9 +254,65 @@ public class RabiRaceModule extends Module{
 				}
 			}
 		}
+		if (mySession!=null) {
+			File file2 = new File(sigIRC.BASEDIR+"mapdata");
+			try {
+				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/maps/"+mySession.getID()),file2);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+			int MapUpdatesRequired=0;
+			String byWhom = "";
+			String[] mapdata = FileUtils.readFromFile(sigIRC.BASEDIR+"mapdata");
+			for (int i=lastreadmapdata+1;i<mapdata.length;i++) {
+				String[] s = mapdata[i].split(";");
+				if (s.length>=2) {
+					if (!s[0].equalsIgnoreCase(myProfile.username)) {
+						if (!this.newmapdata.containsKey(Integer.parseInt(s[1]))) {
+							MapUpdatesRequired++;
+							byWhom = s[0];
+							this.newmapdata.put(Integer.parseInt(s[1]),Integer.parseInt(s[2]));
+						}
+					}
+					this.mapdata.put(Integer.parseInt(s[1]),Integer.parseInt(s[2]));
+					int id = Integer.parseInt(s[1]);
+					AddMapPoint((int)Math.floor(id/450),(int)Math.floor(id%450/18),id%450%18,Integer.parseInt(s[2]),false);
+					lastreadmapdata=Math.max(i,lastreadmapdata);
+				}
+			}
+			
+			if (MapUpdatesRequired>0) {
+				if (MapUpdatesRequired==1) {
+					messagequeue.add(byWhom+" has added a new marker to the map!");
+				} else {
+					messagequeue.add(MapUpdatesRequired+" new markers have been added to the map!");
+				}
+			}
+		}
 		/*if (message_played && mySession.isCoop()) {
 			SoundUtils.playSound(sigIRC.BASEDIR+"sigIRC/collect_item.wav");
 		}*/
+	}
+	
+	public void AddMapPoint(int area, int x, int y, int color, boolean update) {
+		int id = y+18*x+area*450;
+		writeIntToMemory(MemoryOffset.MAP_REGION_START.getOffset()+
+				id*4,color);
+		
+		
+		if (mySession!=null && mySession.isCoop() && update) {
+			mapdata.put(id,color);
+			File file2 = new File(sigIRC.BASEDIR+"tmp_mapdata");
+			try {
+				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?session="+mySession.getID()+"&key=addmappoint&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&mappoint="+myProfile.username+";"+id+";"+color),file2);
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
+		}
 	}
 	
 	public void SyncItemsWithOtherPlayers() {
@@ -256,8 +324,10 @@ public class RabiRaceModule extends Module{
 					for (MemoryData m : p.key_items.keySet()) {
 						if (p.key_items.get(m)!=0 && (!myProfile.key_items.containsKey(m) ||  myProfile.key_items.get(m)==0)) {
 							System.out.println("You do not have a "+m.name+". Syncing from "+p.displayName+".");
-							writeIntToMemory(m.mem.getOffset(),Math.abs(p.key_items.get(m)));
-							updateRequired=true;
+							if (!(readIntFromMemory(MemoryOffset.BOSS_FIGHT.getOffset())==1 && m==MemoryData.RIBBON)) {
+								writeIntToMemory(m.mem.getOffset(),Math.abs(p.key_items.get(m)));
+								updateRequired=true;
+							}
 						}
 					}
 					for (MemoryData m : p.badges.keySet()) {
@@ -357,9 +427,17 @@ public class RabiRaceModule extends Module{
 		if (firstCheck && mySession==null && create_button.mouseInsideBounds(ev)) {
 			create_button.onClickEvent(ev);
 		}
+		if (firstCheck && markmap_button.mouseInsideBounds(ev)) {
+			markmap_button.onClickEvent(ev);
+		}
 		if (mouseoverAvatar) {
 			avatarwindow.setVisible(true);
 		}
+	}
+
+	public void mouseWheel(MouseWheelEvent ev) {
+		selectedMapIcon+=Math.signum(ev.getWheelRotation());
+		selectedMapIcon=(selectedMapIcon<0)?15:selectedMapIcon%16;
 	}
 
 	private void CheckRabiRibiClient() {
@@ -407,6 +485,7 @@ public class RabiRaceModule extends Module{
 	}
 	
 	public void run() {
+		frames++;
 		if (foundRabiRibi) {
 			rainbowcycler.run();
 			/*System.out.println("Value: ("+Integer.toHexString((int)(rabiRibiMemOffset+0x1679EF0))+"): "+readIntFromMemory(0x1679EF0));
@@ -421,11 +500,11 @@ public class RabiRaceModule extends Module{
 					messages.remove(i--);
 				}
 			}
-			
 			if (messagequeue.size()>0) {
+				
 				if (NoMessageDisplayed()) {
 					int character=0;
-					character = messagequeue.get(0).contains(myProfile.displayName)?RabiRaceModule.ERINA:RabiRaceModule.RIBBON;
+					character = messagequeue.get(0).contains("to the map!")?RabiRaceModule.MIRIAM:messagequeue.get(0).contains("Rainbow Egg")?RabiRaceModule.CICINI:messagequeue.get(0).contains(myProfile.displayName)?RabiRaceModule.ERINA:RabiRaceModule.RIBBON;
 					DisplayMessage(messagequeue.get(0).length()>255?messagequeue.remove(0).substring(0,255):messagequeue.remove(0),8,character);
 				}
 			}
@@ -436,7 +515,7 @@ public class RabiRaceModule extends Module{
 		}
 	}
 	
-	private void DisplayMessage(String s, int seconds, int character) {
+	public void DisplayMessage(String s, int seconds, int character) {
 		writeIntToMemory(MemoryOffset.MESSAGE_CHARACTER.getOffset(),character);
 		writeStringToMemory(MemoryOffset.MESSAGE_TEXT.getOffset(),s,256);
 		writeIntToMemory(MemoryOffset.MESSAGE_TEXTREF.getOffset(),27);
@@ -453,6 +532,36 @@ public class RabiRaceModule extends Module{
 			//int paused = 0; //TODO FORCE UNPAUSE FOR NOW.
 			float itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
 			myProfile.isPaused = paused>=1;
+			
+			if (mySession!=null && mySession.isCoop()) {
+				if (readIntFromMemory(MemoryOffset.TITLE_SCREEN)==10) {
+					mapdata.clear();
+					newmapdata.clear();
+					lastreadmapdata=0;
+				}
+				
+				if (newmapdata.size()>0 && readIntFromMemory(MemoryOffset.PAUSED)>0) {
+					viewingupdatedMapIcons=true;
+					for (Integer i : newmapdata.keySet()) {
+						int icon = mapdata.get(i);
+						if ((frames%40)>=20) {
+							AddMapPoint((int)Math.floor(i/450),(int)Math.floor(i%450/18),i%450%18,6,false);
+						} else {
+							AddMapPoint((int)Math.floor(i/450),(int)Math.floor(i%450/18),i%450%18,icon,false);
+						}
+					}
+				}
+				
+				if (viewingupdatedMapIcons && readIntFromMemory(MemoryOffset.PAUSED)==0) {
+					viewingupdatedMapIcons=false;
+					for (Integer i : newmapdata.keySet()) {
+						int icon = mapdata.get(i);
+						AddMapPoint((int)Math.floor(i/450),(int)Math.floor(i%450/18),i%450%18,icon,false);
+					}
+					newmapdata.clear();
+				}
+			}
+			
 			//System.out.println(itempct+","+paused);
 			if (paused==0 && itempct>=0) {
 				myProfile.archiveAllValues();
@@ -657,11 +766,15 @@ public class RabiRaceModule extends Module{
 					create_button.draw(g);
 				}
 			}
-			g.setColor(Color.BLACK);
+			if (mySession!=null) {
+				markmap_button.draw(g);
+				g.drawImage(mapiconimg, (int)(position.getX()+128), (int)(position.getY()+position.getHeight()-48), (int)(position.getX()+128+29), (int)(position.getY()+position.getHeight()-48)+29, selectedMapIcon*29, 0, selectedMapIcon*29+29, 29, sigIRC.panel);
+			}
+			/*g.setColor(Color.BLACK);
 			g.fillRect((int)(position.getX()), (int)(position.getY()+position.getHeight()-28-20), (int)(position.getWidth()), 20);
 			for (int i=0;i<messages.size();i++) {
 				messages.get(i).draw(g);
-			}
+			}*/
 		}
 	}
 	
@@ -693,5 +806,15 @@ public class RabiRaceModule extends Module{
 				DrawUtils.drawOutlineText(g, sigIRC.panel.rabiRibiTinyDisplayFont, position.getX()+x, position.getY()+y-6, 2, Color.WHITE, Color.GRAY, msg);
 			}
 		}
+	}
+
+	public void MarkCurrentPosition() {
+		AddMapPoint(readIntFromMemory(MemoryOffset.MAP_AREA_NUMBER),
+				readIntFromMemory(MemoryOffset.MAP_TILE_X),
+				readIntFromMemory(MemoryOffset.MAP_TILE_Y),
+				selectedMapIcon+1,true);
+		/*for (int i=0;i<17;i++) {
+			AddMapPoint(0,i,0,i);
+		}*/
 	}
 }

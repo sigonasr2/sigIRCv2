@@ -159,6 +159,8 @@ public enum MemoryOffset {
 	MESSAGE_CHARACTER(0x16EA47C,0,0,0,0,0),
 	MESSAGE_TEXT(0x17A8DE8,0,0,0,0,0), //This references the 27th location of text. Use 27 for TEXTREF value.
 	MESSAGE_TEXTREF(0x16EA4B0,0,0,0,0,0), //This should be 27 as this allows for MESSAGE_TEXT to be our "custom message" handler.
+	
+	BOSS_FIGHT(0x16E7D9C,0,0,0,0,0), //Should be 1 when in a boss fight.
 	;
 	
 	long base_offset;

@@ -186,6 +186,16 @@ public class Profile {
 	public static int GetRainbowEggCount(Profile p) {
 		return p.rainbowEggs;
 	}
+
+	public void MarkCurrentPosition() {
+		RabiRaceModule.module.AddMapPoint(RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_AREA_NUMBER),
+				RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_TILE_X),
+				RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_TILE_Y),
+				16,false);
+		/*for (int i=0;i<17;i++) {
+			AddMapPoint(0,i,0,i);
+		}*/
+	}
 	
 	public void compareAndAnnounceAllChangedValues() {
 		//System.out.println(oldProfile.key_items.get(MemoryData.HAMMER)+","+key_items.get(MemoryData.HAMMER));
@@ -196,18 +206,23 @@ public class Profile {
 		String announcement = "";
 		if (GetHealthUpCount(oldProfile)==GetHealthUpCount(this)-1) {
 			announcement = "has obtained a Health Up! ("+GetHealthUpCount(this)+" total)";
+			MarkCurrentPosition();
 		}
 		if (GetAttackUpCount(oldProfile)==GetAttackUpCount(this)-1) {
 			announcement = "has obtained an Attack Up! ("+GetAttackUpCount(this)+" total)";
+			MarkCurrentPosition();
 		}
 		if (GetManaUpCount(oldProfile)==GetManaUpCount(this)-1) {
 			announcement = "has obtained a Mana Up! ("+GetManaUpCount(this)+" total)";
+			MarkCurrentPosition();
 		}
 		if (GetRegenUpCount(oldProfile)==GetRegenUpCount(this)-1) {
 			announcement = "has obtained a Regen Up! ("+GetRegenUpCount(this)+" total)";
+			MarkCurrentPosition();
 		}
 		if (GetPackUpCount(oldProfile)==GetPackUpCount(this)-1) {
 			announcement = "has obtained a Pack Up! ("+GetPackUpCount(this)+" total)";
+			MarkCurrentPosition();
 		}
 		if (GetRainbowEggCount(oldProfile)==GetRainbowEggCount(this)-1) {
 			if (RabiRaceModule.mySession!=null &&
@@ -227,12 +242,14 @@ public class Profile {
 			if (!oldProfile.key_items.containsKey(md) &&
 					key_items.containsKey(md)) {
 				announcement = "has obtained "+md.name+"!";
+				MarkCurrentPosition();
 			}
 		}
 		for (MemoryData md : badges.keySet()) {
 			if (!oldProfile.badges.containsKey(md) &&
 					badges.containsKey(md)) {
 				announcement = "has obtained the "+md.name+" badge!";
+				MarkCurrentPosition();
 			}
 		}
 		if (announcement.length()>0 && changedValueCount!=0) {
@@ -296,6 +313,7 @@ public class Profile {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
+			
 			//System.out.println(getDataString());
 			//String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp");
 			//System.out.println(Arrays.toString(data));
