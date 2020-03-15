@@ -529,11 +529,19 @@ public class RabiRaceModule extends Module{
 	private boolean NoMessageDisplayed() {
 		return readIntFromMemory(MemoryOffset.MESSAGE_TIMER)==0;
 	}
+	
+	public boolean OnTitleScreen() {
+		/*return readIntFromMemory(MemoryOffset.INTERFACE_GRAPHICS_CONTROLLER)==809054496 ||
+				readIntFromMemory(MemoryOffset.INTERFACE_GRAPHICS_CONTROLLER)==1593843744 ||
+				readIntFromMemory(MemoryOffset.INTERFACE_GRAPHICS_CONTROLLER)==842018353 ||
+				readIntFromMemory(MemoryOffset.INTERFACE_GRAPHICS_CONTROLLER)==706755104;*/
+		return readIntFromMemory(MemoryOffset.TITLE_SCREEN)==0;
+	}
 
 	private void UpdateMyProfile() {
 		if (foundRabiRibi) {
 			//System.out.println("Called.");
-			int paused = readIntFromMemory(MemoryOffset.PAUSED) + readIntFromMemory(MemoryOffset.TITLE_SCREEN);
+			int paused = readIntFromMemory(MemoryOffset.PAUSED) + (OnTitleScreen()?1:0);
 			//int paused = 0; //TODO FORCE UNPAUSE FOR NOW.
 			float itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
 			myProfile.isPaused = paused>=1;
@@ -541,7 +549,7 @@ public class RabiRaceModule extends Module{
 			if (mySession!=null && mySession.isCoop()) {
 
 				if (mySession!=null && mySession.isCoop()) {
-					if (readIntFromMemory(MemoryOffset.TITLE_SCREEN)>=1) {
+					if (OnTitleScreen()) {
 						if (waitframes--<=0) {
 							mapdata.clear();
 							newmapdata.clear();
