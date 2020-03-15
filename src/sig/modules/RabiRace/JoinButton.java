@@ -21,6 +21,7 @@ public class JoinButton extends ClickableButton{
 		if (RabiRaceModule.mySession==null) {
 			RabiRaceModule.module.window.setVisible(true);
 		} else {
+			RabiRaceModule.module.LeaveSession();
 			File file = new File(sigIRC.BASEDIR+"sigIRC/tmp.data");
 			try {
 				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=leavesession&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+RabiRaceModule.module.myProfile.username+"&session="+RabiRaceModule.mySession.id),file);

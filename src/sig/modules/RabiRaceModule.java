@@ -534,11 +534,6 @@ public class RabiRaceModule extends Module{
 			myProfile.isPaused = paused>=1;
 			
 			if (mySession!=null && mySession.isCoop()) {
-				if (readIntFromMemory(MemoryOffset.TITLE_SCREEN)==10) {
-					mapdata.clear();
-					newmapdata.clear();
-					lastreadmapdata=0;
-				}
 				
 				if (newmapdata.size()>0 && readIntFromMemory(MemoryOffset.PAUSED)>0) {
 					viewingupdatedMapIcons=true;
@@ -816,5 +811,16 @@ public class RabiRaceModule extends Module{
 		/*for (int i=0;i<17;i++) {
 			AddMapPoint(0,i,0,i);
 		}*/
+	}
+
+	public void LeaveSession() {
+
+		if (mySession!=null && mySession.isCoop()) {
+			if (readIntFromMemory(MemoryOffset.TITLE_SCREEN)==10) {
+				mapdata.clear();
+				newmapdata.clear();
+				lastreadmapdata=0;
+			}
+		}
 	}
 }
