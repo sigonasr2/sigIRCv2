@@ -188,10 +188,16 @@ public class Profile {
 	}
 
 	public void MarkCurrentPosition() {
-		RabiRaceModule.module.AddMapPoint(RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_AREA_NUMBER),
-				RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_TILE_X),
-				RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_TILE_Y),
-				16,false);
+		int id = RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_TILE_Y)+18*RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_TILE_X)+RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_AREA_NUMBER)*450;
+		if (RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_REGION_START.getOffset()+id*4)>1 &&
+				RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_REGION_START.getOffset()+id*4)!=3 &&
+				RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_REGION_START.getOffset()+id*4)!=7 
+				&& !RabiRaceModule.module.mapdata.containsKey(id)) {
+			RabiRaceModule.module.AddMapPoint(RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_AREA_NUMBER),
+					RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_TILE_X),
+					RabiRaceModule.module.readIntFromMemory(MemoryOffset.MAP_TILE_Y),
+					16,false);
+		}
 		/*for (int i=0;i<17;i++) {
 			AddMapPoint(0,i,0,i);
 		}*/
