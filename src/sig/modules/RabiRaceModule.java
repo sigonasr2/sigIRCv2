@@ -374,12 +374,18 @@ public class RabiRaceModule extends Module{
 						updateRequired=true;
 					}
 					if (!p.eventStruct.equalsIgnoreCase(myProfile.eventStruct)) {
+						FileUtils.logToFile("["+System.currentTimeMillis()+"]Events are not synced with "+p.displayName, "debug.log");
 						StringBuilder finalevents = new StringBuilder();
 						String[] events = p.eventStruct.split("_");
+						FileUtils.logToFile("["+System.currentTimeMillis()+"]"+p.displayName+"'s events: "+Arrays.toString(events), "debug.log");
 						String[] myevents = myProfile.eventStruct.split("_");
+						FileUtils.logToFile("["+System.currentTimeMillis()+"]"+myProfile.displayName+"'s events: "+Arrays.toString(myevents), "debug.log");
 						for (int i=0;i<Profile.EVENT_COUNT;i++) {
 							if (i!=1) { //Ignore syncing ribbon event.
 								finalevents.append((events[i].compareTo(myevents[i])>0)?events[i]:myevents[i]);
+								if (events[i].compareTo(myevents[i])>0) {
+									FileUtils.logToFile("["+System.currentTimeMillis()+"]Updated event "+i+" to value "+events[i], "debug.log");
+								}
 								//finalevents.append((Integer.compare(myProfile.eventStruct.charAt(i),p.eventStruct.charAt(i))<0)?p.eventStruct.charAt(i):myProfile.eventStruct.charAt(i));
 							} else {
 								finalevents.append(myevents[i]);
@@ -387,6 +393,7 @@ public class RabiRaceModule extends Module{
 							finalevents.append("_");
 						}
 						UpdateRange(MemoryOffset.EVENT_START,MemoryOffset.EVENT_END,finalevents.toString());
+						FileUtils.logToFile("["+System.currentTimeMillis()+"]ll event ranges updated.", "debug.log");
 					}
 					
 					if (updateRequired && mySession.isCoop()) {
@@ -411,6 +418,7 @@ public class RabiRaceModule extends Module{
 			f--;
 		}*/
 		String[] split = i.split("_");
+		FileUtils.logToFile("["+System.currentTimeMillis()+"]Parsed events: "+Arrays.deepToString(split)+".", "debug.log");
 		for (int l=0;l<split.length;l++) {
 			writeIntToMemory(start.getOffset()+(l*4),Integer.parseInt(split[l]));
 		}
