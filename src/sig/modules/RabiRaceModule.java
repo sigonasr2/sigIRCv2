@@ -586,7 +586,7 @@ public class RabiRaceModule extends Module{
 			float itempct = readFloatFromMemory(MemoryOffset.ITEM_PERCENT);
 			myProfile.isPaused = paused>=1;
 			
-			/*if (mySession!=null && mySession.isCoop()) {
+			if (mySession!=null && mySession.isCoop()) {
 
 				if (mySession!=null && mySession.isCoop()) {
 					if (OnTitleScreen()) {
@@ -620,7 +620,7 @@ public class RabiRaceModule extends Module{
 					}
 					newmapdata.clear();
 				}
-			}*/
+			}
 			
 			//System.out.println(itempct+","+paused);
 			if (paused==0 && itempct>=0) {

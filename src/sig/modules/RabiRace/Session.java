@@ -87,6 +87,8 @@ public class Session {
 			}
 			//System.out.println("Adding Player "+p);
 			players.add(p);
+		} else {
+			FileUtils.logToFile("["+System.currentTimeMillis()+"]Failed to download profile for player "+p.displayName+"!", "debug2.log");
 		}
 	}
 
