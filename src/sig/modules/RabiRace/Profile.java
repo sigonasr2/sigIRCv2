@@ -332,6 +332,7 @@ public class Profile {
 	
 	public boolean downloadProfile() {
 		if (sigIRC.authenticated) {
+			FileUtils.logToFile("["+System.currentTimeMillis()+"]Download profile for "+this.displayName+".", "debug.log");
 			File file = new File(sigIRC.BASEDIR+"tmp_profile");
 			try {
 				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=retrievedata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&retrievename="+username.toLowerCase()+"&name="+sigIRC.nickname.toLowerCase()),file);
@@ -392,11 +393,13 @@ public class Profile {
 						nextval = data[i++];
 						map = Integer.parseInt(nextval);
 						nextval = data[i++];
+						FileUtils.logToFile("["+System.currentTimeMillis()+"]Grabbed map and eventstruct: "+eventStruct+"///"+map, "debug.log");
+						//System.out.println("Grabbed Map data...");
 					}
 					while (!nextval.equalsIgnoreCase("END"));
 				}
 				lastWebUpdate = System.currentTimeMillis();
-				
+				FileUtils.logToFile("["+System.currentTimeMillis()+"]Sync completed syccessfully.", "debug.log");
 				return true;
 			}
 		}
