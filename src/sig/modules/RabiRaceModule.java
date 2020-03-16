@@ -121,6 +121,8 @@ public class RabiRaceModule extends Module{
 		
 		File f = new File("debug.log");
 		f.delete();
+		f = new File("debug2.log");
+		f.delete();
 		
 		CheckRabiRibiClient();
 		
