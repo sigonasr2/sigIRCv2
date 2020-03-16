@@ -58,7 +58,7 @@ public class RabiRaceModule extends Module{
 	final static int RIBBON = 1;
 	final static int CICINI = 2;
 	final static int MIRIAM = 3;
-	public final static int DEBUGMODE = 2;
+	public final static int DEBUGMODE = 0;
 	final static String ITEMS_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/items/";
 	final static String AVATAR_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/characters/";
 	final int PROCESS_PERMISSIONS = WinNT.PROCESS_QUERY_INFORMATION | WinNT.PROCESS_VM_READ | WinNT.PROCESS_VM_WRITE;
@@ -131,7 +131,7 @@ public class RabiRaceModule extends Module{
 		scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleWithFixedDelay(()->{
 			RunRabiRace();
-		}, 5000, 5000, TimeUnit.MILLISECONDS);
+		}, 1500, 1500, TimeUnit.MILLISECONDS);
 		
 		myProfile.downloadProfile(); //Synchronize our profile at the beginning.
 		//System.out.println(myProfile.avatar.displayName);
