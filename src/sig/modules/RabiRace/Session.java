@@ -43,14 +43,14 @@ public class Session {
 			if (playerlist.length>1) {
 				for (String s : playerlist) {
 					Profile p = new Profile(RabiRaceModule.module,true);
-					p.username=s;
+					p.displayName=p.username=s;
 					p.avatar = Profile.GetSeededAvatar(p.username);
 					//System.out.println("Player "+p.username);
 					DownloadAndAddPlayer(p);
 				}
 			} else {
 				Profile p = new Profile(RabiRaceModule.module,true);
-				p.username=val;
+				p.displayName=p.username=val;
 				p.avatar = Profile.GetSeededAvatar(p.username);
 				//System.out.println("Player "+p.username);
 				DownloadAndAddPlayer(p);
@@ -79,7 +79,7 @@ public class Session {
 	}
 
 	private void DownloadAndAddPlayer(Profile p) {
-		FileUtils.logToFile("["+System.currentTimeMillis()+"]Download profile for "+p.displayName+".", "debug2.log");
+		FileUtils.logToFile("["+System.currentTimeMillis()+"]Download profile for "+p.username+".", "debug2.log");
 		if (p.downloadProfile()) {
 			if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
 				RabiRaceModule.mySession = this;
@@ -88,7 +88,7 @@ public class Session {
 			//System.out.println("Adding Player "+p);
 			players.add(p);
 		} else {
-			FileUtils.logToFile("["+System.currentTimeMillis()+"]Failed to download profile for player "+p.displayName+"!", "debug2.log");
+			FileUtils.logToFile("["+System.currentTimeMillis()+"]Failed to download profile for player "+p.username+"!", "debug2.log");
 		}
 	}
 
