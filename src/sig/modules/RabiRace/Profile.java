@@ -297,11 +297,17 @@ public class Profile {
 				badges.remove(md);
 			}
 		}
+		String[] previousEventStruct = eventStruct.split("_");
 		StringBuilder events = new StringBuilder();
 		for (int i=0;i<EVENT_COUNT;i++) {
-			int val = parent.readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4);
-			events.append(val);
-			events.append("_");
+			if (NonRestrictedValue(i) || parent.readIntFromMemory(MemoryOffset.AUTOSAVE.getOffset())==1) {
+				int val = parent.readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4);
+				events.append(val);
+				events.append("_");
+			} else {
+				events.append(previousEventStruct[i]);
+				events.append("_");
+			}
 			/*if (val>9 || val<0) {
 				//System.out.println("WARNING! Event "+(256+i)+" has a value greater than 9 or negative number! Truncating to 1 value.");
 				events.append(Integer.toString(val).charAt(0));
@@ -312,6 +318,14 @@ public class Profile {
 		eventStruct = events.toString();
 	}
 	
+	private boolean NonRestrictedValue(int i) {
+		for (int j=0;j<RabiRaceModule.RESTRICTED_EVENTS.length;j++) {
+			if (i==RabiRaceModule.RESTRICTED_EVENTS[j]-256) {
+				return false;
+			}
+		}
+		return true;
+	}
 	public void uploadProfile() {
 		if (sigIRC.authenticated) {
 			File file = new File(sigIRC.BASEDIR+"tmp2");
