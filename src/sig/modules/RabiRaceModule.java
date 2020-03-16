@@ -344,7 +344,7 @@ public class RabiRaceModule extends Module{
 		boolean soundPlayed=false;
 		if (mySession!=null) {
 			for (Profile p : mySession.getPlayers()) {
-				if (p!=myProfile && !p.isPaused && !myProfile.isPaused) {
+				if (p!=myProfile && !p.isPaused && !myProfile.isPaused && p.username!=myProfile.username) {
 					boolean updateRequired=false;
 					for (MemoryData m : p.key_items.keySet()) {
 						if (p.key_items.get(m)!=0 && (!myProfile.key_items.containsKey(m) ||  myProfile.key_items.get(m)==0)) {
@@ -396,13 +396,13 @@ public class RabiRaceModule extends Module{
 						FileUtils.logToFile("["+System.currentTimeMillis()+"]"+myProfile.displayName+"'s events: "+Arrays.toString(myevents), "debug.log");
 						for (int i=0;i<Profile.EVENT_COUNT;i++) {
 							if (i!=1) { //Ignore syncing ribbon event.
-								finalevents.append((events[i].compareTo(myevents[i])>0)?events[i]:myevents[i]);
-								if (events[i].compareTo(myevents[i])>0) {
+								finalevents.append((events[i].compareTo(Integer.toString(readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4)))>0)?events[i]:readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4));
+								/*if (events[i].compareTo(Integer.toString(readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4)))>0) {
 									FileUtils.logToFile("["+System.currentTimeMillis()+"]Updated event "+i+" to value "+events[i], "debug.log");
-								}
+								}*/
 								//finalevents.append((Integer.compare(myProfile.eventStruct.charAt(i),p.eventStruct.charAt(i))<0)?p.eventStruct.charAt(i):myProfile.eventStruct.charAt(i));
 							} else {
-								finalevents.append(myevents[i]);
+								finalevents.append(readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4));
 							}
 							finalevents.append("_");
 						}
@@ -542,7 +542,7 @@ public class RabiRaceModule extends Module{
 				FileUtils.logToFile("["+System.currentTimeMillis()+"]For some reason scheduler was terminated! Trying to restart...", "debug2.log");
 				scheduler.scheduleWithFixedDelay(()->{
 					RunRabiRace();
-				}, 5000, 5000, TimeUnit.MILLISECONDS);
+				}, 1500, 1500, TimeUnit.MILLISECONDS);
 			}
 			if (scheduler2.isTerminated() || scheduler2.isShutdown()) {
 				FileUtils.logToFile("["+System.currentTimeMillis()+"]For some reason scheduler2 was terminated! Trying to restart...", "debug2.log");
