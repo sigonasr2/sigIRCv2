@@ -362,27 +362,27 @@ public class RabiRaceModule extends Module{
 					}
 					if (Profile.GetHealthUpCount(p)>Profile.GetHealthUpCount(myProfile)) {
 						System.out.println("You do not have the correct amount of health ups. Syncing to ("+p.healthUps+") from "+p.displayName+".");
-						UpdateRange(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END,p.healthUps);
+						UpdateRange_WithoutParsing(MemoryOffset.HEALTHUP_START,MemoryOffset.HEALTHUP_END,p.healthUps);
 						updateRequired=true;
 					}
 					if (Profile.GetManaUpCount(p)>Profile.GetManaUpCount(myProfile)) {
 						System.out.println("You do not have the correct amount of mana ups. Syncing to ("+p.manaUps+") from "+p.displayName+".");
-						UpdateRange(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END,p.manaUps);
+						UpdateRange_WithoutParsing(MemoryOffset.MANAUP_START,MemoryOffset.MANAUP_END,p.manaUps);
 						updateRequired=true;
 					}
 					if (Profile.GetRegenUpCount(p)>Profile.GetRegenUpCount(myProfile)) {
 						System.out.println("You do not have the correct amount of regen ups. Syncing to ("+p.regenUps+") from "+p.displayName+".");
-						UpdateRange(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END,p.regenUps);
+						UpdateRange_WithoutParsing(MemoryOffset.REGENUP_START,MemoryOffset.REGENUP_END,p.regenUps);
 						updateRequired=true;
 					}
 					if (Profile.GetPackUpCount(p)>Profile.GetPackUpCount(myProfile)) {
 						System.out.println("You do not have the correct amount of pack ups. Syncing to ("+p.packUps+") from "+p.displayName+".");
-						UpdateRange(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END,p.packUps);
+						UpdateRange_WithoutParsing(MemoryOffset.PACKUP_START,MemoryOffset.PACKUP_END,p.packUps);
 						updateRequired=true;
 					}
 					if (Profile.GetAttackUpCount(p)>Profile.GetAttackUpCount(myProfile)) {
 						System.out.println("You do not have the correct amount of attack ups. Syncing to ("+p.attackUps+") from "+p.displayName+".");
-						UpdateRange(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END,p.attackUps);
+						UpdateRange_WithoutParsing(MemoryOffset.ATTACKUP_START,MemoryOffset.ATTACKUP_END,p.attackUps);
 						updateRequired=true;
 					}
 					if (!p.eventStruct.equalsIgnoreCase(myProfile.eventStruct)) {
@@ -417,6 +417,20 @@ public class RabiRaceModule extends Module{
 					}
 				}
 			}
+		}
+	}
+
+	private void UpdateRange_WithoutParsing(MemoryOffset start, MemoryOffset end, String i) {
+		/*int f=63;
+		while (i>0 && f>0) {
+			if (readIntFromMemory(start.getOffset())==0) {
+				writeIntToMemory(start.getOffset()+(f*4),1);
+				i--;
+			}
+			f--;
+		}*/
+		for (int l=0;l<i.length();l++) {
+			writeIntToMemory(start.getOffset()+(l*4),Integer.parseInt(Character.toString(i.charAt(l))));
 		}
 	}
 
