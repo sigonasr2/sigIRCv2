@@ -314,7 +314,7 @@ public class Profile {
 	
 	public void uploadProfile() {
 		if (sigIRC.authenticated) {
-			File file = new File(sigIRC.BASEDIR+"tmp");
+			File file = new File(sigIRC.BASEDIR+"tmp2");
 			try {
 				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=playerdata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+sigIRC.nickname.toLowerCase()+"&data="+getDataString()),file);
 			} catch (MalformedURLException e) {
@@ -332,7 +332,6 @@ public class Profile {
 	
 	public boolean downloadProfile() {
 		if (sigIRC.authenticated) {
-			FileUtils.logToFile("["+System.currentTimeMillis()+"]Download profile for "+this.displayName+".", "debug.log");
 			File file = new File(sigIRC.BASEDIR+"tmp_profile");
 			try {
 				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=retrievedata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&retrievename="+username.toLowerCase()+"&name="+sigIRC.nickname.toLowerCase()),file);

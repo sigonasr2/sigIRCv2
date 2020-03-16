@@ -26,6 +26,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import sig.sigIRC;
+import sig.modules.RabiRaceModule;
 import sig.modules.ChatLog.ChatLogMessage;
 
 public class FileUtils {
@@ -241,7 +242,12 @@ public class FileUtils {
 	  }
 	  
 	  public static void logToFile(String message, String filename) {
-		 logToFile(message,filename,false);  
+		 if (filename.equalsIgnoreCase("debug.log") && RabiRaceModule.DEBUGMODE==1
+				 ||
+				 filename.equalsIgnoreCase("debug2.log") && RabiRaceModule.DEBUGMODE==2
+				  ) {
+			 logToFile(message,filename,false);  
+		 }
 	  }
 	  
 	  public static void logToFile(String message, String filename, boolean outputToChatLog) {

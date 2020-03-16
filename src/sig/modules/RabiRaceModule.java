@@ -58,6 +58,7 @@ public class RabiRaceModule extends Module{
 	final static int RIBBON = 1;
 	final static int CICINI = 2;
 	final static int MIRIAM = 3;
+	public final static int DEBUGMODE = 2;
 	final static String ITEMS_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/items/";
 	final static String AVATAR_DIRECTORY = sigIRC.BASEDIR+"sigIRC/rabi-ribi/characters/";
 	final int PROCESS_PERMISSIONS = WinNT.PROCESS_QUERY_INFORMATION | WinNT.PROCESS_VM_READ | WinNT.PROCESS_VM_WRITE;
@@ -90,6 +91,7 @@ public class RabiRaceModule extends Module{
 	public boolean viewingupdatedMapIcons=false;
 	public HashMap<Integer,Integer> mapdata = new HashMap<Integer,Integer>();
 	public HashMap<Integer,Integer> newmapdata = new HashMap<Integer,Integer>();
+	public static ScheduledExecutorService scheduler,scheduler2; 
 	int frames=0;
 	
 	public SessionListData session_listing = new SessionListData();
@@ -124,31 +126,17 @@ public class RabiRaceModule extends Module{
 		
 		VerifyClientIsValid(); //If the client is not allowed to send data, we need to know that.
 
-		ScheduledExecutorService scheduler = Executors.newScheduledThreadPool(1);
+		scheduler = Executors.newScheduledThreadPool(1);
 		scheduler.scheduleWithFixedDelay(()->{
-			CheckRabiRibiClient();
-			if (foundRabiRibi) {
-				FileUtils.logToFile("["+System.currentTimeMillis()+"]Start update cycle...", "debug.log");
-				myProfile.uploadProfile();
-				getSessionList();
-				getMessageUpdates();
-				//trimeadProfile.downloadProfile();
-				firstCheck=true;
-				if (mySession!=null) {
-					RequestData("tmp.data","key=keepalivesession&session="+mySession.getID());
-					FileUtils.logToFile("["+System.currentTimeMillis()+"]Requested data"+"key=keepalivesession&session="+mySession.getID(), "debug.log");
-				}
-			}
+			RunRabiRace();
 		}, 5000, 5000, TimeUnit.MILLISECONDS);
 		
 		myProfile.downloadProfile(); //Synchronize our profile at the beginning.
 		//System.out.println(myProfile.avatar.displayName);
 		
-		ScheduledExecutorService scheduler2 = Executors.newScheduledThreadPool(1);
+		scheduler2 = Executors.newScheduledThreadPool(1);
 		scheduler2.scheduleWithFixedDelay(()->{
-			if (foundRabiRibi) {
-				UpdateMyProfile();
-			}
+			RunRabiRaceUpdater();
 		}, 250, 250, TimeUnit.MILLISECONDS);
 		
 		File dir = new File(ITEMS_DIRECTORY);
@@ -191,6 +179,28 @@ public class RabiRaceModule extends Module{
 		join_button = new JoinButton(new Rectangle(2,(int)(position.getHeight()-18),120,18),"Join Session (0)",this);
 		create_button = new CreateButton(new Rectangle(122,(int)(position.getHeight()-18),120,18),"Create Session",this);
 		markmap_button = new MarkMapButton(new Rectangle(2,(int)(position.getHeight()-42),120,18),"Mark Map",this);
+	}
+
+	private void RunRabiRaceUpdater() {
+		if (foundRabiRibi) {
+			UpdateMyProfile();
+		}
+	}
+
+	private void RunRabiRace() {
+		CheckRabiRibiClient();
+		if (foundRabiRibi) {
+			FileUtils.logToFile("["+System.currentTimeMillis()+"]Start update cycle...", "debug.log");
+			myProfile.uploadProfile();
+			getSessionList();
+			getMessageUpdates();
+			//trimeadProfile.downloadProfile();
+			firstCheck=true;
+			if (mySession!=null) {
+				RequestData("tmp.data","key=keepalivesession&session="+mySession.getID());
+				FileUtils.logToFile("["+System.currentTimeMillis()+"]Requested data"+"key=keepalivesession&session="+mySession.getID(), "debug.log");
+			}
+		}
 	}
 
 	private void VerifyClientIsValid() {
@@ -510,6 +520,18 @@ public class RabiRaceModule extends Module{
 	public void run() {
 		frames++;
 		if (foundRabiRibi) {
+			if (scheduler.isTerminated() || scheduler.isShutdown()) {
+				FileUtils.logToFile("["+System.currentTimeMillis()+"]For some reason scheduler was terminated! Trying to restart...", "debug2.log");
+				scheduler.scheduleWithFixedDelay(()->{
+					RunRabiRace();
+				}, 5000, 5000, TimeUnit.MILLISECONDS);
+			}
+			if (scheduler2.isTerminated() || scheduler2.isShutdown()) {
+				FileUtils.logToFile("["+System.currentTimeMillis()+"]For some reason scheduler2 was terminated! Trying to restart...", "debug2.log");
+				scheduler2.scheduleWithFixedDelay(()->{
+					RunRabiRaceUpdater();
+				}, 250, 250, TimeUnit.MILLISECONDS);
+			}
 			rainbowcycler.run();
 			/*System.out.println("Value: ("+Integer.toHexString((int)(rabiRibiMemOffset+0x1679EF0))+"): "+readIntFromMemory(0x1679EF0));
 			System.out.println("Write...");

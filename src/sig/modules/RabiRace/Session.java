@@ -7,6 +7,7 @@ import java.util.List;
 
 import sig.sigIRC;
 import sig.modules.RabiRaceModule;
+import sig.utils.FileUtils;
 import sig.utils.ReflectUtils;
 
 public class Session {
@@ -78,6 +79,7 @@ public class Session {
 	}
 
 	private void DownloadAndAddPlayer(Profile p) {
+		FileUtils.logToFile("["+System.currentTimeMillis()+"]Download profile for "+p.displayName+".", "debug2.log");
 		if (p.downloadProfile()) {
 			if (RabiRaceModule.mySession==null && p.username.equalsIgnoreCase(RabiRaceModule.module.myProfile.username)) {
 				RabiRaceModule.mySession = this;
