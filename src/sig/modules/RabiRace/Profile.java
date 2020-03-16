@@ -343,7 +343,7 @@ public class Profile {
 			FileUtils.logToFile("["+System.currentTimeMillis()+"]Download profile w/settings: "+"http://45.33.13.215/rabirace/send.php?key=retrievedata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&retrievename="+username.toLowerCase()+"&name="+sigIRC.nickname.toLowerCase(), "debug2.log");
 			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp_profile");
 			//System.out.println(Arrays.toString(data));
-			if (data.length>=23) {
+			if (data.length>=22) {
 				int i=0;
 				displayName = data[i++];
 				try {
