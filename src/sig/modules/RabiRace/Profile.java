@@ -62,6 +62,7 @@ public class Profile {
 	public boolean stat_update_required = true;
 	public boolean image_display_update_required = true;
 	public int timeKey = -1;
+	public boolean syncing = false;
 	
 	public Profile(RabiRaceModule module) {
 		this(module,true);
@@ -383,7 +384,7 @@ public class Profile {
 			FileUtils.logToFile("["+System.currentTimeMillis()+"]Download profile w/settings: "+"http://45.33.13.215/rabirace/send.php?key=retrievedata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&retrievename="+username.toLowerCase()+"&name="+sigIRC.nickname.toLowerCase(), "debug2.log");
 			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp_profile");
 			//System.out.println(Arrays.toString(data));
-			if (data.length>=22) {
+			if (data.length>=23) {
 				int i=0;
 				displayName = data[i++];
 				try {
@@ -433,6 +434,8 @@ public class Profile {
 						nextval = data[i++];
 						map = Integer.parseInt(nextval);
 						nextval = data[i++];
+						syncing = Boolean.parseBoolean(data[i++]);
+						nextval = data[i++];
 						FileUtils.logToFile("["+System.currentTimeMillis()+"]Grabbed map and eventstruct: "+eventStruct+"///"+map, "debug.log");
 						//System.out.println("Grabbed Map data...");
 					}
@@ -477,6 +480,7 @@ public class Profile {
 		appendData("UPDATES:",sb);
 		appendData(eventStruct,sb); 
 		appendData(map,sb);
+		appendData(syncing,sb);
 		appendData("END",sb);
 		return sb.toString();
 	}
@@ -509,6 +513,9 @@ public class Profile {
 			DrawUtils.drawOutlineText(g2, sigIRC.panel.rabiRibiMoneyDisplayFont, 54, 26, 0, 1, g2.getColor(), Color.BLACK, displayName);
 			DrawUtils.drawCenteredOutlineText(g2, sigIRC.panel.rabiRibiTinyDisplayFont, (int)(tmp.getWidth()*0.2), 50, 0, 1, GetDifficultyColor(), Color.BLACK, GetDifficultyName());
 			String text = TextUtils.convertSecondsToTimeFormat(playtime/60);
+			if (!syncing) {
+				g2.setColor(new Color(196,24,24));
+			} else 
 			if (isPaused) {
 				g2.setColor(new Color(128,96,0));
 			} else {
