@@ -300,16 +300,16 @@ public class Profile {
 		}
 		String[] previousEventStruct = eventStruct.split("_");
 		StringBuilder events = new StringBuilder();
-		
-
+	
 		
 		if (parent.readIntFromMemory(MemoryOffset.PLAYERHEALTH)<=0) {
 			RabiRaceModule.syncEvents=false;
+			RabiRaceModule.hasDied=true;
 		}
 		
-		if (!RabiRaceModule.syncEvents && parent.readIntFromMemory(MemoryOffset.PLAYERHEALTH)>0 &&
-				parent.readIntFromMemory(MemoryOffset.DARKNESS)==0 && !RabiRaceModule.darknessHasReachedzero) {
+		if (!RabiRaceModule.syncEvents && RabiRaceModule.hasDied && parent.readIntFromMemory(MemoryOffset.PLAYERHEALTH)>0) {
 			RabiRaceModule.syncEvents=true;
+			RabiRaceModule.hasDied=false;
 		}
 		
 		if (parent.readIntFromMemory(MemoryOffset.DARKNESS)>0 && RabiRaceModule.syncEvents) {
