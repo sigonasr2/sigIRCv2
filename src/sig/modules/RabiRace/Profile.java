@@ -339,7 +339,7 @@ public class Profile {
 				events.append("_");
 			} else {
 				if (RabiRaceModule.syncEvents) {
-					events.append(previousEventStruct[i]);
+					events.append(parent.readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4));
 					events.append("_");
 				} else {
 					events.append(0);
