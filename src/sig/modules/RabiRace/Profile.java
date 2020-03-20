@@ -325,7 +325,7 @@ public class Profile {
 			RabiRaceModule.darknessHasReachedzero=false;
 		}*/
 		
-		RabiRaceModule.syncEvents = InBossBattleSong();
+		RabiRaceModule.syncEvents = !InBossBattleSong();
 
 		/*if (parent.readIntFromMemory(MemoryOffset.DARKNESS)>0 && RabiRaceModule.darknessHasReachedzero) {
 			RabiRaceModule.syncEvents=!RabiRaceModule.syncEvents;
