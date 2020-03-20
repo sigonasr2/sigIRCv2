@@ -93,11 +93,13 @@ public class RabiRaceModule extends Module{
 	public HashMap<Integer,Integer> newmapdata = new HashMap<Integer,Integer>();
 	public static ScheduledExecutorService scheduler,scheduler2; 
 	public static boolean syncEvents = true;
-	public static boolean darknessHasReachedzero = true; //darkness needs to go down to 0, then go back up.
+	//public static boolean darknessHasReachedzero = true; //darkness needs to go down to 0, then go back up.
 	public static boolean hasDied = false;
+	public static String lastEventString = "";
 	int frames=0;
 	
 	public static final int[] RESTRICTED_EVENTS = new int[] {256,257,260,262,264,265,266,267,268,269,271,272,278,279,284,289,290,295,296,307,315,316,322,323,324,331,333,344,345,371,377,379,385,386,387,399,412,427,428,451,452,464,465,484,516,517,518,519};
+	public static final int[] BOSSSONGS = new int[] {8,27,33,34,36,37,38,39,42,43,44,47,48,51,52,54,56,59,60,61,63,64};
 	
 	public SessionListData session_listing = new SessionListData();
 	
@@ -609,16 +611,14 @@ public class RabiRaceModule extends Module{
 			
 			if (mySession!=null && mySession.isCoop()) {
 
-				if (mySession!=null && mySession.isCoop()) {
-					if (OnTitleScreen()) {
-						if (waitframes--<=0) {
-							mapdata.clear();
-							newmapdata.clear();
-							lastreadmapdata=0;
-						}
-					} else {
-						waitframes = WAITFRAMEMAX;
+				if (OnTitleScreen()) {
+					if (waitframes--<=0) {
+						mapdata.clear();
+						newmapdata.clear();
+						lastreadmapdata=0;
 					}
+				} else {
+					waitframes = WAITFRAMEMAX;
 				}
 				
 				if (newmapdata.size()>0 && readIntFromMemory(MemoryOffset.PAUSED)>0) {

@@ -163,6 +163,7 @@ public enum MemoryOffset {
 	MESSAGE_TEXTREF(0x16EA4B0,0,0,0,0,0), //This should be 27 as this allows for MESSAGE_TEXT to be our "custom message" handler.
 	
 	MAP_AREA_COLOR(0x84C888,0,0,0,0,0), //See https://github.com/wcko87/rabiribi-map-editing/blob/master/docs/room_colors.md for colors.
+		//Also changes based on music
 	
 	BOSS_FIGHT(0x16E7D9C,0,0,0,0,0), //Should be 1 when in a boss fight.
 	AUTOSAVE(0xD34A70,0,0,0,0,0), //1 if autosaving is occurring.

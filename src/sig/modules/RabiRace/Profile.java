@@ -324,14 +324,16 @@ public class Profile {
 			RabiRaceModule.syncEvents=true;
 			RabiRaceModule.darknessHasReachedzero=false;
 		}*/
+		
+		RabiRaceModule.syncEvents = InBossBattleSong();
 
-		if (parent.readIntFromMemory(MemoryOffset.DARKNESS)>0 && RabiRaceModule.darknessHasReachedzero) {
+		/*if (parent.readIntFromMemory(MemoryOffset.DARKNESS)>0 && RabiRaceModule.darknessHasReachedzero) {
 			RabiRaceModule.syncEvents=!RabiRaceModule.syncEvents;
 			RabiRaceModule.darknessHasReachedzero=false;
 		}
 		if (parent.readIntFromMemory(MemoryOffset.DARKNESS)==0) {
 			RabiRaceModule.darknessHasReachedzero=true;
-		}
+		}*/
 		for (int i=0;i<EVENT_COUNT;i++) {
 			if (NonRestrictedValue(i)) {
 				int val = parent.readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4);
@@ -353,11 +355,24 @@ public class Profile {
 				events.append(val);
 			}*/
 		}
-		eventStruct = events.toString();
+		if (RabiRaceModule.syncEvents && 
+				RabiRaceModule.lastEventString.equalsIgnoreCase(events.toString())) {
+			eventStruct = events.toString();
+		} else {
+			RabiRaceModule.lastEventString = events.toString();
+		}
 		
 		syncing = RabiRaceModule.syncEvents;
 	}
 	
+	private boolean InBossBattleSong() {
+		for (int i=0;i<RabiRaceModule.BOSSSONGS.length;i++) {
+			if (parent.readIntFromMemory(MemoryOffset.MAP_AREA_COLOR)==RabiRaceModule.BOSSSONGS[i]) {
+				return true;
+			}
+		}
+		return false;
+	}
 	private boolean NonRestrictedValue(int i) {
 		for (int j=0;j<RabiRaceModule.RESTRICTED_EVENTS.length;j++) {
 			if (i==RabiRaceModule.RESTRICTED_EVENTS[j]-256) {
