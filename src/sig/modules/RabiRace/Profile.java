@@ -333,6 +333,9 @@ public class Profile {
 				if (RabiRaceModule.syncEvents) {
 					events.append(previousEventStruct[i]);
 					events.append("_");
+				} else {
+					events.append(0);
+					events.append("_");
 				}
 			}
 			/*if (val>9 || val<0) {
