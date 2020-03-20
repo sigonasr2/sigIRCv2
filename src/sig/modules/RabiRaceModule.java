@@ -345,7 +345,7 @@ public class RabiRaceModule extends Module{
 	
 	public void SyncItemsWithOtherPlayers() {
 		boolean soundPlayed=false;
-		if (mySession!=null) {
+		if (mySession!=null && mySession.isCoop()) {
 			for (Profile p : mySession.getPlayers()) {
 				if (p!=myProfile && !p.isPaused && !myProfile.isPaused && p.username!=myProfile.username) {
 					boolean updateRequired=false;
