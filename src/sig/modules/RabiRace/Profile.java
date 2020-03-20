@@ -430,19 +430,13 @@ public class Profile {
 					while (!nextval.equalsIgnoreCase("UPDATES:"));
 				}
 				nextval = data[i++];
-				if (!nextval.equalsIgnoreCase("END")) {
-					do {
-						eventStruct = nextval;
-						nextval = data[i++];
-						map = Integer.parseInt(nextval);
-						nextval = data[i++];
-						syncing = Boolean.parseBoolean(nextval);
-						nextval = data[i++];
-						FileUtils.logToFile("["+System.currentTimeMillis()+"]Grabbed map and eventstruct: "+eventStruct+"///"+map, "debug.log");
-						//System.out.println("Grabbed Map data...");
-					}
-					while (!nextval.equalsIgnoreCase("END"));
-				}
+
+				eventStruct = nextval;
+				nextval = data[i++];
+				map = Integer.parseInt(nextval);
+				nextval = data[i++];
+				System.out.println(nextval);
+				syncing = Boolean.parseBoolean(nextval);
 				lastWebUpdate = System.currentTimeMillis();
 				FileUtils.logToFile("["+System.currentTimeMillis()+"]Sync completed syccessfully.", "debug.log");
 				return true;
