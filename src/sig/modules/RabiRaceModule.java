@@ -93,7 +93,7 @@ public class RabiRaceModule extends Module{
 	public HashMap<Integer,Integer> newmapdata = new HashMap<Integer,Integer>();
 	public static ScheduledExecutorService scheduler,scheduler2; 
 	public static boolean syncEvents = true;
-	public static boolean darknessHasReachedzero = false; //darkness needs to go down to 0, then go back up.
+	public static boolean darknessHasReachedzero = true; //darkness needs to go down to 0, then go back up.
 	public static boolean hasDied = false;
 	int frames=0;
 	

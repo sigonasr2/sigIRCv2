@@ -311,7 +311,7 @@ public class Profile {
 			RabiRaceModule.syncEvents=true;
 			RabiRaceModule.hasDied=false;
 		}
-		
+		/*
 		if (parent.readIntFromMemory(MemoryOffset.DARKNESS)>0 && RabiRaceModule.syncEvents) {
 			RabiRaceModule.syncEvents=false;
 		}
@@ -323,6 +323,14 @@ public class Profile {
 				parent.readIntFromMemory(MemoryOffset.DARKNESS)>0) {
 			RabiRaceModule.syncEvents=true;
 			RabiRaceModule.darknessHasReachedzero=false;
+		}*/
+
+		if (parent.readIntFromMemory(MemoryOffset.DARKNESS)>0 && RabiRaceModule.darknessHasReachedzero) {
+			RabiRaceModule.syncEvents=!RabiRaceModule.syncEvents;
+			RabiRaceModule.darknessHasReachedzero=false;
+		}
+		if (parent.readIntFromMemory(MemoryOffset.DARKNESS)==0) {
+			RabiRaceModule.darknessHasReachedzero=true;
 		}
 		for (int i=0;i<EVENT_COUNT;i++) {
 			if (NonRestrictedValue(i)) {
