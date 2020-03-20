@@ -343,6 +343,8 @@ public class Profile {
 			}*/
 		}
 		eventStruct = events.toString();
+		
+		syncing = RabiRaceModule.syncEvents;
 	}
 	
 	private boolean NonRestrictedValue(int i) {
@@ -434,7 +436,7 @@ public class Profile {
 						nextval = data[i++];
 						map = Integer.parseInt(nextval);
 						nextval = data[i++];
-						syncing = Boolean.parseBoolean(data[i++]);
+						syncing = Boolean.parseBoolean(nextval);
 						nextval = data[i++];
 						FileUtils.logToFile("["+System.currentTimeMillis()+"]Grabbed map and eventstruct: "+eventStruct+"///"+map, "debug.log");
 						//System.out.println("Grabbed Map data...");
