@@ -166,6 +166,9 @@ public enum MemoryOffset {
 	
 	BOSS_FIGHT(0x16E7D9C,0,0,0,0,0), //Should be 1 when in a boss fight.
 	AUTOSAVE(0xD34A70,0,0,0,0,0), //1 if autosaving is occurring.
+	
+	DARKNESS(0x172C2E8,0,0,0,0,0),
+	PLAYERHEALTH(0x16E90E0,0,0,0,0,0),
 	;
 	
 	long base_offset;

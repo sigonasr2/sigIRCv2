@@ -299,14 +299,40 @@ public class Profile {
 		}
 		String[] previousEventStruct = eventStruct.split("_");
 		StringBuilder events = new StringBuilder();
+		
+
+		
+		if (parent.readIntFromMemory(MemoryOffset.PLAYERHEALTH)<=0) {
+			RabiRaceModule.syncEvents=false;
+		}
+		
+		if (!RabiRaceModule.syncEvents && parent.readIntFromMemory(MemoryOffset.PLAYERHEALTH)>0 &&
+				parent.readIntFromMemory(MemoryOffset.DARKNESS)==0 && !RabiRaceModule.darknessHasReachedzero) {
+			RabiRaceModule.syncEvents=true;
+		}
+		
+		if (parent.readIntFromMemory(MemoryOffset.DARKNESS)>0 && RabiRaceModule.syncEvents) {
+			RabiRaceModule.syncEvents=false;
+		}
+		if (!RabiRaceModule.syncEvents && !RabiRaceModule.darknessHasReachedzero &&
+				parent.readIntFromMemory(MemoryOffset.DARKNESS)==0) {
+			RabiRaceModule.darknessHasReachedzero=true;
+		}
+		if (!RabiRaceModule.syncEvents && RabiRaceModule.darknessHasReachedzero &&
+				parent.readIntFromMemory(MemoryOffset.DARKNESS)>0) {
+			RabiRaceModule.syncEvents=true;
+			RabiRaceModule.darknessHasReachedzero=false;
+		}
 		for (int i=0;i<EVENT_COUNT;i++) {
-			if (NonRestrictedValue(i) || parent.readIntFromMemory(MemoryOffset.AUTOSAVE.getOffset())==1) {
+			if (NonRestrictedValue(i)) {
 				int val = parent.readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4);
 				events.append(val);
 				events.append("_");
 			} else {
-				events.append(previousEventStruct[i]);
-				events.append("_");
+				if (RabiRaceModule.syncEvents) {
+					events.append(previousEventStruct[i]);
+					events.append("_");
+				}
 			}
 			/*if (val>9 || val<0) {
 				//System.out.println("WARNING! Event "+(256+i)+" has a value greater than 9 or negative number! Truncating to 1 value.");
