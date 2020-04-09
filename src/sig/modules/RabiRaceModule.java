@@ -400,7 +400,7 @@ public class RabiRaceModule extends Module{
 						String[] myevents = myProfile.eventStruct.split("_");
 						FileUtils.logToFile("["+System.currentTimeMillis()+"]"+myProfile.displayName+"'s events: "+Arrays.toString(myevents), "debug.log");
 						for (int i=0;i<Profile.EVENT_COUNT;i++) {
-							if (i!=1) { //Ignore syncing ribbon event.
+							if (i!=1 && i!=90 && i!=177) { //Ignore syncing ribbon event, irisu library event, and forgotten cave 2 event.
 								finalevents.append((events[i].compareTo(Integer.toString(readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4)))>0)?events[i]:readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4));
 								/*if (events[i].compareTo(Integer.toString(readIntFromMemory(MemoryOffset.EVENT_START.getOffset()+i*4)))>0) {
 									FileUtils.logToFile("["+System.currentTimeMillis()+"]Updated event "+i+" to value "+events[i], "debug.log");

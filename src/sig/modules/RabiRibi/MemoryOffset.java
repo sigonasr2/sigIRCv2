@@ -187,11 +187,9 @@ public enum MemoryOffset {
 		this.offset_v190=offset_v190;
 		this.offset_v199=offset_v199;
 		this.offset_v199t=offset_v199t;
-		
 		//TODO CHANGE THIS IF PUBLIC VERSION CHANGES!
 		this.latest_offset = offset_v199t;
 	}
-	
 	public long getOffset() {
 		return base_offset+latest_offset;
 	}

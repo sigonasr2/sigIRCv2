@@ -461,7 +461,7 @@ public class Profile {
 				nextval = data[i++];
 				map = Integer.parseInt(nextval);
 				nextval = data[i++];
-				System.out.println(nextval);
+				//System.out.println(nextval);
 				syncing = Boolean.parseBoolean(nextval);
 				lastWebUpdate = System.currentTimeMillis();
 				FileUtils.logToFile("["+System.currentTimeMillis()+"]Sync completed syccessfully.", "debug.log");
