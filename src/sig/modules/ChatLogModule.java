@@ -2,6 +2,7 @@ package sig.modules;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.MouseWheelEvent;
 import java.awt.geom.Rectangle2D;
@@ -49,6 +50,22 @@ public class ChatLogModule extends Module{
 			}
 			ChatLogMessage.importMessages(logContents);
 		} 
+	}
+	
+	public static void loadModule() {
+		sigIRC.modules.add(new ChatLogModule(
+				new Rectangle(sigIRC.chatlogmodule_X,sigIRC.chatlogmodule_Y,sigIRC.chatlogmodule_width,sigIRC.chatlogmodule_height),
+				"Chat Log"
+				));
+		sigIRC.chatlogmodule_enabled=true;
+	}
+	public static void unloadModule() {
+		for (int i=0;i<sigIRC.modules.size();i++) {
+			if (sigIRC.modules.get(i) instanceof ChatLogModule) {
+				sigIRC.modules.remove(sigIRC.modules.get(i));
+			}
+		}
+		sigIRC.chatlogmodule_enabled=false;
 	}
 	
 	public void run() {

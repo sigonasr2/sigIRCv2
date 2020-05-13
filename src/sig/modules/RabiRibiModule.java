@@ -3,6 +3,7 @@ package sig.modules;
 import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Point2D;
 import java.awt.geom.Rectangle2D;
@@ -127,6 +128,22 @@ public class RabiRibiModule extends Module{
 			UpdateEntities();
 			//System.out.println("Called Entity creation "+callcount+" times.");
 		}, 1000, 1000, TimeUnit.MILLISECONDS);
+	}
+	
+	public static void loadModule() {
+		sigIRC.modules.add(new RabiRibiModule(
+				new Rectangle(sigIRC.rabiribimodule_X,sigIRC.rabiribimodule_Y,sigIRC.rabiribimodule_width,sigIRC.rabiribimodule_height),
+				"Rabi Ribi"
+				));
+		sigIRC.rabiribimodule_enabled=true;
+	}
+	public static void unloadModule() {
+		for (int i=0;i<sigIRC.modules.size();i++) {
+			if (sigIRC.modules.get(i) instanceof RabiRibiModule) {
+				sigIRC.modules.remove(sigIRC.modules.get(i));
+			}
+		}
+		sigIRC.rabiribimodule_enabled=false;
 	}
 	
 	public void ApplyConfigWindowProperties() {

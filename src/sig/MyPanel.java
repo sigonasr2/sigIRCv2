@@ -34,7 +34,9 @@ import javax.swing.JPopupMenu;
 import sig.modules.BandoriModule;
 import sig.modules.ChatLogModule;
 import sig.modules.ChatLog.ChatLogMessage;
+import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
+import sig.utils.TextUtils;
 
 public class MyPanel extends JPanel implements MouseListener, ActionListener, MouseWheelListener, KeyListener, ComponentListener, WindowListener{
 	//List<String> messages = new ArrayList<String>();
@@ -95,6 +97,11 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         		sigIRC.chatlogtwitchemoticons.get(i).draw(g);
         	}
         }
+        if (sigIRC.newUpdateIsAvailable) {
+        	DrawUtils.drawOutlineText(g, MyPanel.programFont, sigIRC.panel.getWidth()
+				- TextUtils.calculateStringBoundsFont("NEW UPDATE AVAILABLE!!",MyPanel.programFont).getWidth(), sigIRC.panel.getHeight()
+				- TextUtils.calculateStringBoundsFont("NEW UPDATE AVAILABLE!!",MyPanel.programFont).getHeight(), 2, Color.RED, Color.WHITE, "NEW UPDATE AVAILABLE!!");
+        }
         for (int i=0;i<sigIRC.textobj.size();i++) {
         	if (sigIRC.textobj.get(i).isActive()) {
         		if (sigIRC.overlayMode) {
@@ -120,6 +127,7 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         }
         if (!sigIRC.overlayMode) {
         	sigIRC.button.draw(g);
+        	sigIRC.modulebutton.draw(g);
         }
     }  
     
@@ -148,6 +156,7 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 			m.mouseModuleMousePress(ev);
 		}
         sigIRC.button.onClickEvent(ev);
+        sigIRC.modulebutton.onClickEvent(ev);
 	}
 
 	@Override
@@ -213,8 +222,10 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
 		sigIRC.config.setInteger("windowY", sigIRC.windowY);
 		sigIRC.config.setInteger("windowWidth", sigIRC.windowWidth);
 		sigIRC.config.setInteger("windowHeight", sigIRC.windowHeight);
-		sigIRC.button.x = sigIRC.panel.getX()+sigIRC.panel.getWidth()-96;
+		sigIRC.button.x = sigIRC.panel.getX()+sigIRC.panel.getWidth()-192;
 		sigIRC.button.y = 64+sigIRC.rowobj.size()*sigIRC.rowSpacing;
+		sigIRC.modulebutton.x = sigIRC.panel.getX()+sigIRC.panel.getWidth()-96;
+		sigIRC.modulebutton.y = 64+sigIRC.rowobj.size()*sigIRC.rowSpacing;
 		//com.repaint();
 		//sigIRC.panel.repaint();
 		sigIRC.config.saveProperties();

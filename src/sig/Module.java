@@ -102,6 +102,13 @@ public class Module {
 			}
 		}
 	}
+	
+	public static void loadModule() {
+		
+	}
+	public static void unloadModule() {
+		
+	}
 
 	private void dragWindow() {
 		if (sigIRC.showWindowControls) {

@@ -1,14 +1,14 @@
 package sig.modules.Twitch;
 
 public class Follower {
-	long id;
-	String bio;
-	String created_at;
-	String display_name;
-	String logo_url;
-	String name;
-	String type;
-	String updated_at;
+	public long id;
+	public String bio;
+	public String created_at;
+	public String display_name;
+	public String logo_url;
+	public String name;
+	public String type;
+	public String updated_at;
 	Follower(Long id,
 			String bio,
 			String created_at,
@@ -26,7 +26,7 @@ public class Follower {
 		this.type = type;
 		this.updated_at = updated_at;
 	}
-	Follower(String id,
+	public Follower(String id,
 			String bio,
 			String created_at,
 			String display_name,

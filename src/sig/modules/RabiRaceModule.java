@@ -189,6 +189,22 @@ public class RabiRaceModule extends Module{
 		create_button = new CreateButton(new Rectangle(122,(int)(position.getHeight()-18),120,18),"Create Session",this);
 		markmap_button = new MarkMapButton(new Rectangle(2,(int)(position.getHeight()-42),120,18),"Mark Map",this);
 	}
+	
+	public static void loadModule() {
+		sigIRC.modules.add(new RabiRaceModule(
+				new Rectangle(sigIRC.rabiracemodule_X,sigIRC.rabiracemodule_Y,sigIRC.rabiracemodule_width,sigIRC.rabiracemodule_height),
+				"Rabi Race"
+				));
+		sigIRC.rabiracemodule_enabled=true;
+	}
+	public static void unloadModule() {
+		for (int i=0;i<sigIRC.modules.size();i++) {
+			if (sigIRC.modules.get(i) instanceof RabiRaceModule) {
+				sigIRC.modules.remove(sigIRC.modules.get(i));
+			}
+		}
+		sigIRC.rabiracemodule_enabled=false;
+	}
 
 	private void RunRabiRaceUpdater() {
 		if (foundRabiRibi) {

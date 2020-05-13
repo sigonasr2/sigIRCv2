@@ -2,6 +2,7 @@ package sig.modules;
 
 import java.awt.Color;
 import java.awt.Graphics;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.event.WindowEvent;
 import java.awt.geom.Rectangle2D;
@@ -229,6 +230,22 @@ public class BandoriModule extends Module{
 		for (int i=0;i<4;i++) {
 			parts.add(new SongPart("Song Part "+i));
 		}
+	}
+	
+	public static void loadModule() {
+		sigIRC.modules.add(new BandoriModule(
+				new Rectangle(sigIRC.bandorimodule_X,sigIRC.bandorimodule_Y,sigIRC.bandorimodule_width,sigIRC.bandorimodule_height),
+				"Bandori"
+				));
+		sigIRC.bandorimodule_enabled=true;
+	}
+	public static void unloadModule() {
+		for (int i=0;i<sigIRC.modules.size();i++) {
+			if (sigIRC.modules.get(i) instanceof BandoriModule) {
+				sigIRC.modules.remove(sigIRC.modules.get(i));
+			}
+		}
+		sigIRC.bandorimodule_enabled=false;
 	}
 	
 	public BufferedImage crop(BufferedImage img, int x, int y, int targetWidth, int targetHeight) throws IOException {

@@ -26,6 +26,7 @@ import sig.modules.TouhouMotherModule;
 import sig.modules.TwitchModule;
 import sig.modules.ChatLog.ChatLogMessage;
 import sig.modules.ChatLog.ChatLogTwitchEmote;
+import sig.modules.Controller.ControlConfigurationWindow;
 import sig.modules.utils.MyKernel32;
 import sig.modules.utils.PsapiTools;
 import sig.utils.FileUtils;
@@ -52,12 +53,14 @@ import java.io.OutputStreamWriter;
 import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.Socket;
+import java.net.SocketException;
 import java.net.URL;
 import java.net.UnknownHostException;
 import java.util.ArrayList;
 import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
+import java.util.TimerTask;
 
 import javax.imageio.ImageIO;
 import javax.swing.JFrame;
@@ -92,6 +95,7 @@ public class sigIRC{
 	static int dingThreshold;
 	static Color backgroundcol;
 	public static BackgroundColorButton button;
+	public static ModuleSelectorButton modulebutton;
 	public static JFrame window;
 	static boolean overlayMode=false;
 	public static boolean showWindowControls=false;
@@ -108,8 +112,8 @@ public class sigIRC{
 	static Integer messageFontSize = 24;
 	static Integer usernameFontSize = 16;
 	static Integer touhoumotherConsoleFontSize = 12;
-	static boolean touhoumothermodule_enabled=false;
-	static boolean twitchmodule_enabled=true;
+	public static boolean touhoumothermodule_enabled=false;
+	public static boolean twitchmodule_enabled=true;
 	public static boolean chatlogmodule_enabled=true;
 	static boolean downloadsComplete=false;
 	static boolean hardwareAcceleration=true;
@@ -168,9 +172,12 @@ public class sigIRC{
 	public static int lastSubEmoteUpdate = -1;
 	public static boolean autoUpdateProgram = true;
 	public static Image programIcon;
-	final public static int MAX_CONNECTION_RETRIES = 100; 
-	public final static String CLIENTID = "b5d94i1pu4pq6egyc43xil4p3ujh8t";
+	//final public static int MAX_CONNECTION_RETRIES = 100; 
+	public static String CLIENTID = "";
 	public static int retryCounter = 0;
+	public static boolean newUpdateIsAvailable = false;
+	public static long lastRetryTime = 0l;
+	public static List<ModuleLinker> moduleList;
 	
 	public static int subchannelCount = 0;
 	public static HashMap<Long,String> subchannelIds = new HashMap<Long,String>();
@@ -182,13 +189,40 @@ public class sigIRC{
 	static int lastWindowX = 0;
 	static int lastWindowY = 0;
 	public static String longString = "10988989d";
+	public static ModuleSelector moduleSelectorWindow;
+	public static String oauth;
 	
 	public static void main(String[] args) {
+		
+		String[] filedata = FileUtils.readFromFile(BASEDIR+"sigIRC/oauthToken.txt");
+		
+		oauth = filedata[0];
+		//filedata = FileUtils.readFromFile("user_data");
+		
+		JSONObject data;
+		try {
+			FileUtils.downloadFileFromUrl("https://id.twitch.tv/oauth2/validate", "user_data");
+			data = FileUtils.readJsonFromFile("user_data");
+			sigIRC.CLIENTID = data.getString("client_id");
+		} catch (JSONException | IOException e) {
+			// TODO Auto-generated catch block
+			e.printStackTrace();
+		}
+		
+		
 		config = InitializeConfigurationFile();
 		
 		server = config.getProperty("server");
 		nickname = config.getProperty("nickname");
 		channel = config.getProperty("channel");
+		
+
+		try {
+			channel_id = sigIRC.GetChannelID(channel.replace("#", ""));
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+		
 		overlayMode = config.getBoolean("overlayMode", false);
 		showWindowControls = config.getBoolean("showWindowControls", true);
 		windowX = config.getInteger("windowX", 0);
@@ -271,10 +305,6 @@ public class sigIRC{
 			e.printStackTrace();
 		}*/
 		
-		String[] filedata = FileUtils.readFromFile(BASEDIR+"sigIRC/oauthToken.txt");
-		
-		final String oauth = filedata[0];
-		
 		Initialize();
 		
 		WriteBreakToLogFile();
@@ -355,6 +385,7 @@ public class sigIRC{
 		manager = new FileManager("swap.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("update.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("backcolor.png"); manager.verifyAndFetchFileFromServer();
+		manager = new FileManager("modules.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("drag_bar.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("map_icons.png"); manager.verifyAndFetchFileFromServer();
 		manager = new FileManager("sigIRC/stamps1.png"); manager.verifyAndFetchFileFromServer();
@@ -386,10 +417,10 @@ public class sigIRC{
 				} catch (IOException e) {
 					e.printStackTrace();
 				}
+				newUpdateIsAvailable = true;
 			}
 		}
 	}
-
 	private static void InitializeModules() {
 		try {
 			Module.IMG_DRAGBAR = ImageIO.read(new File(sigIRC.BASEDIR+"drag_bar.png"));
@@ -434,10 +465,7 @@ public class sigIRC{
 					));
 		}
 		if (bandorimodule_enabled) {
-			modules.add(new BandoriModule(
-					new Rectangle(bandorimodule_X,bandorimodule_Y,bandorimodule_width,bandorimodule_height),
-					"Bandori"
-					));
+			BandoriModule.loadModule();
 		}
 		if (ddrstepmodule_enabled) {
 			modules.add(new DDRStepModule(
@@ -445,6 +473,7 @@ public class sigIRC{
 					"DDR Step"
 					));
 		}
+		moduleSelectorWindow = new ModuleSelector();
 	}
 
 	private static void InitializeCustomSounds() {
@@ -473,17 +502,18 @@ public class sigIRC{
 		        writer.flush();
 		        runIRCLoop(channel, writer, reader);
 	        }
-		} catch (UnknownHostException e) {
-			e.printStackTrace();
+		} catch (UnknownHostException | SocketException e) {
+			//e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		if (retryCounter<MAX_CONNECTION_RETRIES) {
-			InitializeIRCConnection(server,nickname,channel,oauth);
-		} else {
-			sigIRC.panel.addMessage("Connection timed out. Please restart and try again.");
-			System.out.println("Connection timed out. Please restart and try again.");
-		}
+        new java.util.Timer().schedule(new TimerTask() {
+        	public void run() {
+				InitializeIRCConnection(server,nickname,channel,oauth);
+				sigIRC.panel.addMessage("SYSTEM: Lost connection. Trying to reconnect...");
+				System.out.println("SYSTEM: Lost connection. Trying to reconnect...");
+        	}
+		},10000);
 	}
 
 	public static void WriteBreakToLogFile() {
@@ -497,16 +527,21 @@ public class sigIRC{
 	
 	private static void getSubChannels(String s) {
 		try {
-			FileUtils.downloadFileFromUrl("https://api.twitch.tv/kraken/users?login="+s, "temp_connect");
-			JSONObject j = FileUtils.readJsonFromFile("temp_connect");
-			JSONArray a = j.getJSONArray("users");
-			Long id = Long.parseLong(a.getJSONObject(0).getString("_id"));
+			Long id = GetChannelID(s);
 			subchannelIds.put(id, s);
 			//System.out.println("Got ID "+id+" for channel "+s);
 		} catch (JSONException | IOException e) {
 			e.printStackTrace();
 		}
 		//TwitchModule.streamOnline=true;
+	}
+
+	public static Long GetChannelID(String username) throws IOException {
+		FileUtils.downloadFileFromUrl("https://api.twitch.tv/kraken/users?login="+username, "temp_connect");
+		JSONObject j = FileUtils.readJsonFromFile("temp_connect");
+		JSONArray a = j.getJSONArray("users");
+		Long id = Long.parseLong(a.getJSONObject(0).getString("_id"));
+		return id;
 	}
 
 	/*private static void getSubChannels(String channelName) {
@@ -710,6 +745,7 @@ public class sigIRC{
        f.setIconImage(programIcon);
 
         button = new BackgroundColorButton(new File(sigIRC.BASEDIR+"backcolor.png"),panel.getX()+panel.getWidth()-96,64+rowobj.size()*rowSpacing);
+        modulebutton = new ModuleSelectorButton(new File(sigIRC.BASEDIR+"modules.png"),panel.getX()+panel.getWidth()-96,64+rowobj.size()*rowSpacing);
         if (sigIRC.overlayMode) {
         	f.setBackground(new Color(0,0,0,0));
             f.setAlwaysOnTop(true);

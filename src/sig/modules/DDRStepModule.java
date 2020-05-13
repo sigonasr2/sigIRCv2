@@ -4,6 +4,7 @@ import java.awt.Color;
 import java.awt.Graphics;
 import java.awt.Image;
 import java.awt.Point;
+import java.awt.Rectangle;
 import java.awt.event.KeyEvent;
 import java.awt.geom.Rectangle2D;
 import java.io.File;
@@ -80,6 +81,22 @@ public class DDRStepModule extends Module{
 			System.out.println("Cannot initialize DDRStepModule due to Controller Module being disabled!");
 			this.enabled = false;
 		}
+	}
+	
+	public static void loadModule() {
+		sigIRC.modules.add(new DDRStepModule(
+				new Rectangle(sigIRC.ddrstepmodule_X,sigIRC.ddrstepmodule_Y,sigIRC.ddrstepmodule_width,sigIRC.ddrstepmodule_height),
+				"DDR Step"
+				));
+		sigIRC.ddrstepmodule_enabled=true;
+	}
+	public static void unloadModule() {
+		for (int i=0;i<sigIRC.modules.size();i++) {
+			if (sigIRC.modules.get(i) instanceof DDRStepModule) {
+				sigIRC.modules.remove(sigIRC.modules.get(i));
+			}
+		}
+		sigIRC.ddrstepmodule_enabled=false;
 	}
 	
 	public void run() {

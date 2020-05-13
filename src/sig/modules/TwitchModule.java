@@ -12,6 +12,8 @@ import java.io.IOException;
 import java.net.MalformedURLException;
 import java.net.URL;
 import java.text.DateFormat;
+import java.time.ZonedDateTime;
+import java.time.format.DateTimeFormatter;
 import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Calendar;
@@ -29,6 +31,7 @@ import sig.Module;
 import sig.sigIRC;
 import sig.modules.Twitch.Announcement;
 import sig.modules.Twitch.FancyNumber;
+import sig.modules.Twitch.Follower;
 import sig.utils.DrawUtils;
 import sig.utils.FileUtils;
 import sig.utils.SoundUtils;
@@ -53,7 +56,7 @@ public class TwitchModule extends Module{
 	FancyNumber viewers_numb;
 	FancyNumber followers_numb;
 	FancyNumber views_numb;
-	Date uptime = Calendar.getInstance().getTime();
+	ZonedDateTime uptime;
 	String currentlyPlaying=" ";
 	final public static int ARROWTIMER = 3000;
 	public static BufferedImage UPARROWIMAGE;
@@ -79,8 +82,10 @@ public class TwitchModule extends Module{
 		if (firstTime) {
 			CreateFollowerQueueLog();
 		}
+		ClearFollowerAnnouncerQueue();
 		
-		myTwitchChannelID = getMyChannelID();
+		
+		//myTwitchChannelID = getMyChannelID();
 		
 		/*manager.streams().get("theduckishot", new StreamResponseHandler() {
 
@@ -129,17 +134,20 @@ public class TwitchModule extends Module{
 		});*/
 	}
 	
-	private long getMyChannelID() {
-		Long id = -1l;
-		try {
-			FileUtils.downloadFileFromUrl("https://api.twitch.tv/kraken/users?login="+sigIRC.nickname, "temp_connect");
-			JSONObject j = FileUtils.readJsonFromFile("temp_connect");
-			JSONArray a = j.getJSONArray("users");
-			id = Long.parseLong(a.getJSONObject(0).getString("_id"));
-		} catch (JSONException | IOException e) {
-			e.printStackTrace();
+	public static void loadModule() {
+		sigIRC.modules.add(new TwitchModule(
+				new Rectangle(sigIRC.twitchmodule_X,sigIRC.twitchmodule_Y,sigIRC.twitchmodule_width,sigIRC.twitchmodule_height),
+				"Twitch"
+				));
+		sigIRC.twitchmodule_enabled=true;
+	}
+	public static void unloadModule() {
+		for (int i=0;i<sigIRC.modules.size();i++) {
+			if (sigIRC.modules.get(i) instanceof TwitchModule) {
+				sigIRC.modules.remove(sigIRC.modules.get(i));
+			}
 		}
-		return id;
+		sigIRC.twitchmodule_enabled=false;
 	}
 
 	private void InitializeFollowerSounds() {
@@ -171,15 +179,53 @@ public class TwitchModule extends Module{
 	public void run() {
 		if (lastFollowerCheck--<=0) {
 			lastFollowerCheck = FOLLOWERCHECKTIMER;
-			getFollowers(false);
+			//getFollowers(false);
+			try {
+				GetFollowerAndStreamData();
+			} catch (IOException e1) {
+				e1.printStackTrace();
+			}
 			popFollowerFromQueue();
+			try {
+				//System.out.println("Checking Followers...");
+				JSONObject FollowerData = GetFollowerAndStreamData();
+				followers_numb.updateValue(FollowerData.getInt("total"));
+				//views_numb.updateValue(FollowerData.get);
+			} catch (JSONException e) {
+				e.printStackTrace();
+			} catch (IOException e) {
+				e.printStackTrace();
+			}
 //			isStreamOnline(true);
-			///TODO Rewrite.
 		}
 		if (lastFollowerAnnouncement>0) {
 			lastFollowerAnnouncement--;
 		}
 		//System.out.println(lastFollowerCheck);
+	}
+
+		
+		public JSONObject GetFollowerAndStreamData() throws IOException {
+			FileUtils.downloadFileFromUrl("https://api.twitch.tv/helix/streams?user_id="+sigIRC.channel_id, "stream_info",true);
+		JSONObject streamInfo = FileUtils.readJsonFromFile("stream_info");
+		JSONArray streamData = streamInfo.getJSONArray("data");
+		JSONObject stream = streamData.getJSONObject(0);
+		streamOnline = streamData.length()!=0;
+		DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+                .ofPattern("uuuu-MM-dd'T'HH:mm:ssz");
+		uptime = ZonedDateTime.parse(stream.getString("started_at"),DATE_TIME_FORMATTER);
+		viewers_numb.updateValue(stream.getInt("viewer_count"));
+		FileUtils.downloadFileFromUrl("https://api.twitch.tv/helix/users/follows?to_id="+sigIRC.channel_id, "temp_followers",true);
+		JSONObject FollowerData = FileUtils.readJsonFromFile("temp_followers");
+		JSONArray data = FollowerData.getJSONArray("data");
+		FileUtils.downloadFileFromUrl("https://api.twitch.tv/helix/users?id="+sigIRC.channel_id, "channel_info",true);
+		JSONObject channelData = FileUtils.readJsonFromFile("channel_info").getJSONArray("data").getJSONObject(0);
+		views_numb.updateValue(channelData.getInt("view_count"));
+		for (int i=0;i<data.length();i++) {
+			JSONObject user = data.getJSONObject(i);
+			addFollower(user.getString("from_name"),user.getLong("from_id"),streamOnline,false);
+		}
+		return FollowerData;
 	}
 	
 	public void ApplyConfigWindowProperties() {
@@ -190,31 +236,31 @@ public class TwitchModule extends Module{
 	}
 
 	private void popFollowerFromQueue() {
-		//TODO REWRITE.
 		if (sigIRC.testMode) {
-			/*User user = new User();
-			user.setDisplayName("Test User"+((int)Math.random()*100000));
-			user.setBio("I am an awesome test subject.");
-			user.setName(user.getDisplayName());
-			user.setLogo("http://45.33.13.215/sigIRCv2/sigIRC/sigIRCicon.png");
-			DisplayFollowerAnnouncement(user,true);*/
+			Follower user = new Follower("0","I am an awesome test subject.",
+					new Date().toString(),
+					"Test User"+((int)Math.random()*100000),
+					"http://45.33.13.215/sigIRCv2/sigIRC/sigIRCicon.png",
+					"Test User",
+					"",
+					new Date().toString());
+			DisplayFollowerAnnouncement(user,true);
 		} else
 		if (follower_queue.size()>0) {
-			///TODO Rewrite.
-//			if (isStreamOnline()) {
-//				//We have a follower to announce!
-//				/*Announcement a = follower_queue.remove(0);
-//				User user = a.getUser();
-//				if (user.getDisplayName().length()>0 &&
-//						!user.getDisplayName().contains("?")) {
-//					DisplayFollowerAnnouncement(user,true);
-//				} else {
-//					DisplayFollowerAnnouncement(user,false);
-//				}*/
-//			} else {
-//				//Store away all remaining followers in the queue....We can't announce them right now.
-//				StoreRemainingFollowers();
-//			}
+			if (streamOnline) {
+				//We have a follower to announce!
+				Announcement a = follower_queue.remove(0);
+				Follower user = a.getUser();
+				if (user.display_name.length()>0 &&
+						!user.display_name.contains("?")) {
+					DisplayFollowerAnnouncement(user,true);
+				} else {
+					DisplayFollowerAnnouncement(user,false);
+				}
+			} else {
+				//Store away all remaining followers in the queue....We can't announce them right now.
+				StoreRemainingFollowers();
+			}
 		}
 	}
 	
@@ -224,25 +270,25 @@ public class TwitchModule extends Module{
 
 	private void StoreRemainingFollowers() {
 		for (Announcement a : follower_queue) {
-			//FileUtils.logToFile(Long.toString(a.getUser().getId()), FOLLOWERQUEUEFILE);
-			//TODO REWRITE
+			FileUtils.logToFile(Long.toString(a.getUser().id), FOLLOWERQUEUEFILE);
 		}
 		follower_queue.clear();
 	}
 
 
-	//TODO REWRITE
-	/*private void DisplayFollowerAnnouncement(User user, boolean useNickname) {
+	public static Follower announcedFollowerUser;
+	
+	private void DisplayFollowerAnnouncement(Follower user, boolean useNickname) {
 		lastFollowerAnnouncement = FOLLOWERANNOUNCEMENTTIME;
 		if (!useNickname) {
-			user.setDisplayName(user.getName());
+			user.display_name=user.name;
 		}
 		announcedFollowerUser = user;
-		String followerAnnouncement = user.getDisplayName()+" is now following the stream!";
-		String userlogo = USERDIR+user.getId()+"_logo";
-		if (user.getLogo()!=null && !user.getLogo().equalsIgnoreCase("null")) {
+		String followerAnnouncement = user.display_name+" is now following the stream!";
+		String userlogo = USERDIR+user.id+"_logo";
+		if (user.logo_url!=null && !user.logo_url.equalsIgnoreCase("null")) {
 			try {
-				org.apache.commons.io.FileUtils.copyURLToFile(new URL(user.getLogo()),new File(userlogo));
+				org.apache.commons.io.FileUtils.copyURLToFile(new URL(user.logo_url),new File(userlogo));
 				File logo = new File(userlogo);
 				if (logo.exists()) {
 					followerUserLogo = ImageIO.read(logo);
@@ -260,7 +306,7 @@ public class TwitchModule extends Module{
 		LogMessageToFile(followerAnnouncement);
 		System.out.println(followerAnnouncement);
 		SoundUtils.playSound(SOUNDSDIR+followersounds[(int)(Math.random()*followersounds.length)]);
-	}*/
+	}
 
 	private void InitializeImages() {
 		try {
@@ -286,44 +332,7 @@ public class TwitchModule extends Module{
 			}
 		}
 	}
-
-	private void getFollowers(boolean firstTime) {
-		try {
-			FileUtils.downloadFileFromUrl("https://api.twitch.tv/kraken/channels/"+myTwitchChannelID+"/follows", "follows");
-			JSONObject o = FileUtils.readJsonFromFile("follows");
-			JSONArray data = o.getJSONArray("follows");
-			for (int i=0;i<data.length();i++) {
-				
-			}
-		} catch (JSONException | IOException e) {
-			e.printStackTrace();
-		}
 		
-		///TODO Rewrite.
-		/*sigIRC.manager.channels().getFollows(TextUtils.getActualChannelName(), new ChannelFollowsResponseHandler() {
-					@Override
-					public void onSuccess(int total, java.util.List<ChannelFollow> follows) {
-						//System.out.println("Successfully found followers for channel "+sigIRC.channel+". Total: "+total);
-						//console = "Last Follower: "+follows.get(0).getUser().getDisplayName();
-						for (ChannelFollow f : follows) {
-							addFollower(f,isStreamOnline(),firstTime);
-						}
-					}
-		
-					@Override
-					public void onFailure(Throwable arg0) {
-					}
-		
-					@Override
-					public void onFailure(int arg0, String arg1, String arg2) {
-						System.out.println(arg0+","+arg1+","+arg2);
-					}
-				}
-			);
-		if (isStreamOnline()) {ClearFollowerAnnouncerQueue();}*/
-		
-	}
-
 	private void ClearFollowerAnnouncerQueue() {
 		String[] contents = FileUtils.readFromFile(FOLLOWERQUEUEFILE);
 		//System.out.println("Contents: "+Arrays.toString(contents));
@@ -335,101 +344,50 @@ public class TwitchModule extends Module{
 			} 
 		}
 	}
-//	private boolean isStreamOnline() {
-		///TODO Rewrite.
-//		return isStreamOnline(false);
-//	}
 
-
-	///TODO Rewrite.
-	/*private boolean isStreamOnline(boolean update) {
-		if (update) {
-			sigIRC.manager.streams().get(TextUtils.getActualChannelName(), new StreamResponseHandler() {
-	
-				@Override
-				public void onFailure(Throwable arg0) {
-					TwitchModule.streamOnline=false;
+	protected void addFollower(String username, long id, boolean streamOnline, boolean silent) {
+		String filename = USERDIR + Long.toString(id);
+		File userProfile = new File(filename);
+		if (!userProfile.exists()) {
+			CreateUserProfile(username, id, filename, userProfile);
+			if (!silent) { //If we got in here, this isn't the initial follower setup, so we are good to go with announcing these followers.
+				if (!streamOnline) {
+					//Save their ID to a queue.
+					FileUtils.logToFile(Long.toString(id), FOLLOWERQUEUEFILE);
+				} else {
+					//Announce it now.
+					//System.out.println("Stream is online...");
+					AnnounceFollower(username,id);
 				}
-	
-				@Override
-				public void onFailure(int arg0, String arg1, String arg2) {
-					System.out.println(arg0+","+arg1+","+arg2);
-					TwitchModule.streamOnline=false;
-				}
-	
-				@Override
-				public void onSuccess(Stream arg0) {
-					//System.out.println("Stream data is available! "+arg0);
-					if (arg0==null) {
-						TwitchModule.streamOnline=false;
-					} else {
-						TwitchModule.streamOnline=true;
-						UpdateAllStreamStatistics(arg0);
-					}
-				}
-	
-				private void UpdateAllStreamStatistics(Stream data) {
-					if (data!=null) {
-						if (data.getGame()!=null && data.getGame().length()>0) {
-							currentlyPlaying = data.getGame();
-						}
-						if (data.getCreatedAt()!=null) {
-							uptime = data.getCreatedAt();
-						}
-						viewers_numb.updateValue(data.getViewers());
-						views_numb.updateValue((int)data.getChannel().getViews());
-						followers_numb.updateValue(data.getChannel().getFollowers());
-					}
-				}
-				
-			});
-			return TwitchModule.streamOnline;
-		} else {
-			return TwitchModule.streamOnline;
+			}
 		}
-		//TwitchModule.streamOnline=true;
-		//return true;
-	}*/
+	}
 
-//	protected void addFollower(ChannelFollow f, boolean streamOnline, boolean silent) {
-//		String filename = USERDIR+f.getUser().getId();
-//		File userProfile = new File(filename);
-//		if (!userProfile.exists()) {
-//			if (!silent) { //If we got in here, this isn't the initial follower setup, so we are good to go with announcing these followers.
-//				if (!streamOnline) {
-//					//Save their ID to a queue.
-//					FileUtils.logToFile(Long.toString(f.getUser().getId()), FOLLOWERQUEUEFILE);
-//				} else {
-//					//Announce it now.
-//					//System.out.println("Stream is online...");
-//					AnnounceFollower(f);
-//				}
-//			}
-//			CreateUserProfile(f, filename, userProfile);
-//		}
-//	}
-//
-//	private void CreateUserProfile(ChannelFollow f, String filename, File userProfile) {
-//		try {
-//			userProfile.createNewFile();
-//			FileUtils.logToFile(DateFormat.getDateInstance().format(f.getCreatedAt()), filename);
-//			FileUtils.logToFile(f.getUser().getBio(), filename);
-//			FileUtils.logToFile(f.getUser().getDisplayName(), filename);
-//			FileUtils.logToFile(f.getUser().getLogo(), filename);
-//			FileUtils.logToFile(f.getUser().getName(), filename);
-//			FileUtils.logToFile(f.getUser().getType(), filename);
-//			FileUtils.logToFile(DateFormat.getDateInstance().format(f.getUser().getUpdatedAt()), filename);
-//		} catch (IOException e) {
-//			e.printStackTrace();
-//		}
-//	}
-//
-//	private void AnnounceFollower(ChannelFollow f) {
-//		//System.out.println("Thanks for following "+f.getUser().getDisplayName()+"!");
-//		AddFollowerToQueue(f.getUser());
-//	}
+	private void CreateUserProfile(String username, long id, String filename, File userProfile) {
+		try {
+			FileUtils.downloadFileFromUrl("https://api.twitch.tv/helix/users?id="+id, "user_info",true);
+			System.out.println("File data: "+Arrays.toString(FileUtils.readFromFile("user_info")));
+			JSONObject userdata = FileUtils.readJsonFromFile("user_info").getJSONArray("data").getJSONObject(0);
+			userProfile.createNewFile();
+			System.out.println("Profile Image URL: "+userdata.getString("profile_image_url"));
+			FileUtils.logToFile(new Date().toString(), filename);
+			FileUtils.logToFile(userdata.getString("description"), filename);
+			FileUtils.logToFile(username, filename);
+			FileUtils.logToFile(userdata.getString("profile_image_url"), filename);
+			FileUtils.logToFile(userdata.getString("login"), filename);
+			FileUtils.logToFile(userdata.getString("type"), filename);
+			FileUtils.logToFile(new Date().toString(), filename);
+		} catch (IOException e) {
+			e.printStackTrace();
+		}
+	}
 
-	private void AddFollowerToQueue(int id) {
+	private void AnnounceFollower(String name,long id) {
+		System.out.println("Thanks for following "+name+"!");
+		AddFollowerToQueue(id);
+	}
+
+	private void AddFollowerToQueue(long id) {
 		follower_queue.add(new Announcement(id));
 	}
 
@@ -482,7 +440,7 @@ public class TwitchModule extends Module{
 		int xoffset = 0;
 		int yoffset = 0;
 		g.drawImage(UPTIMEIMAGE, x+xoffset, y+yoffset-2, sigIRC.panel);xoffset+=UPTIMEIMAGE.getWidth()+4;
-		String timediff = TimeUtils.GetTimeDifferenceFromCurrentDate(uptime);
+		String timediff = TimeUtils.GetTimeDifferenceFromCurrentDate(Date.from(uptime.toInstant()));
 		if (timediff.length()>0) {
 			DrawUtils.drawTextFont(g, sigIRC.panel.userFont, x+xoffset, y+yoffset+TextUtils.calculateStringBoundsFont(timediff, sigIRC.panel.userFont).getHeight()/2+3,new Color(184,181,192),timediff);xoffset+=TextUtils.calculateStringBoundsFont(timediff, sigIRC.panel.userFont).getWidth()+12;
 		}
@@ -514,25 +472,25 @@ public class TwitchModule extends Module{
 			//g.drawImage(follower_img, (int)bounds.getX(), (int)bounds.getY(), , , sigIRC.panel)
 			g.drawImage(follower_img, (int)position.getX(), (int)position.getY()+canvasYOffset, (int)position.getX()+follower_img.getWidth()+canvasXOffset, (int)position.getY()+follower_img.getHeight(),
 					-xAlteration, 0, follower_img.getWidth(), follower_img.getHeight()-yAlteration, sigIRC.panel);
-//			Rectangle2D usernameTextsize = TextUtils.calculateStringBoundsFont(announcedFollowerUser.getDisplayName(), sigIRC.panel.programFont);
-//			int textY = (int)position.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration;
-//			int textX = (int)position.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration;
-//			if (textY<position.getY()+position.getHeight() && textX+usernameTextsize.getWidth()>position.getX()) {
-//				DrawUtils.drawCenteredText(g, sigIRC.panel.programFont, (int)position.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration, (int)position.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration, Color.BLACK, announcedFollowerUser.getDisplayName());	
-//			}
-//			if (announcedFollowerUser.getBio()!=null && !announcedFollowerUser.getBio().equalsIgnoreCase("null")) {
-//				if (followerUserLogo!=null) {
-//					final int image_size = sigIRC.twitchmodule_newfollowerImgLogoSize;
-//					int img_startx = (int)(position.getX()+position.getWidth()-ticksPassed*3-(image_size+4));
-//					int img_starty = (int)(position.getY()+follower_img.getHeight()+2-image_size/2);
-//					//g.setColor(Color.BLACK);
-//					//g.drawRect(img_startx, img_starty, image_size, image_size);
-//					g.drawImage(followerUserLogo, img_startx, img_starty, img_startx+image_size, img_starty+image_size, 0, 0, followerUserLogo.getWidth(), followerUserLogo.getHeight(), TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerImgBackgroundColor), sigIRC.panel);
-//				}
-//				if (announcedFollowerUser.getBio()!=null && announcedFollowerUser.getBio().length()>0) {
-//					DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, position.getX()+position.getWidth()-ticksPassed*3, position.getY()+follower_img.getHeight()+2+8, 2, TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerTextColor), TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerShadowTextColor), announcedFollowerUser.getBio());
-//				}
-//			}
+			Rectangle2D usernameTextsize = TextUtils.calculateStringBoundsFont(announcedFollowerUser.display_name, sigIRC.panel.programFont);
+			int textY = (int)position.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration;
+			int textX = (int)position.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration;
+			if (textY<position.getY()+position.getHeight() && textX+usernameTextsize.getWidth()>position.getX()) {
+				DrawUtils.drawCenteredText(g, sigIRC.panel.programFont, (int)position.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration, (int)position.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration, Color.BLACK, announcedFollowerUser.display_name);	
+			}
+			if (announcedFollowerUser.bio!=null && !announcedFollowerUser.bio.equalsIgnoreCase("null")) {
+				if (followerUserLogo!=null) {
+					final int image_size = sigIRC.twitchmodule_newfollowerImgLogoSize;
+					int img_startx = (int)(position.getX()+position.getWidth()-ticksPassed*3-(image_size+4));
+					int img_starty = (int)(position.getY()+follower_img.getHeight()+2-image_size/2);
+					g.setColor(Color.BLACK);
+					g.drawRect(img_startx, img_starty, image_size, image_size);
+					g.drawImage(followerUserLogo, img_startx, img_starty, img_startx+image_size, img_starty+image_size, 0, 0, followerUserLogo.getWidth(), followerUserLogo.getHeight(), TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerImgBackgroundColor), sigIRC.panel);
+				}
+				if (announcedFollowerUser.bio!=null && announcedFollowerUser.bio.length()>0) {
+					DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, position.getX()+position.getWidth()-ticksPassed*3, position.getY()+follower_img.getHeight()+2+8, 2, TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerTextColor), TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerShadowTextColor), announcedFollowerUser.bio);
+				}
+			}
 		}
 	}
 }

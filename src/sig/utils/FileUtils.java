@@ -242,9 +242,10 @@ public class FileUtils {
 	  }
 	  
 	  public static void logToFile(String message, String filename) {
-		 if (filename.equalsIgnoreCase("debug.log") && RabiRaceModule.DEBUGMODE==1
+		 if ((!filename.equalsIgnoreCase("debug.log") &&
+				 !filename.equalsIgnoreCase("debug2.log")) || (filename.equalsIgnoreCase("debug.log") && RabiRaceModule.DEBUGMODE==1)
 				 ||
-				 filename.equalsIgnoreCase("debug2.log") && RabiRaceModule.DEBUGMODE==2
+				 (filename.equalsIgnoreCase("debug2.log") && RabiRaceModule.DEBUGMODE==2)
 				  ) {
 			 logToFile(message,filename,false);  
 		 }
@@ -314,8 +315,7 @@ public class FileUtils {
 	  }
 	  
 
-	  
-	  public static void downloadFileFromUrl(String url, String file) throws IOException, JSONException {
+	  public static void downloadFileFromUrl(String url, String file,boolean bearer) throws IOException, JSONException {
 		  File filer = new File(file);
 		  filer.createNewFile();
 		  
@@ -327,7 +327,11 @@ public class FileUtils {
 		    connection.setRequestMethod("GET");
 		    //connection.setRequestProperty("Content-Type", "application/json");
 		    connection.setRequestProperty("Accept", "application/vnd.twitchtv.v5+json");
-		    connection.setRequestProperty("Client-ID", sigIRC.CLIENTID);
+		    connection.setRequestProperty("Authorization", ((bearer)?"Bearer":"OAuth") + " "+sigIRC.oauth.replace("oauth:", ""));
+		    if (sigIRC.CLIENTID.length()!=0) {
+		    	connection.setRequestProperty("Client-ID", sigIRC.CLIENTID);
+		    	//System.out.println("Using "+ sigIRC.oauth+"/"+sigIRC.CLIENTID);
+		    }
 		    try {
 			  ReadableByteChannel rbc = Channels.newChannel(connection.getInputStream());
 			  FileOutputStream fos = new FileOutputStream(file);
@@ -336,5 +340,9 @@ public class FileUtils {
 		    } catch (ConnectException e) {
 		    	System.out.println("Failed to connect, moving on...");
 		    }
+	  }
+	  
+	  public static void downloadFileFromUrl(String url, String file) throws IOException, JSONException {
+		  downloadFileFromUrl(url,file,false); //Uses OAUTH instead of Bearer
 	  }
 }

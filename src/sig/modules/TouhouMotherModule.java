@@ -113,6 +113,22 @@ public class TouhouMotherModule extends Module implements ActionListener{
 			CheckTouhouMotherClient();
 		}, 5000, 5000, TimeUnit.MILLISECONDS);
 	}
+	
+	public static void loadModule() {
+		sigIRC.modules.add(new TouhouMotherModule(
+				new Rectangle(sigIRC.touhoumothermodule_X,sigIRC.touhoumothermodule_Y,sigIRC.touhoumothermodule_width,sigIRC.touhoumothermodule_height),
+				"Touhou Mother"
+				));
+		sigIRC.touhoumothermodule_enabled=true;
+	}
+	public static void unloadModule() {
+		for (int i=0;i<sigIRC.modules.size();i++) {
+			if (sigIRC.modules.get(i) instanceof TouhouMotherModule) {
+				sigIRC.modules.remove(sigIRC.modules.get(i));
+			}
+		}
+		sigIRC.touhoumothermodule_enabled=false;
+	}
 
 	private void CheckTouhouMotherClient() {
 		List<Integer> pids;

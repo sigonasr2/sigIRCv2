@@ -110,6 +110,22 @@ public class ControllerModule extends Module{
 		}
 	}
 	
+	public static void loadModule() {
+		sigIRC.modules.add(new ControllerModule(
+				new Rectangle(sigIRC.controllermodule_X,sigIRC.controllermodule_Y,sigIRC.controllermodule_width,sigIRC.controllermodule_height),
+				"Controller"
+				));
+		sigIRC.controllermodule_enabled=true;
+	}
+	public static void unloadModule() {
+		for (int i=0;i<sigIRC.modules.size();i++) {
+			if (sigIRC.modules.get(i) instanceof ControllerModule) {
+				sigIRC.modules.remove(sigIRC.modules.get(i));
+			}
+		}
+		sigIRC.controllermodule_enabled=false;
+	}
+	
 	public List<Controller> getControllers() {
 		return controllers;
 	}
