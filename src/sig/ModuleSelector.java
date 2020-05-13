@@ -160,7 +160,7 @@ public class ModuleSelector extends JFrame implements WindowListener{
 			
 			this.add(panel);
 			this.pack();
-			this.setVisible(true);
+			//this.setVisible(true);
 			this.repaint();
 		}
 
