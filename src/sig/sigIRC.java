@@ -163,6 +163,9 @@ public class sigIRC{
 	public static String twitchmodule_newfollowerImgBackgroundColor="90,90,90";
 	public static String twitchmodule_newfollowerShadowTextColor="26,90,150";
 	public static String twitchmodule_newfollowerTextColor="255,255,255";
+	public static String twitchmodule_newfollowerNameTextColor="0,0,0";
+	public static String twitchmodule_newfollowerNameShadowColor="255,255,180";
+	public static int twitchmodule_newfollowerNameShadowSize=2;
 	public static String chatlogmodule_backgroundColor="195,195,195,255";
 	public static int twitchmodule_newfollowerImgLogoSize=32;
 	public static boolean testMode=false;

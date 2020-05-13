@@ -478,7 +478,8 @@ public class TwitchModule extends Module{
 			int textY = (int)position.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration;
 			int textX = (int)position.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration;
 			if (textY<position.getY()+position.getHeight() && textX+usernameTextsize.getWidth()>position.getX()) {
-				DrawUtils.drawCenteredText(g, sigIRC.panel.programFont, (int)position.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration, (int)position.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration, Color.BLACK, announcedFollowerUser.display_name);	
+				//DrawUtils.drawCenteredText(g, sigIRC.panel.programFont, (int)position.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration, (int)position.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration, Color.BLACK, announcedFollowerUser.display_name);
+				DrawUtils.drawCenteredOutlineText(g, sigIRC.panel.programFont, (int)position.getX()+sigIRC.twitchmodule_followerText_centerX+xAlteration, (int)position.getY()+sigIRC.twitchmodule_followerText_Y+yAlteration, sigIRC.twitchmodule_newfollowerNameShadowSize, TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerNameTextColor), TextUtils.convertStringToColor(sigIRC.twitchmodule_newfollowerNameShadowColor), announcedFollowerUser.display_name);
 			}
 			if (announcedFollowerUser.bio!=null && !announcedFollowerUser.bio.equalsIgnoreCase("null")) {
 				if (followerUserLogo!=null) {
