@@ -299,8 +299,8 @@ public class sigIRC{
 		disableChatMessages = config.getBoolean("Disable_Chat_Messages", false);
 		lastSubEmoteUpdate = config.getInteger("lastSubEmote_APIUpdate",Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
 		twitchmodule_newfollowerNameTextColor = config.getProperty("twitchmodule_newfollowerNameTextColor","0,0,0");
-		twitchmodule_newfollowerNameShadowColor = config.getProperty("twitchmodule_newfollowerNameTextColor","255,255,180");
-		twitchmodule_newfollowerNameShadowSize = config.getInteger("twitchmodule_newfollowerNameTextColor",2);
+		twitchmodule_newfollowerNameShadowColor = config.getProperty("twitchmodule_newfollowerNameShadowColor","255,255,180");
+		twitchmodule_newfollowerNameShadowSize = config.getInteger("twitchmodule_newfollowerNameShadowSize",2);
 		//manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
 		//System.out.println(manager.auth().hasAccessToken());
 
