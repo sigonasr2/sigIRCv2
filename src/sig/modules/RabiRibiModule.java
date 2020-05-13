@@ -136,6 +136,7 @@ public class RabiRibiModule extends Module{
 				"Rabi Ribi"
 				));
 		sigIRC.rabiribimodule_enabled=true;
+		sigIRC.config.setBoolean("Module_rabiribi_Enabled", sigIRC.rabiribimodule_enabled);
 		sigIRC.config.saveProperties();
 	}
 	public static void unloadModule() {
@@ -145,6 +146,7 @@ public class RabiRibiModule extends Module{
 			}
 		}
 		sigIRC.rabiribimodule_enabled=false;
+		sigIRC.config.setBoolean("Module_rabiribi_Enabled", sigIRC.rabiribimodule_enabled);
 		sigIRC.config.saveProperties();
 	}
 	

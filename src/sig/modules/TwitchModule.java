@@ -140,6 +140,7 @@ public class TwitchModule extends Module{
 				"Twitch"
 				));
 		sigIRC.twitchmodule_enabled=true;
+		sigIRC.config.setBoolean("Module_twitch_Enabled", sigIRC.twitchmodule_enabled);
 		sigIRC.config.saveProperties();
 	}
 	public static void unloadModule() {
@@ -149,6 +150,7 @@ public class TwitchModule extends Module{
 			}
 		}
 		sigIRC.twitchmodule_enabled=false;
+		sigIRC.config.setBoolean("Module_twitch_Enabled", sigIRC.twitchmodule_enabled);
 		sigIRC.config.saveProperties();
 	}
 

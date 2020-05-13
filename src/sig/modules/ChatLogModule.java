@@ -58,6 +58,7 @@ public class ChatLogModule extends Module{
 				"Chat Log"
 				));
 		sigIRC.chatlogmodule_enabled=true;
+		sigIRC.config.setBoolean("Module_chatlog_Enabled", sigIRC.chatlogmodule_enabled);
 		sigIRC.config.saveProperties();
 	}
 	public static void unloadModule() {
@@ -67,6 +68,7 @@ public class ChatLogModule extends Module{
 			}
 		}
 		sigIRC.chatlogmodule_enabled=false;
+		sigIRC.config.setBoolean("Module_chatlog_Enabled", sigIRC.chatlogmodule_enabled);
 		sigIRC.config.saveProperties();
 	}
 	

@@ -238,6 +238,7 @@ public class BandoriModule extends Module{
 				"Bandori"
 				));
 		sigIRC.bandorimodule_enabled=true;
+		sigIRC.config.setBoolean("Module_bandori_Enabled", sigIRC.bandorimodule_enabled);
 		sigIRC.config.saveProperties();
 	}
 	public static void unloadModule() {
@@ -247,6 +248,7 @@ public class BandoriModule extends Module{
 			}
 		}
 		sigIRC.bandorimodule_enabled=false;
+		sigIRC.config.setBoolean("Module_bandori_Enabled", sigIRC.bandorimodule_enabled);
 		sigIRC.config.saveProperties();
 	}
 	
