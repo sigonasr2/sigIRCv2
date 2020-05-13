@@ -89,6 +89,7 @@ public class DDRStepModule extends Module{
 				"DDR Step"
 				));
 		sigIRC.ddrstepmodule_enabled=true;
+		sigIRC.config.saveProperties();
 	}
 	public static void unloadModule() {
 		for (int i=0;i<sigIRC.modules.size();i++) {
@@ -97,6 +98,7 @@ public class DDRStepModule extends Module{
 			}
 		}
 		sigIRC.ddrstepmodule_enabled=false;
+		sigIRC.config.saveProperties();
 	}
 	
 	public void run() {

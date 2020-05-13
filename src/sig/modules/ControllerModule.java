@@ -116,6 +116,7 @@ public class ControllerModule extends Module{
 				"Controller"
 				));
 		sigIRC.controllermodule_enabled=true;
+		sigIRC.config.saveProperties();
 	}
 	public static void unloadModule() {
 		for (int i=0;i<sigIRC.modules.size();i++) {
@@ -124,6 +125,7 @@ public class ControllerModule extends Module{
 			}
 		}
 		sigIRC.controllermodule_enabled=false;
+		sigIRC.config.saveProperties();
 	}
 	
 	public List<Controller> getControllers() {

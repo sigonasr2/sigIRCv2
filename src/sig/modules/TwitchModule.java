@@ -140,6 +140,7 @@ public class TwitchModule extends Module{
 				"Twitch"
 				));
 		sigIRC.twitchmodule_enabled=true;
+		sigIRC.config.saveProperties();
 	}
 	public static void unloadModule() {
 		for (int i=0;i<sigIRC.modules.size();i++) {
@@ -148,6 +149,7 @@ public class TwitchModule extends Module{
 			}
 		}
 		sigIRC.twitchmodule_enabled=false;
+		sigIRC.config.saveProperties();
 	}
 
 	private void InitializeFollowerSounds() {

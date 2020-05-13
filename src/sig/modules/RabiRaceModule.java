@@ -196,6 +196,7 @@ public class RabiRaceModule extends Module{
 				"Rabi Race"
 				));
 		sigIRC.rabiracemodule_enabled=true;
+		sigIRC.config.saveProperties();
 	}
 	public static void unloadModule() {
 		for (int i=0;i<sigIRC.modules.size();i++) {
@@ -204,6 +205,7 @@ public class RabiRaceModule extends Module{
 			}
 		}
 		sigIRC.rabiracemodule_enabled=false;
+		sigIRC.config.saveProperties();
 	}
 
 	private void RunRabiRaceUpdater() {

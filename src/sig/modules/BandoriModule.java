@@ -238,6 +238,7 @@ public class BandoriModule extends Module{
 				"Bandori"
 				));
 		sigIRC.bandorimodule_enabled=true;
+		sigIRC.config.saveProperties();
 	}
 	public static void unloadModule() {
 		for (int i=0;i<sigIRC.modules.size();i++) {
@@ -246,6 +247,7 @@ public class BandoriModule extends Module{
 			}
 		}
 		sigIRC.bandorimodule_enabled=false;
+		sigIRC.config.saveProperties();
 	}
 	
 	public BufferedImage crop(BufferedImage img, int x, int y, int targetWidth, int targetHeight) throws IOException {

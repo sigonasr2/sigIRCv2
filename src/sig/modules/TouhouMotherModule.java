@@ -120,6 +120,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 				"Touhou Mother"
 				));
 		sigIRC.touhoumothermodule_enabled=true;
+		sigIRC.config.saveProperties();
 	}
 	public static void unloadModule() {
 		for (int i=0;i<sigIRC.modules.size();i++) {
@@ -128,6 +129,7 @@ public class TouhouMotherModule extends Module implements ActionListener{
 			}
 		}
 		sigIRC.touhoumothermodule_enabled=false;
+		sigIRC.config.saveProperties();
 	}
 
 	private void CheckTouhouMotherClient() {
