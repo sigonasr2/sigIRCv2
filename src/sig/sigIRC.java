@@ -180,6 +180,8 @@ public class sigIRC{
 	public static int retryCounter = 0;
 	public static boolean newUpdateIsAvailable = false;
 	public static long lastRetryTime = 0l;
+	public static long lastRetryMessage = 0l;
+	public static int retryCount = 0;
 	public static List<ModuleLinker> moduleList;
 	
 	public static int subchannelCount = 0;
@@ -516,8 +518,20 @@ public class sigIRC{
         new java.util.Timer().schedule(new TimerTask() {
         	public void run() {
 				InitializeIRCConnection(server,nickname,channel,oauth);
-				sigIRC.panel.addMessage("SYSTEM: Lost connection. Trying to reconnect...");
-				System.out.println("SYSTEM: Lost connection. Trying to reconnect...");
+				if (retryCount>1) {
+					sigIRC.panel.addMessage("SYSTEM: Lost connection. Trying to reconnect...");
+					System.out.println("SYSTEM: Lost connection. Trying to reconnect...");
+				}
+				if (retryCount==0) {
+					retryCount=1;
+				} else {
+					if (System.currentTimeMillis()-60000>lastRetryTime) {
+						retryCount=0;
+					} else {
+						retryCount++;
+					}
+				}
+				lastRetryTime = System.currentTimeMillis();
         	}
 		},10000);
 	}
