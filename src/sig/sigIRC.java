@@ -252,7 +252,7 @@ public class sigIRC{
 		twitchmodule_follower_img = config.getProperty("TWITCH_module_follower_img","sigIRC/glaceon_follower.png");
 		twitchmodule_follower_img_animation = config.getBoolean("TWITCH_module_follower_img_animation",true);
 		twitchmodule_followerText_centerX = config.getInteger("TWITCH_module_followerText_centerX",292);
-		twitchmodule_followerText_Y = config.getInteger("TWITCH_module_followerText_Y",42);
+		twitchmodule_followerText_Y = config.getInteger("TWITCH_module_followerText_Y",84);
 		twitchmodule_newfollowerImgLogoSize = config.getInteger("TWITCH_module_newFollowerImgLogoSize",32);
 		twitchmodule_newfollowerImgBackgroundColor = config.getProperty("TWITCH_module_newFollowerImgBackgroundColor","90,90,90");
 		twitchmodule_newfollowerShadowTextColor = config.getProperty("TWITCH_module_newFollowerShadowTextColor","26,90,150");
@@ -298,6 +298,9 @@ public class sigIRC{
 		autoUpdateProgram = config.getBoolean("Automatically_Update_Program", true);
 		disableChatMessages = config.getBoolean("Disable_Chat_Messages", false);
 		lastSubEmoteUpdate = config.getInteger("lastSubEmote_APIUpdate",Calendar.getInstance().get(Calendar.DAY_OF_YEAR));
+		twitchmodule_newfollowerNameTextColor = config.getProperty("twitchmodule_newfollowerNameTextColor","0,0,0");
+		twitchmodule_newfollowerNameShadowColor = config.getProperty("twitchmodule_newfollowerNameTextColor","255,255,180");
+		twitchmodule_newfollowerNameShadowSize = config.getInteger("twitchmodule_newfollowerNameTextColor",2);
 		//manager.setClientId("o4c2x0l3e82scgar4hpxg6m5dfjbem");
 		//System.out.println(manager.auth().hasAccessToken());
 
