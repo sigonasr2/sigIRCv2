@@ -209,12 +209,14 @@ public class TwitchModule extends Module{
 			FileUtils.downloadFileFromUrl("https://api.twitch.tv/helix/streams?user_id="+sigIRC.channel_id, "stream_info",true);
 		JSONObject streamInfo = FileUtils.readJsonFromFile("stream_info");
 		JSONArray streamData = streamInfo.getJSONArray("data");
-		JSONObject stream = streamData.getJSONObject(0);
 		streamOnline = streamData.length()!=0;
-		DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
-                .ofPattern("uuuu-MM-dd'T'HH:mm:ssz");
-		uptime = ZonedDateTime.parse(stream.getString("started_at"),DATE_TIME_FORMATTER);
-		viewers_numb.updateValue(stream.getInt("viewer_count"));
+		if (streamOnline) {
+			JSONObject stream = streamData.getJSONObject(0);
+			DateTimeFormatter DATE_TIME_FORMATTER = DateTimeFormatter
+	                .ofPattern("uuuu-MM-dd'T'HH:mm:ssz");
+			uptime = ZonedDateTime.parse(stream.getString("started_at"),DATE_TIME_FORMATTER);
+			viewers_numb.updateValue(stream.getInt("viewer_count"));
+		}
 		FileUtils.downloadFileFromUrl("https://api.twitch.tv/helix/users/follows?to_id="+sigIRC.channel_id, "temp_followers",true);
 		JSONObject FollowerData = FileUtils.readJsonFromFile("temp_followers");
 		JSONArray data = FollowerData.getJSONArray("data");
