@@ -220,6 +220,15 @@ public class TwitchModule extends Module{
 	                .ofPattern("uuuu-MM-dd'T'HH:mm:ssz");
 			uptime = ZonedDateTime.parse(stream.getString("started_at"),DATE_TIME_FORMATTER);
 			viewers_numb.updateValue(stream.getInt("viewer_count"));
+			//System.out.println(stream.getString("game_id"));
+			if (stream.getString("game_id").length()>0 && !stream.getString("game_id").equalsIgnoreCase("null")) { 
+				int gameID = Integer.parseInt(stream.getString("game_id"));
+				FileUtils.downloadFileFromUrl("https://api.twitch.tv/helix/games?id="+gameID, "game_info",true);
+				JSONObject gameData = FileUtils.readJsonFromFile("game_info");
+				currentlyPlaying = gameData.getJSONArray("data").getJSONObject(0).getString("name");
+			} else {
+				currentlyPlaying = "";
+			}
 		}
 		FileUtils.downloadFileFromUrl("https://api.twitch.tv/helix/users/follows?to_id="+sigIRC.channel_id, "temp_followers",true);
 		JSONObject FollowerData = FileUtils.readJsonFromFile("temp_followers");
