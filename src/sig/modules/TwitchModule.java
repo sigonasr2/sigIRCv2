@@ -63,6 +63,7 @@ public class TwitchModule extends Module{
 	public static BufferedImage DOWNARROWIMAGE;
 	public static BufferedImage UPTIMEIMAGE;
 	public static long myTwitchChannelID = 0;
+	public int previous_xoffset = 0;
 
 	public TwitchModule(Rectangle2D bounds, String moduleName) {
 		this(bounds,moduleName,true);
@@ -442,6 +443,7 @@ public class TwitchModule extends Module{
 		g.fillPolygon(new int[]{(int)position.getX(),(int)(position.getX()+position.getWidth()),(int)(position.getX()+position.getWidth()),(int)position.getX()}, 
 				new int[]{yoffset-4,yoffset-4,yoffset+16,yoffset+16}, 
 				4);
+		previous_xoffset = xoffset;
 		if (currentlyPlaying!=null && currentlyPlaying.length()>0) {
 			DrawUtils.drawOutlineText(g, sigIRC.panel.userFont, xoffset, yoffset+TextUtils.calculateStringBoundsFont(currentlyPlaying, sigIRC.panel.userFont).getHeight()/2+3, 2, g.getColor(), new Color(195,195,195), currentlyPlaying);xoffset+=TextUtils.calculateStringBoundsFont(currentlyPlaying, sigIRC.panel.userFont).getWidth()+16;
 		}

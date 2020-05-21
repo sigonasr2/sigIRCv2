@@ -75,10 +75,14 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         super.paintComponent(g);
         // Draw Text
         //int counter=18;
-        if (sigIRC.panel!=null) {
-	        lastMouseX = (int)(MouseInfo.getPointerInfo().getLocation().getX()-sigIRC.panel.getLocationOnScreen().getX());
-	        lastMouseY = (int)(MouseInfo.getPointerInfo().getLocation().getY()-sigIRC.panel.getLocationOnScreen().getY());
-	        //System.out.println("("+lastMouseX+","+lastMouseY+")");
+        try {
+	        if (sigIRC.panel!=null && MouseInfo.getPointerInfo()!=null) {
+		        lastMouseX = (int)(MouseInfo.getPointerInfo().getLocation().getX()-sigIRC.panel.getLocationOnScreen().getX());
+		        lastMouseY = (int)(MouseInfo.getPointerInfo().getLocation().getY()-sigIRC.panel.getLocationOnScreen().getY());
+		        //System.out.println("("+lastMouseX+","+lastMouseY+")");
+	        }
+        } catch (NullPointerException e) {
+        	//Do Nothing I guess.
         }
         /*if (sigIRC.window!=null && sigIRC.window.getMousePosition(true)!=null && sigIRC.overlayMode) {
 	        lastMouseX = (int)sigIRC.window.getMousePosition(true).getX();
