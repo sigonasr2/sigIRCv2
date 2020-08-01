@@ -9,7 +9,7 @@ import sig.utils.DebugUtils;
 
 public class FileManager {
 	String fileloc;
-	final String serverURL = "http://45.33.13.215/sigIRCv2/";
+	final String serverURL = "http://45.33.13.215:8080/sigIRCv2/";
 	boolean folder=false;
 	
 	public FileManager(String location) {

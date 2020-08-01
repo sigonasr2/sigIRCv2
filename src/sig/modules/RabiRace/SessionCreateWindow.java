@@ -219,9 +219,9 @@ public class SessionCreateWindow extends JFrame{
 				sessionText = sessionText.replaceAll(" ", "%20");
 				File file = new File(sigIRC.BASEDIR+"sigIRC/tmp.data");
 				try {
-					//System.out.println("Write to "+"http://45.33.13.215/rabirace/send.php?key=sessioncreate&name="+sessionText+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")+"&difficulty="+((difficulty.getText().length()>0)?difficulty.getText():"-1")+"&mode="+GetModeIndex()+"&extradata="+GetModeData());
-					org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=sessioncreate&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+RabiRaceModule.module.myProfile.username+"&roomname="+sessionText+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")+"&difficulty="+((difficulty.getText().length()>0)?difficulty.getText():"-1")+"&mode="+GetModeIndex()+"&extradata="+GetModeData()+"&coop="+GetCoopValue()),file);
-					//org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=sessioncreate&name="+session_name.getText()+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")),file);
+					//System.out.println("Write to "+"http://45.33.13.215:8080/rabirace/send.php?key=sessioncreate&name="+sessionText+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")+"&difficulty="+((difficulty.getText().length()>0)?difficulty.getText():"-1")+"&mode="+GetModeIndex()+"&extradata="+GetModeData());
+					org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215:8080/rabirace/send.php?key=sessioncreate&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+RabiRaceModule.module.myProfile.username+"&roomname="+sessionText+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")+"&difficulty="+((difficulty.getText().length()>0)?difficulty.getText():"-1")+"&mode="+GetModeIndex()+"&extradata="+GetModeData()+"&coop="+GetCoopValue()),file);
+					//org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215:8080/rabirace/send.php?key=sessioncreate&name="+session_name.getText()+"&players="+maxplayers.getText()+"&password="+((hashpass.length()>0)?hashpass:"none")),file);
 					String[] contents = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/tmp.data");
 					int sessionID=-1;
 					if (contents.length>=2) {

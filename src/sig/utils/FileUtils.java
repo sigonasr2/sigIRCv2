@@ -8,8 +8,11 @@ import java.io.FileWriter;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.io.OutputStream;
+import java.io.OutputStreamWriter;
 import java.io.PrintWriter;
 import java.io.Reader;
+import java.io.Writer;
 import java.net.ConnectException;
 import java.net.HttpURLConnection;
 import java.net.URL;
@@ -17,6 +20,7 @@ import java.nio.channels.Channels;
 import java.nio.channels.FileChannel;
 import java.nio.channels.ReadableByteChannel;
 import java.nio.charset.Charset;
+import java.nio.charset.StandardCharsets;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -250,7 +254,6 @@ public class FileUtils {
 			 logToFile(message,filename,false);  
 		 }
 	  }
-	  
 	  public static void logToFile(String message, String filename, boolean outputToChatLog) {
 		  File file = new File(filename);
 			try {
@@ -258,9 +261,9 @@ public class FileUtils {
 				if (!file.exists()) {
 					file.createNewFile();
 				}
-
-				FileWriter fw = new FileWriter(file, true);
-				PrintWriter pw = new PrintWriter(fw);
+				OutputStream out = new FileOutputStream(file,true);
+			    Writer writer = new OutputStreamWriter(out, StandardCharsets.UTF_8);
+				PrintWriter pw = new PrintWriter(writer);
 
 				pw.println(message);
 				pw.flush();

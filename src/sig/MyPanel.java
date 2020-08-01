@@ -25,7 +25,11 @@ import java.awt.event.WindowEvent;
 import java.awt.event.WindowListener;
 import java.io.File;
 import java.io.IOException;
+import java.util.Arrays;
 
+import javax.sound.sampled.AudioSystem;
+import javax.sound.sampled.LineUnavailableException;
+import javax.sound.sampled.Mixer;
 import javax.swing.JColorChooser;
 import javax.swing.JMenuItem;
 import javax.swing.JPanel;
@@ -93,6 +97,12 @@ public class MyPanel extends JPanel implements MouseListener, ActionListener, Mo
         	lastMouseY = -1;
         }*/
 		//
+        //AudioSystem.getMixerInfo()[0].
+        /*for (Mixer.Info i : AudioSystem.getMixerInfo()) {
+        	System.out.println(i+": "+AudioSystem.getMixer(i).isOpen());
+        }*/
+        //System.out.println(Audio.getMasterOutputVolume());
+        
         for (Module m : sigIRC.modules) {
         	m.draw(g);
         }

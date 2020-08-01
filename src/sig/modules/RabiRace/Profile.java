@@ -271,7 +271,7 @@ public class Profile {
 
 		File file = new File(sigIRC.BASEDIR+"sigIRC/tmp.data");
 		try {
-			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=addupdate&session="+RabiRaceModule.mySession.id+"&message="+string),file);
+			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215:8080/rabirace/send.php?key=addupdate&session="+RabiRaceModule.mySession.id+"&message="+string),file);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -385,13 +385,13 @@ public class Profile {
 		if (sigIRC.authenticated) {
 			File file = new File(sigIRC.BASEDIR+"tmp2");
 			try {
-				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=playerdata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+sigIRC.nickname.toLowerCase()+"&data="+getDataString()),file);
+				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215:8080/rabirace/send.php?key=playerdata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+sigIRC.nickname.toLowerCase()+"&data="+getDataString()),file);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			FileUtils.logToFile("["+System.currentTimeMillis()+"]Upload profile. "+"http://45.33.13.215/rabirace/send.php?key=playerdata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+sigIRC.nickname.toLowerCase()+"&data="+getDataString(), "debug.log");
+			FileUtils.logToFile("["+System.currentTimeMillis()+"]Upload profile. "+"http://45.33.13.215:8080/rabirace/send.php?key=playerdata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+sigIRC.nickname.toLowerCase()+"&data="+getDataString(), "debug.log");
 			
 			//System.out.println(getDataString());
 			//String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp");
@@ -403,13 +403,13 @@ public class Profile {
 		if (sigIRC.authenticated) {
 			File file = new File(sigIRC.BASEDIR+"tmp_profile");
 			try {
-				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=retrievedata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&retrievename="+username.toLowerCase()+"&name="+sigIRC.nickname.toLowerCase()),file);
+				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215:8080/rabirace/send.php?key=retrievedata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&retrievename="+username.toLowerCase()+"&name="+sigIRC.nickname.toLowerCase()),file);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			FileUtils.logToFile("["+System.currentTimeMillis()+"]Download profile w/settings: "+"http://45.33.13.215/rabirace/send.php?key=retrievedata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&retrievename="+username.toLowerCase()+"&name="+sigIRC.nickname.toLowerCase(), "debug2.log");
+			FileUtils.logToFile("["+System.currentTimeMillis()+"]Download profile w/settings: "+"http://45.33.13.215:8080/rabirace/send.php?key=retrievedata&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&retrievename="+username.toLowerCase()+"&name="+sigIRC.nickname.toLowerCase(), "debug2.log");
 			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"tmp_profile");
 			//System.out.println(Arrays.toString(data));
 			if (data.length>=23) {

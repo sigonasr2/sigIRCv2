@@ -256,7 +256,7 @@ public class TwitchModule extends Module{
 			Follower user = new Follower("0","I am an awesome test subject.",
 					new Date().toString(),
 					"Test User"+((int)Math.random()*100000),
-					"http://45.33.13.215/sigIRCv2/sigIRC/sigIRCicon.png",
+					"http://45.33.13.215:8080/sigIRCv2/sigIRC/sigIRCicon.png",
 					"Test User",
 					"",
 					new Date().toString());

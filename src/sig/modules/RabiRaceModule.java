@@ -244,7 +244,7 @@ public class RabiRaceModule extends Module{
 	private void RequestData(String filename,String requestString) {
 		File file = new File(sigIRC.BASEDIR+"sigIRC/"+filename);
 		try {
-			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?"+requestString),file);
+			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215:8080/rabirace/send.php?"+requestString),file);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
@@ -281,14 +281,14 @@ public class RabiRaceModule extends Module{
 	private void getMessageUpdates() {
 		File file = new File(sigIRC.BASEDIR+"sigIRC/messages");
 		try {
-			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=getupdates&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+myProfile.username),file);
+			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215:8080/rabirace/send.php?key=getupdates&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+myProfile.username),file);
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
 		String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"sigIRC/messages");
-		FileUtils.logToFile("["+System.currentTimeMillis()+"]Message updates."+"http://45.33.13.215/rabirace/send.php?key=getupdates&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+myProfile.username+" Data: "+Arrays.deepToString(data), "debug.log");
+		FileUtils.logToFile("["+System.currentTimeMillis()+"]Message updates."+"http://45.33.13.215:8080/rabirace/send.php?key=getupdates&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&name="+myProfile.username+" Data: "+Arrays.deepToString(data), "debug.log");
 		//boolean message_played=false;
 		for (String s : data) {
 			if (s.length()>0) {
@@ -306,7 +306,7 @@ public class RabiRaceModule extends Module{
 		if (mySession!=null) {
 			File file2 = new File(sigIRC.BASEDIR+"mapdata");
 			try {
-				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/maps/"+mySession.getID()),file2);
+				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215:8080/rabirace/maps/"+mySession.getID()),file2);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -356,7 +356,7 @@ public class RabiRaceModule extends Module{
 			mapdata.put(id,color);
 			File file2 = new File(sigIRC.BASEDIR+"tmp_mapdata");
 			try {
-				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?session="+mySession.getID()+"&key=addmappoint&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&mappoint="+myProfile.username+";"+id+";"+color),file2);
+				org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215:8080/rabirace/send.php?session="+mySession.getID()+"&key=addmappoint&timekey="+RabiRaceModule.CLIENT_SERVER_READTIME+"&mappoint="+myProfile.username+";"+id+";"+color),file2);
 			} catch (MalformedURLException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -480,7 +480,7 @@ public class RabiRaceModule extends Module{
 	public void getSessionList() {
 		File file = new File(sigIRC.BASEDIR+"sessions");
 		try {
-			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215/rabirace/send.php?key=getsessions"),file);
+			org.apache.commons.io.FileUtils.copyURLToFile(new URL("http://45.33.13.215:8080/rabirace/send.php?key=getsessions"),file);
 			String[] data = FileUtils.readFromFile(sigIRC.BASEDIR+"sessions");
 			//System.out.println("Data is "+Arrays.toString(data));
 			session_listing.UpdateData(data);
@@ -492,7 +492,7 @@ public class RabiRaceModule extends Module{
 		} else {
 			join_button.setButtonLabel("Leave Session");
 		}
-		FileUtils.logToFile("["+System.currentTimeMillis()+"]Retrieve session list."+"http://45.33.13.215/rabirace/send.php?key=getsessions", "debug.log");
+		FileUtils.logToFile("["+System.currentTimeMillis()+"]Retrieve session list."+"http://45.33.13.215:8080/rabirace/send.php?key=getsessions", "debug.log");
 		window.UpdateSessionList();
 	}
 
